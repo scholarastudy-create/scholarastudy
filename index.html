@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholara - Study Smarter, Not Harder</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #F5F3EF;
+            color: #1a3a52;
+            overflow-x: hidden;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(245, 243, 239, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+            animation: slideDown 0.6s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a3a52;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #1a3a52;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #E8A735;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .dashboard-btn {
+            padding: 0.7rem 1.5rem;
+            background: #E8A735;
+            color: white !important;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-btn:hover {
+            background: #d49625;
+            transform: translateY(-2px);
+        }
+
+        .dashboard-btn::after {
+            display: none;
+        }
+
+        .logout-btn {
+            padding: 0.7rem 1.5rem;
+            background: white;
+            color: #1a3a52;
+            border: 2px solid #1a3a52;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #1a3a52;
+            color: white;
+        }
+
+        .logged-out-nav {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .logged-in-nav {
+            display: none;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 5% 4rem;
+            background: linear-gradient(135deg, #F5F3EF 0%, #e8e5df 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(232, 167, 53, 0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(5deg); }
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text {
+            animation: fadeInLeft 0.8s ease;
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            color: #1a3a52;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero-text p {
+            font-size: 1.3rem;
+            color: #5a6c7d;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: #E8A735;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(232, 167, 53, 0.3);
+        }
+
+        .cta-button:hover {
+            background: #d49625;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(232, 167, 53, 0.4);
+        }
+
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            animation: fadeInRight 0.8s ease;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .logo-icon {
+            width: 350px;
+            height: 350px;
+            animation: bookFloat 4s ease-in-out infinite;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.1));
+        }
+
+        @keyframes bookFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        section {
+            padding: 6rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            color: #1a3a52;
+            margin-bottom: 1rem;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #5a6c7d;
+            margin-bottom: 4rem;
+            animation: fadeIn 0.8s ease 0.2s backwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease backwards;
+        }
+
+        .pricing-card:nth-child(1) { animation-delay: 0.1s; }
+        .pricing-card:nth-child(2) { animation-delay: 0.2s; }
+        .pricing-card:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #1a3a52, #E8A735);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+        }
+
+        .pricing-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .pricing-card.popular {
+            border: 2px solid #E8A735;
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: 20px;
+            right: -35px;
+            background: #E8A735;
+            color: white;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .plan-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .plan-name {
+            font-size: 1.8rem;
+            color: #1a3a52;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .plan-tagline {
+            font-size: 1rem;
+            color: #5a6c7d;
+            margin-bottom: 1rem;
+        }
+
+        .plan-price {
+            font-size: 2.5rem;
+            color: #E8A735;
+            font-weight: 700;
+            margin: 1.5rem 0;
+        }
+
+        .plan-price span {
+            font-size: 1rem;
+            color: #5a6c7d;
+            font-weight: 400;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .plan-features li {
+            padding: 0.8rem 0;
+            color: #5a6c7d;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .plan-features li::before {
+            content: '✓';
+            color: #E8A735;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .plan-button {
+            width: 100%;
+            padding: 1rem;
+            background: #1a3a52;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .plan-button:hover {
+            background: #E8A735;
+            transform: scale(1.05);
+        }
+
+        .plan-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .pricing-toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin: 2rem 0 3rem;
+        }
+
+        .toggle-option {
+            font-size: 1.1rem;
+            color: #5a6c7d;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-option.active {
+            color: #E8A735;
+        }
+
+        .toggle-switch {
+            width: 60px;
+            height: 30px;
+            background: #e8e5df;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #E8A735;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(30px);
+        }
+
+        .savings-badge {
+            display: inline-block;
+            background: #E8A735;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .mission-section {
+            background: linear-gradient(135deg, #1a3a52 0%, #2a4a62 100%);
+            color: white;
+            border-radius: 30px;
+            padding: 5rem 4rem;
+            margin: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mission-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(232, 167, 53, 0.15) 0%, transparent 70%);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .mission-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .mission-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #E8A735;
+        }
+
+        .mission-content p {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 5% 4rem;
+            background: linear-gradient(135deg, #F5F3EF 0%, #e8e5df 100%);
+        }
+
+        .auth-container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .auth-header img {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-header h2 {
+            font-size: 2rem;
+            color: #1a3a52;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-header p {
+            color: #5a6c7d;
+            font-size: 1rem;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            color: #5a6c7d;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .tab-button.active {
+            color: #E8A735;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #E8A735;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #1a3a52;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e8e5df;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #E8A735;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: auto;
+        }
+
+        .remember-me label {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #5a6c7d;
+        }
+
+        .auth-button {
+            width: 100%;
+            padding: 1rem;
+            background: #E8A735;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .auth-button:hover {
+            background: #d49625;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(232, 167, 53, 0.3);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 2rem 0;
+            color: #5a6c7d;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #e8e5df;
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-button {
+            flex: 1;
+            padding: 1rem;
+            background: white;
+            border: 2px solid #e8e5df;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #1a3a52;
+        }
+
+        .social-button:hover {
+            border-color: #E8A735;
+            transform: translateY(-2px);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #5a6c7d;
+        }
+
+        .auth-footer a {
+            color: #E8A735;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #5a6c7d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #E8A735;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            background: white;
+            padding: 3rem 5%;
+            margin-top: 4rem;
+            border-top: 2px solid #e8e5df;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .footer-logo img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .footer-logo span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a3a52;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #5a6c7d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #E8A735;
+        }
+
+        .footer-copy {
+            width: 100%;
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e5df;
+            color: #5a6c7d;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                gap: 1.5rem;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">SCHOLARA</div>
+        
+        <ul class="nav-links logged-out-nav" id="loggedOutNav">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#mission">Mission</a></li>
+            <li><a href="#login" class="dashboard-btn">Login</a></li>
+        </ul>
+
+        <div class="logged-in-nav" id="loggedInNav">
+            <a href="dashboard.html" class="dashboard-btn">Go to Dashboard</a>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Study Smarter,<br>Not Harder</h1>
+                <p>Transform your notes into high-quality study guides in seconds. End those countless nights of cramming.</p>
+                <a href="#login" class="cta-button" id="ctaButton">Get Started Free</a>
+            </div>
+            <div class="hero-visual">
+                <img src="https://i.imgur.com/ba7q8q6.png" alt="Scholara Logo" class="logo-icon">
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing">
+        <h2 class="section-title">Choose Your Plan</h2>
+        <p class="section-subtitle">Start free, upgrade when you're ready</p>
+        
+        <div class="pricing-toggle">
+            <span class="toggle-option active" id="monthlyLabel">Monthly</span>
+            <div class="toggle-switch" id="pricingToggle" onclick="togglePricing()"></div>
+            <span class="toggle-option" id="semesterLabel">Semester <span class="savings-badge">Save up to 30%</span></span>
+        </div>
+        
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div class="plan-header">
+                    <div class="plan-name">Free</div>
+                    <div class="plan-tagline">💡 For students who want to get organized fast.</div>
+                </div>
+                <div class="plan-price">$0<span> / month</span></div>
+                <ul class="plan-features">
+                    <li>Access to 5 free templates</li>
+                    <li>Resume & cover letter templates</li>
+                    <li>Limited customization</li>
+                    <li>Community access</li>
+                </ul>
+                <button class="plan-button" id="freeBtn" onclick="handleFreePlan()">Get Started</button>
+            </div>
+
+            <div class="pricing-card popular">
+                <div class="popular-badge">⭐ Most Popular</div>
+                <div class="plan-header">
+                    <div class="plan-name">Pro</div>
+                    <div class="plan-tagline">🔥 Turn your notes into high-quality study guides in seconds.</div>
+                </div>
+                <div class="plan-price">
+                    <span id="proPriceAmount">$5.99</span><span id="proPricePeriod"> / month</span>
+                </div>
+                <ul class="plan-features">
+                    <li>Everything in Free</li>
+                    <li>Upload notes or syllabus → custom study guides</li>
+                    <li>Full access to all templates</li>
+                    <li>Priority template updates</li>
+                </ul>
+                <button class="plan-button" id="proCheckoutBtn" onclick="handleCheckout('pro')">Upgrade to Pro</button>
+            </div>
+
+            <div class="pricing-card">
+                <div class="plan-header">
+                    <div class="plan-name">Premium ScholarAI</div>
+                    <div class="plan-tagline">🚀 Your personal AI for smarter studying.</div>
+                </div>
+                <div class="plan-price">
+                    <span id="premiumPriceAmount">$9.99</span><span id="premiumPricePeriod"> / month</span>
+                </div>
+                <ul class="plan-features">
+                    <li>Everything in Pro</li>
+                    <li>AI assistant optimized for schoolwork & essays</li>
+                    <li>Advanced formatting & citations</li>
+                    <li>Early access to new features</li>
+                </ul>
+                <button class="plan-button" id="premiumCheckoutBtn" onclick="handleCheckout('premium')">Upgrade to Premium</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="mission" class="mission-section">
+        <div class="mission-content">
+            <h2>Our Mission Statement</h2>
+            <p>At Scholara, our mission is to end those countless nights of staying up studying. Our goal is to provide you with a means of learning the content in your classes and acing your exam.</p>
+        </div>
+    </section>
+
+    <section id="login" class="auth-page hidden">
+        <div class="auth-container">
+            <a href="#home" class="back-link" onclick="showHome()">← Back to Home</a>
+            
+            <div class="auth-header">
+                <img src="https://i.imgur.com/ba7q8q6.png" alt="Scholara Logo">
+                <h2>Welcome to Scholara</h2>
+                <p>Sign in to start studying smarter</p>
+            </div>
+
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="switchTab('login')">Login</button>
+                <button class="tab-button" onclick="switchTab('signup')">Sign Up</button>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="your.email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div class="remember-me">
+                        <input type="checkbox" id="rememberMe" checked>
+                        <label for="rememberMe">Keep me logged in</label>
+                    </div>
+                    <a href="#" onclick="showForgotPassword(); return false;" style="color: #E8A735; text-decoration: none; font-size: 0.9rem; font-weight: 500;">Forgot Password?</a>
+                </div>
+                <button type="submit" class="auth-button">Sign In</button>
+            </form>
+
+            <form id="forgotPasswordForm" class="hidden" onsubmit="handleForgotPassword(event)">
+                <div style="margin-bottom: 1.5rem; text-align: center;">
+                    <p style="color: #5a6c7d; font-size: 0.95rem;">Enter your email address and we'll send you a link to reset your password.</p>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="forgotEmail" placeholder="your.email@example.com" required>
+                </div>
+                <button type="submit" class="auth-button" id="resetBtn">Send Reset Link</button>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <a href="#" onclick="showLoginForm(); return false;" style="color: #5a6c7d; text-decoration: none; font-size: 0.9rem;">← Back to Login</a>
+                </div>
+            </form>
+
+            <form id="signupForm" class="hidden" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="your.email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Create a password" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" placeholder="Confirm your password" required>
+                </div>
+                <div class="form-group" style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                    <input type="checkbox" id="agreeTerms" required style="width: auto; margin-top: 0.3rem;">
+                    <label for="agreeTerms" style="font-size: 0.9rem; font-weight: 400;">
+                        I agree to the <a href="terms.html" target="_blank" style="color: #E8A735; text-decoration: none;">Terms of Service</a> and <a href="privacy-policy.html" target="_blank" style="color: #E8A735; text-decoration: none;">Privacy Policy</a>
+                    </label>
+                </div>
+                <button type="submit" class="auth-button">Create Account</button>
+            </form>
+
+            <div class="divider">or</div>
+
+            <div class="social-login">
+                <button class="social-button" onclick="signInWithGoogle()">
+                    🔍 Google
+                </button>
+                <button class="social-button" onclick="signInWithApple()">
+                    🍎 Apple
+                </button>
+            </div>
+
+            <div class="auth-footer">
+                <p id="authFooterText">Don't have an account? <a href="#" onclick="switchTab('signup'); return false;">Sign up</a></p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const SUPABASE_URL = 'https://kiojxqwuxkrhkznszdvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtpb2p4cXd1eGtyaGt6bnN6ZHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwNzQxMTMsImV4cCI6MjA3NTY1MDExM30.guF9oB2LmY3GDcwSWQEe_5K6FmQ592otUPtttQW1LQQ';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true
+            }
+        });
+        
+        let currentUser = null;
+        let userProfile = null;
+        let isMonthly = true;
+        
+        // YOUR STRIPE PAYMENT LINKS - UPDATED WITH RECURRING SEMESTER PLANS!
+        const paymentLinks = {
+            proMonthly: 'https://buy.stripe.com/8x23cpbZU9ehc2Bap4enS02',
+            proSemester: 'https://buy.stripe.com/9B600dfc6bmp3w51SyenS05',        // NEW: Recurring every 6 months
+            premiumMonthly: 'https://buy.stripe.com/9B65kx6FA8ad6Ih7cSenS00',
+            premiumSemester: 'https://buy.stripe.com/fZu4gt1lg7694A9bt8enS04'     // NEW: Recurring every 6 months
+        };
+        
+        async function checkAuth() {
+            const { data: { user } } = await supabase.auth.getUser();
+            currentUser = user;
+            
+            if (user) {
+                console.log('User logged in:', user.email);
+                
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (profile) {
+                    userProfile = profile;
+                    console.log('User plan:', profile.subscription_plan);
+                    updateUIForLoggedInUser();
+                }
+            } else {
+                updateUIForLoggedOutUser();
+            }
+        }
+        
+        function updateUIForLoggedInUser() {
+            document.getElementById('loggedOutNav').style.display = 'none';
+            document.getElementById('loggedInNav').style.display = 'flex';
+            
+            const ctaButton = document.getElementById('ctaButton');
+            ctaButton.textContent = 'Go to Dashboard';
+            ctaButton.href = 'dashboard.html';
+            ctaButton.onclick = function(e) {
+                e.preventDefault();
+                window.location.href = 'dashboard.html';
+            };
+            
+            // Update pricing buttons based on user's current plan
+            updatePricingButtons();
+        }
+        
+        function updateUIForLoggedOutUser() {
+            document.getElementById('loggedOutNav').style.display = 'flex';
+            document.getElementById('loggedInNav').style.display = 'none';
+            
+            const ctaButton = document.getElementById('ctaButton');
+            ctaButton.textContent = 'Get Started Free';
+            ctaButton.href = '#login';
+            
+            // Reset pricing buttons to default
+            resetPricingButtons();
+        }
+
+        function updatePricingButtons() {
+            if (!userProfile) return;
+            
+            const currentPlan = userProfile.subscription_plan || 'free';
+            
+            // Update Free button
+            const freeBtn = document.getElementById('freeBtn');
+            if (currentPlan === 'free') {
+                freeBtn.textContent = '✓ Current Plan';
+                freeBtn.style.background = '#28a745';
+                freeBtn.disabled = true;
+                freeBtn.style.cursor = 'not-allowed';
+            } else if (currentPlan === 'pro' || currentPlan === 'premium') {
+                freeBtn.textContent = 'Downgrade to Free';
+                freeBtn.style.background = '#6c757d';
+                freeBtn.disabled = true;
+                freeBtn.style.cursor = 'not-allowed';
+            } else if (currentPlan === 'admin') {
+                freeBtn.textContent = '✓ Current Plan';
+                freeBtn.style.background = '#28a745';
+                freeBtn.disabled = true;
+                freeBtn.style.cursor = 'not-allowed';
+            }
+            
+            // Update Pro button
+            const proBtn = document.getElementById('proCheckoutBtn');
+            if (currentPlan === 'pro' || currentPlan === 'admin') {
+                proBtn.textContent = '✓ Current Plan';
+                proBtn.style.background = '#28a745';
+                proBtn.disabled = true;
+                proBtn.style.cursor = 'not-allowed';
+            } else if (currentPlan === 'premium') {
+                proBtn.textContent = 'Downgrade to Pro';
+                proBtn.style.background = '#6c757d';
+            } else {
+                proBtn.textContent = 'Upgrade to Pro';
+            }
+            
+            // Update Premium button
+            const premiumBtn = document.getElementById('premiumCheckoutBtn');
+            if (currentPlan === 'premium' || currentPlan === 'admin') {
+                premiumBtn.textContent = '✓ Current Plan';
+                premiumBtn.style.background = '#28a745';
+                premiumBtn.disabled = true;
+                premiumBtn.style.cursor = 'not-allowed';
+            } else if (currentPlan === 'free') {
+                premiumBtn.textContent = 'Upgrade to Premium';
+            } else if (currentPlan === 'pro') {
+                premiumBtn.textContent = 'Upgrade to Premium';
+            }
+        }
+
+        function resetPricingButtons() {
+            const freeBtn = document.getElementById('freeBtn');
+            freeBtn.textContent = 'Get Started';
+            freeBtn.style.background = '#1a3a52';
+            freeBtn.disabled = false;
+            freeBtn.style.cursor = 'pointer';
+            
+            const proBtn = document.getElementById('proCheckoutBtn');
+            proBtn.textContent = 'Upgrade to Pro';
+            proBtn.style.background = '#1a3a52';
+            proBtn.disabled = false;
+            proBtn.style.cursor = 'pointer';
+            
+            const premiumBtn = document.getElementById('premiumCheckoutBtn');
+            premiumBtn.textContent = 'Upgrade to Premium';
+            premiumBtn.style.background = '#1a3a52';
+            premiumBtn.disabled = false;
+            premiumBtn.style.cursor = 'pointer';
+        }
+
+        function handleFreePlan() {
+            if (!currentUser) {
+                window.location.href = '#login';
+                document.querySelector('.hero').classList.add('hidden');
+                document.getElementById('pricing').classList.add('hidden');
+                document.getElementById('mission').classList.add('hidden');
+                document.getElementById('login').classList.remove('hidden');
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        function togglePricing() {
+            isMonthly = !isMonthly;
+            const toggle = document.getElementById('pricingToggle');
+            const monthlyLabel = document.getElementById('monthlyLabel');
+            const semesterLabel = document.getElementById('semesterLabel');
+            const proPriceAmount = document.getElementById('proPriceAmount');
+            const proPricePeriod = document.getElementById('proPricePeriod');
+            const premiumPriceAmount = document.getElementById('premiumPriceAmount');
+            const premiumPricePeriod = document.getElementById('premiumPricePeriod');
+
+            if (isMonthly) {
+                toggle.classList.remove('active');
+                monthlyLabel.classList.add('active');
+                semesterLabel.classList.remove('active');
+                proPriceAmount.textContent = '$5.99';
+                proPricePeriod.textContent = ' / month';
+                premiumPriceAmount.textContent = '$9.99';
+                premiumPricePeriod.textContent = ' / month';
+            } else {
+                toggle.classList.add('active');
+                monthlyLabel.classList.remove('active');
+                semesterLabel.classList.add('active');
+                proPriceAmount.textContent = '$25';
+                proPricePeriod.textContent = ' / semester';
+                premiumPriceAmount.textContent = '$45';
+                premiumPricePeriod.textContent = ' / semester';
+            }
+        }
+
+        async function handleCheckout(plan) {
+            if (!currentUser) {
+                alert('Please log in or sign up first!');
+                window.location.href = '#login';
+                document.querySelector('.hero').classList.add('hidden');
+                document.getElementById('pricing').classList.add('hidden');
+                document.getElementById('mission').classList.add('hidden');
+                document.getElementById('login').classList.remove('hidden');
+                return;
+            }
+            
+            let paymentLink;
+            let planName;
+            
+            if (plan === 'pro') {
+                paymentLink = isMonthly ? paymentLinks.proMonthly : paymentLinks.proSemester;
+                planName = 'Pro';
+            } else if (plan === 'premium') {
+                paymentLink = isMonthly ? paymentLinks.premiumMonthly : paymentLinks.premiumSemester;
+                planName = 'Premium';
+            }
+            
+            localStorage.setItem('selectedPlan', planName);
+            localStorage.setItem('selectedBilling', isMonthly ? 'Monthly' : 'Semester');
+            
+            const button = document.getElementById(plan + 'CheckoutBtn');
+            button.disabled = true;
+            button.textContent = 'Redirecting to payment...';
+            
+            window.location.href = paymentLink + '?prefilled_email=' + encodeURIComponent(currentUser.email);
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                // Skip if it's the CTA button going to dashboard
+                if (this.getAttribute('href') === 'dashboard.html') {
+                    return;
+                }
+                
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                
+                document.querySelectorAll('section').forEach(section => {
+                    section.classList.add('hidden');
+                });
+                
+                if (target) {
+                    target.classList.remove('hidden');
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        function showHome() {
+            document.querySelector('.hero').classList.remove('hidden');
+            document.getElementById('pricing').classList.remove('hidden');
+            document.getElementById('mission').classList.remove('hidden');
+            document.getElementById('login').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const footerText = document.getElementById('authFooterText');
+            const authHeader = document.querySelector('.auth-header h2');
+
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                forgotPasswordForm.classList.add('hidden');
+                tabButtons[0].classList.add('active');
+                authHeader.textContent = 'Welcome to Scholara';
+                footerText.innerHTML = 'Don\'t have an account? <a href="#" onclick="switchTab(\'signup\'); return false;">Sign up</a>';
+            } else {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                forgotPasswordForm.classList.add('hidden');
+                tabButtons[1].classList.add('active');
+                authHeader.textContent = 'Create Your Account';
+                footerText.innerHTML = 'Already have an account? <a href="#" onclick="switchTab(\'login\'); return false;">Sign in</a>';
+            }
+        }
+
+        function showForgotPassword() {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const authHeader = document.querySelector('.auth-header h2');
+            const footerText = document.getElementById('authFooterText');
+
+            // Hide all forms and tabs
+            loginForm.classList.add('hidden');
+            signupForm.classList.add('hidden');
+            forgotPasswordForm.classList.remove('hidden');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            authHeader.textContent = 'Reset Password';
+            footerText.innerHTML = '';
+        }
+
+        function showLoginForm() {
+            switchTab('login');
+        }
+
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('forgotEmail').value;
+            const resetBtn = document.getElementById('resetBtn');
+            
+            resetBtn.disabled = true;
+            resetBtn.textContent = 'Sending...';
+            
+            try {
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: 'https://scholarastudy.com/reset-password.html'
+                });
+                
+                if (error) throw error;
+                
+                alert('✅ Password reset link sent! Check your email inbox (and spam folder).');
+                showLoginForm();
+                
+            } catch (error) {
+                console.error('Password reset error:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                resetBtn.disabled = false;
+                resetBtn.textContent = 'Send Reset Link';
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const form = e.target;
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Signing in...';
+            
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+            
+            if (error) {
+                alert('Error: ' + error.message);
+                submitButton.disabled = false;
+                submitButton.textContent = 'Sign In';
+            } else {
+                currentUser = data.user;
+                await checkAuth();
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            const form = e.target;
+            const fullName = form.querySelector('input[placeholder="John Doe"]').value;
+            const email = form.querySelector('input[type="email"]').value;
+            const password = form.querySelectorAll('input[type="password"]')[0].value;
+            const confirmPassword = form.querySelectorAll('input[type="password"]')[1].value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long.');
+                return;
+            }
+            
+            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Creating account...';
+            
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        full_name: fullName
+                    }
+                }
+            });
+            
+            if (error) {
+                alert('Error: ' + error.message);
+                submitButton.disabled = false;
+                submitButton.textContent = 'Create Account';
+            } else {
+                alert('Account created successfully! You can now choose a plan.');
+                currentUser = data.user;
+                await checkAuth();
+                showHome();
+                document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            currentUser = null;
+            userProfile = null;
+            alert('Logged out successfully!');
+            updateUIForLoggedOutUser();
+            window.location.href = 'index.html';
+        }
+
+        // Google Sign-In
+        async function signInWithGoogle() {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: 'https://scholarastudy.com/dashboard.html'
+                }
+            });
+            
+            if (error) {
+                console.error('Google sign-in error:', error);
+                alert('Google sign-in failed. Please try again.');
+            }
+        }
+
+        // Apple Sign-In
+        async function signInWithApple() {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'apple',
+                options: {
+                    redirectTo: 'https://scholarastudy.com/dashboard.html'
+                }
+            });
+            
+            if (error) {
+                console.error('Apple sign-in error:', error);
+                alert('Apple sign-in failed. Please try again.');
+            }
+        }
+
+        const observerOptions = {
+            threshold: 0.2,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.pricing-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            
+            if (window.location.hash === '#login') {
+                document.querySelector('.hero').classList.add('hidden');
+                document.getElementById('pricing').classList.add('hidden');
+                document.getElementById('mission').classList.add('hidden');
+                document.getElementById('login').classList.remove('hidden');
+            }
+        });
+    </script>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="https://i.imgur.com/s9222rr.png" alt="Scholara Logo">
+                <span>SCHOLARA</span>
+            </div>
+            <div class="footer-links">
+                <a href="contact.html">Contact Us</a>
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="terms.html">Terms of Service</a>
+                <a href="#pricing">Pricing</a>
+            </div>
+            <div class="footer-copy">
+                © 2025 Scholara. All rights reserved. Study smarter, not harder.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

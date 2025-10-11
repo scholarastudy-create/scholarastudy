@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Notes - Scholara</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #F5F3EF;
+            color: #1a3a52;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(245, 243, 239, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a3a52;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.7rem 1.5rem;
+            background: white;
+            color: #1a3a52;
+            border: 2px solid #1a3a52;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            background: #1a3a52;
+            color: white;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 8rem 5% 4rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: #1a3a52;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            color: #5a6c7d;
+        }
+
+        .upload-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-bottom: 3rem;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #1a3a52;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e8e5df;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #E8A735;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .file-upload-area {
+            border: 3px dashed #e8e5df;
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .file-upload-area:hover {
+            border-color: #E8A735;
+            background: #fefdfb;
+        }
+
+        .file-upload-area.dragover {
+            border-color: #E8A735;
+            background: #fff9f0;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .file-upload-area h3 {
+            color: #1a3a52;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload-area p {
+            color: #5a6c7d;
+            font-size: 0.9rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: 1.5rem;
+        }
+
+        .file-item {
+            background: #f8f8f8;
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-item-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .file-icon {
+            font-size: 1.5rem;
+        }
+
+        .remove-file {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .remove-file:hover {
+            background: #cc0000;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: #E8A735;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #d49625;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(232, 167, 53, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .my-submissions {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        .my-submissions h2 {
+            color: #1a3a52;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .submission-card {
+            background: #f8f8f8;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #E8A735;
+        }
+
+        .submission-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .submission-title {
+            font-weight: 600;
+            color: #1a3a52;
+            font-size: 1.1rem;
+        }
+
+        .status-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .submission-meta {
+            color: #5a6c7d;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .submission-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download {
+            background: #E8A735;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #d49625;
+        }
+
+        .btn-download:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .info-box h3 {
+            color: #1a3a52;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box p {
+            color: #5a6c7d;
+            line-height: 1.6;
+        }
+
+        .info-box ul {
+            margin-top: 1rem;
+            margin-left: 1.5rem;
+            color: #5a6c7d;
+        }
+
+        .info-box li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .submission-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">SCHOLARA</a>
+        <div class="nav-right">
+            <a href="dashboard.html" class="nav-btn">Dashboard</a>
+            <button class="nav-btn" onclick="handleLogout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>📝 Upload Your Notes</h1>
+            <p>Turn your class notes into comprehensive study guides</p>
+        </div>
+
+        <div class="info-box">
+            <h3>How it works:</h3>
+            <ul>
+                <li>Upload your notes, syllabus, or lecture materials (PDF, DOCX, TXT, or images)</li>
+                <li>Provide context about your subject and what you need help with</li>
+                <li>Our team will create a personalized study guide for you</li>
+                <li>Get notified when your study guide is ready (usually within 24-48 hours)</li>
+            </ul>
+        </div>
+
+        <div class="upload-section">
+            <form id="uploadForm" onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label>Study Guide Title *</label>
+                    <input type="text" id="titleInput" placeholder="e.g., Chapter 5: Photosynthesis" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Subject/Course *</label>
+                    <input type="text" id="subjectInput" placeholder="e.g., Biology 101" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Additional Instructions</label>
+                    <textarea id="instructionsInput" placeholder="Tell us what you'd like to focus on... (e.g., key terms, practice questions, summary format)"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload Your Files *</label>
+                    <div class="file-upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                        <div class="upload-icon">📤</div>
+                        <h3>Click or drag files here</h3>
+                        <p>Supports PDF, DOCX, TXT, JPG, PNG (Max 10MB per file)</p>
+                    </div>
+                    <input type="file" id="fileInput" multiple accept=".pdf,.docx,.txt,.jpg,.jpeg,.png" onchange="handleFiles(this.files)">
+                    <div id="fileList" class="file-list"></div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Submit for Processing
+                </button>
+            </form>
+        </div>
+
+        <div class="my-submissions">
+            <h2>My Submissions</h2>
+            <div id="submissionsList">
+                <p style="color: #5a6c7d; text-align: center;">No submissions yet. Upload your first notes above!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://kiojxqwuxkrhkznszdvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtpb2p4cXd1eGtyaGt6bnN6ZHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwNzQxMTMsImV4cCI6MjA3NTY1MDExM30.guF9oB2LmY3GDcwSWQEe_5K6FmQ592otUPtttQW1LQQ';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let userProfile = null;
+        let selectedFiles = [];
+
+        // Admin email - YOUR account has access to everything
+        const ADMIN_EMAIL = 'talonflinders@gmail.com';
+        let isAdmin = false;
+
+        // Check authentication and plan
+        async function checkAuth() {
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (!user) {
+                window.location.href = 'index.html#login';
+                return;
+            }
+
+            currentUser = user;
+
+            // Check if user is admin
+            if (user.email === ADMIN_EMAIL) {
+                isAdmin = true;
+                console.log('Admin access granted');
+            }
+
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (profile) {
+                userProfile = profile;
+                
+                // Check if user has Pro or Premium plan OR is admin
+                if (profile.subscription_plan === 'free' && !isAdmin) {
+                    alert('This feature requires a Pro or Premium plan. Please upgrade to continue.');
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+                
+                loadSubmissions();
+            }
+        }
+
+        // Drag and drop functionality
+        const uploadArea = document.getElementById('uploadArea');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        // Handle file selection
+        function handleFiles(files) {
+            const fileList = document.getElementById('fileList');
+            
+            Array.from(files).forEach(file => {
+                // Check file size (10MB max)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`${file.name} is too large. Maximum file size is 10MB.`);
+                    return;
+                }
+                
+                selectedFiles.push(file);
+                
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-item-info">
+                        <span class="file-icon">📄</span>
+                        <span>${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+                    </div>
+                    <button type="button" class="remove-file" onclick="removeFile('${file.name}')">Remove</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        // Remove file from selection
+        function removeFile(fileName) {
+            selectedFiles = selectedFiles.filter(f => f.name !== fileName);
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            selectedFiles.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-item-info">
+                        <span class="file-icon">📄</span>
+                        <span>${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+                    </div>
+                    <button type="button" class="remove-file" onclick="removeFile('${file.name}')">Remove</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        // Handle form submission
+        async function handleSubmit(e) {
+            e.preventDefault();
+            
+            if (selectedFiles.length === 0) {
+                alert('Please upload at least one file.');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+
+            const title = document.getElementById('titleInput').value;
+            const subject = document.getElementById('subjectInput').value;
+            const instructions = document.getElementById('instructionsInput').value;
+
+            try {
+                // Store file data as base64 for simplicity (in production, use Supabase Storage)
+                const fileData = await Promise.all(
+                    selectedFiles.map(async (file) => {
+                        return new Promise((resolve) => {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                resolve({
+                                    name: file.name,
+                                    type: file.type,
+                                    size: file.size,
+                                    data: e.target.result
+                                });
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    })
+                );
+
+                // Insert submission into database
+                const { data, error } = await supabase
+                    .from('study_guide_requests')
+                    .insert([
+                        {
+                            user_id: currentUser.id,
+                            title: title,
+                            subject: subject,
+                            instructions: instructions,
+                            files: fileData,
+                            status: 'pending',
+                            created_at: new Date().toISOString()
+                        }
+                    ])
+                    .select();
+
+                if (error) throw error;
+
+                alert('Success! Your notes have been submitted. You\'ll be notified when your study guide is ready.');
+                
+                // Reset form
+                document.getElementById('uploadForm').reset();
+                selectedFiles = [];
+                document.getElementById('fileList').innerHTML = '';
+                
+                // Reload submissions
+                loadSubmissions();
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Something went wrong. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit for Processing';
+            }
+        }
+
+        // Load user's submissions
+        async function loadSubmissions() {
+            const { data: submissions, error } = await supabase
+                .from('study_guide_requests')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error loading submissions:', error);
+                return;
+            }
+
+            const submissionsList = document.getElementById('submissionsList');
+            
+            if (!submissions || submissions.length === 0) {
+                submissionsList.innerHTML = '<p style="color: #5a6c7d; text-align: center;">No submissions yet. Upload your first notes above!</p>';
+                return;
+            }
+
+            submissionsList.innerHTML = submissions.map(sub => `
+                <div class="submission-card">
+                    <div class="submission-header">
+                        <div class="submission-title">${sub.title}</div>
+                        <div class="status-badge status-${sub.status}">${sub.status.toUpperCase()}</div>
+                    </div>
+                    <div class="submission-meta">
+                        ${sub.subject} • Submitted ${new Date(sub.created_at).toLocaleDateString()}
+                    </div>
+                    ${sub.instructions ? `<p style="color: #5a6c7d; font-size: 0.9rem; margin-top: 0.5rem;">${sub.instructions}</p>` : ''}
+                    <div class="submission-actions">
+                        <button class="btn-small btn-download" ${sub.status !== 'completed' ? 'disabled' : ''} onclick="downloadStudyGuide('${sub.id}')">
+                            ${sub.status === 'completed' ? '📥 Download Study Guide' : '⏳ Processing...'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Download study guide
+        function downloadStudyGuide(submissionId) {
+            alert('Downloading study guide...\n\nIn production, this would download the completed study guide PDF.');
+            // In production, you would fetch the study guide file and trigger download
+        }
+
+        // Logout
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>

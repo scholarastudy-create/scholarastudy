@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Cancelled - Scholara</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #F5F3EF 0%, #e8e5df 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .cancel-container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 30px;
+            padding: 4rem 3rem;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cancel-icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #5a6c7d, #3a4c5d);
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: scaleIn 0.5s ease 0.2s backwards;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .cancel-icon svg {
+            width: 60px;
+            height: 60px;
+            stroke: white;
+            stroke-width: 4;
+            fill: none;
+            stroke-linecap: round;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #1a3a52;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #5a6c7d;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .reasons {
+            background: #f8f8f8;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .reasons h3 {
+            color: #1a3a52;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .reasons ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .reasons li {
+            padding: 0.8rem 0;
+            color: #5a6c7d;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .reasons li::before {
+            content: '•';
+            color: #E8A735;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #E8A735;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #d49625;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(232, 167, 53, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #1a3a52;
+            border: 2px solid #1a3a52;
+        }
+
+        .btn-secondary:hover {
+            background: #1a3a52;
+            color: white;
+        }
+
+        .help-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #e8f4f8;
+            border-radius: 10px;
+            color: #1a3a52;
+        }
+
+        .help-box a {
+            color: #E8A735;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .help-box a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="cancel-container">
+        <div class="cancel-icon">
+            <svg viewBox="0 0 52 52">
+                <path d="M16 16 L36 36 M36 16 L16 36" />
+            </svg>
+        </div>
+
+        <h1>Payment Cancelled</h1>
+        <p class="subtitle">No worries! Your payment was not processed. You can try again whenever you're ready.</p>
+
+        <div class="reasons">
+            <h3>Why choose Scholara?</h3>
+            <ul>
+                <li>Transform notes into study guides in seconds</li>
+                <li>AI-powered learning assistance</li>
+                <li>Save hours of study time</li>
+                <li>Join thousands of successful students</li>
+                <li>Cancel anytime, no commitment</li>
+            </ul>
+        </div>
+
+        <div class="button-group">
+            <a href="index.html#pricing" class="btn btn-primary">Try Again</a>
+            <a href="index.html" class="btn btn-secondary">Back to Home</a>
+        </div>
+
+        <div class="help-box">
+            Need help? <a href="mailto:scholara@gmail.com">Contact our support team</a>
+        </div>
+    </div>
+</body>
+</html>

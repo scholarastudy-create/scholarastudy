@@ -1,0 +1,697 @@
+<!-- COPY EVERYTHING BELOW THIS LINE -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarAI - Your Study Assistant</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #F5F3EF;
+            color: #1a3a52;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            background: rgba(245, 243, 239, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a3a52;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.7rem 1.5rem;
+            background: white;
+            color: #1a3a52;
+            border: 2px solid #1a3a52;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            background: #1a3a52;
+            color: white;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+            gap: 2rem;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar h2 {
+            color: #1a3a52;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .new-chat-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #E8A735;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .new-chat-btn:hover {
+            background: #d49625;
+            transform: translateY(-2px);
+        }
+
+        .features-list {
+            padding-top: 1rem;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .features-list h3 {
+            color: #1a3a52;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #5a6c7d;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .main-chat {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h1 {
+            font-size: 1.8rem;
+            color: #1a3a52;
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 1rem;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .message.ai .message-avatar {
+            background: linear-gradient(135deg, #E8A735, #d49625);
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #1a3a52, #2a4a62);
+        }
+
+        .message-content {
+            background: #f8f8f8;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            line-height: 1.6;
+        }
+
+        .message.user .message-content {
+            background: #E8A735;
+            color: white;
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #5a6c7d;
+        }
+
+        .welcome-message h2 {
+            color: #1a3a52;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-suggestions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .suggestion-card {
+            background: #f8f8f8;
+            padding: 1.5rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .suggestion-card:hover {
+            background: #e8e5df;
+            transform: translateY(-2px);
+        }
+
+        .suggestion-card h3 {
+            color: #1a3a52;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .suggestion-card p {
+            color: #5a6c7d;
+            font-size: 0.85rem;
+        }
+
+        .input-area {
+            padding: 1.5rem 2rem;
+            border-top: 2px solid #f0f0f0;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            display: flex;
+            gap: 0.5rem;
+            background: #f8f8f8;
+            padding: 0.5rem;
+            border-radius: 15px;
+        }
+
+        #messageInput {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 0.8rem;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            max-height: 120px;
+        }
+
+        .send-btn {
+            padding: 1rem 2rem;
+            background: #E8A735;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            background: #d49625;
+        }
+
+        .send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 0.3rem;
+            padding: 1rem;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #5a6c7d;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 968px) {
+            .sidebar {
+                display: none;
+            }
+
+            .chat-container {
+                padding: 1rem;
+            }
+
+            .welcome-suggestions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">SCHOLARA</a>
+        <div class="nav-right">
+            <a href="dashboard.html" class="nav-btn">Dashboard</a>
+            <button class="nav-btn" onclick="handleLogout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="chat-container">
+        <aside class="sidebar">
+            <div>
+                <h2>ScholarAI</h2>
+                <p style="color: #5a6c7d; font-size: 0.9rem;">Your AI study assistant</p>
+            </div>
+
+            <button class="new-chat-btn" onclick="startNewChat()">+ New Conversation</button>
+
+            <div class="features-list">
+                <h3>Capabilities</h3>
+                <div class="feature-item">✓ Essay assistance</div>
+                <div class="feature-item">✓ Citation formatting</div>
+                <div class="feature-item">✓ Research help</div>
+                <div class="feature-item">✓ Homework support</div>
+                <div class="feature-item">✓ Study strategies</div>
+            </div>
+        </aside>
+
+        <main class="main-chat">
+            <div class="chat-header">
+                <h1>🤖 ScholarAI</h1>
+            </div>
+
+            <div class="messages-area" id="messagesArea">
+                <div class="welcome-message">
+                    <img src="https://i.imgur.com/wQNnhiG.png" alt="Scholara Logo" style="width: 120px; height: 120px; margin: 0 auto 2rem; display: block;">
+                    <h2>Welcome to ScholarAI</h2>
+                    <p>Your personal AI study assistant powered by OpenAI. Ask me anything about your coursework, essays, or research.</p>
+                    
+                    <div class="welcome-suggestions">
+                        <div class="suggestion-card" onclick="sendSuggestion('Help me write an essay about climate change')">
+                            <h3>📝 Essay Writing</h3>
+                            <p>Get help structuring and writing your essays</p>
+                        </div>
+                        <div class="suggestion-card" onclick="sendSuggestion('Explain photosynthesis to me in simple terms')">
+                            <h3>💡 Learn & Understand</h3>
+                            <p>Break down complex topics into simple explanations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="Ask me anything about your studies..." 
+                        rows="1"
+                        onkeydown="handleKeyPress(event)"
+                    ></textarea>
+                </div>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://kiojxqwuxkrhkznszdvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtpb2p4cXd1eGtyaGt6bnN6ZHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwNzQxMTMsImV4cCI6MjA3NTY1MDExM30.guF9oB2LmY3GDcwSWQEe_5K6FmQ592otUPtttQW1LQQ';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const ADMIN_EMAIL = 'talonflinders@gmail.com';
+
+        let currentUser = null;
+        let userProfile = null;
+        let currentThreadId = null;
+        let isAdmin = false;
+
+        async function checkAuth() {
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (!user) {
+                window.location.href = 'index.html#login';
+                return;
+            }
+
+            currentUser = user;
+
+            if (user.email === ADMIN_EMAIL) {
+                isAdmin = true;
+                console.log('Admin access granted');
+                await createThread();
+                return;
+            }
+
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (profile) {
+                userProfile = profile;
+                
+                if (profile.subscription_plan !== 'premium') {
+                    alert('ScholarAI requires a Premium plan. Please upgrade to continue.');
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+            }
+
+            await createThread();
+        }
+
+        async function createThread() {
+            try {
+                const response = await fetch('/.netlify/functions/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'createThread'
+                    })
+                });
+
+                const data = await response.json();
+                currentThreadId = data.id;
+                console.log('Thread created:', currentThreadId);
+            } catch (error) {
+                console.error('Error creating thread:', error);
+            }
+        }
+
+        function sendSuggestion(text) {
+            document.getElementById('messageInput').value = text;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+
+            input.value = '';
+
+            const welcomeMsg = document.querySelector('.welcome-message');
+            if (welcomeMsg) welcomeMsg.remove();
+
+            addMessage(message, 'user');
+            showTypingIndicator();
+
+            try {
+                const aiResponse = await getAIResponse(message);
+                hideTypingIndicator();
+                addMessage(aiResponse, 'ai');
+            } catch (error) {
+                console.error('Error:', error);
+                hideTypingIndicator();
+                addMessage('Sorry, I encountered an error. Please try again.', 'ai');
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+
+        async function getAIResponse(userMessage) {
+            try {
+                await fetch('/.netlify/functions/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'addMessage',
+                        threadId: currentThreadId,
+                        message: userMessage
+                    })
+                });
+
+                const runResponse = await fetch('/.netlify/functions/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'runAssistant',
+                        threadId: currentThreadId
+                    })
+                });
+
+                const runData = await runResponse.json();
+                const runId = runData.id;
+
+                let runStatus = 'queued';
+                let attempts = 0;
+                const maxAttempts = 60;
+
+                while ((runStatus === 'queued' || runStatus === 'in_progress') && attempts < maxAttempts) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+
+                    const statusResponse = await fetch('/.netlify/functions/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'checkStatus',
+                            threadId: currentThreadId,
+                            runId: runId
+                        })
+                    });
+
+                    const statusData = await statusResponse.json();
+                    runStatus = statusData.status;
+                    attempts++;
+
+                    if (runStatus === 'failed' || runStatus === 'cancelled' || runStatus === 'expired') {
+                        throw new Error('Assistant run failed: ' + runStatus);
+                    }
+                }
+
+                if (attempts >= maxAttempts) {
+                    throw new Error('Request timed out');
+                }
+
+                const messagesResponse = await fetch('/.netlify/functions/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'getMessages',
+                        threadId: currentThreadId
+                    })
+                });
+
+                const messagesData = await messagesResponse.json();
+                const assistantMessage = messagesData.data.find(msg => msg.role === 'assistant');
+                
+                if (assistantMessage && assistantMessage.content && assistantMessage.content.length > 0) {
+                    return assistantMessage.content[0].text.value;
+                }
+
+                return 'Sorry, I could not generate a response. Please try again.';
+
+            } catch (error) {
+                console.error('Error getting AI response:', error);
+                throw error;
+            }
+        }
+
+        function addMessage(content, sender) {
+            const messagesArea = document.getElementById('messagesArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = sender === 'ai' ? '🤖' : '👤';
+            const formattedContent = formatMessage(content);
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">${formattedContent}</div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function formatMessage(text) {
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            text = text.replace(/```(.*?)```/gs, '<pre style="background: #f0f0f0; padding: 1rem; border-radius: 8px; overflow-x: auto;"><code>$1</code></pre>');
+            text = text.replace(/`(.*?)`/g, '<code style="background: #f0f0f0; padding: 0.2rem 0.4rem; border-radius: 4px;">$1</code>');
+            text = text.replace(/\n/g, '<br>');
+            
+            return text;
+        }
+
+        function showTypingIndicator() {
+            const messagesArea = document.getElementById('messagesArea');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            messagesArea.appendChild(typingDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+        }
+
+        async function startNewChat() {
+            const messagesArea = document.getElementById('messagesArea');
+            messagesArea.innerHTML = `
+                <div class="welcome-message">
+                    <img src="https://i.imgur.com/wQNnhiG.png" alt="Scholara Logo" style="width: 120px; height: 120px; margin: 0 auto 2rem; display: block;">
+                    <h2>Welcome to ScholarAI</h2>
+                    <p>Your personal AI study assistant powered by OpenAI. Ask me anything about your coursework, essays, or research.</p>
+                    
+                    <div class="welcome-suggestions">
+                        <div class="suggestion-card" onclick="sendSuggestion('Help me write an essay about climate change')">
+                            <h3>📝 Essay Writing</h3>
+                            <p>Get help structuring and writing your essays</p>
+                        </div>
+                        <div class="suggestion-card" onclick="sendSuggestion('Explain photosynthesis to me in simple terms')">
+                            <h3>💡 Learn & Understand</h3>
+                            <p>Break down complex topics into simple explanations</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            await createThread();
+        }
+
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        const textarea = document.getElementById('messageInput');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - Scholara</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #F5F3EF 0%, #e8e5df 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .success-container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 30px;
+            padding: 4rem 3rem;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .checkmark-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #E8A735, #d49625);
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: scaleIn 0.5s ease 0.2s backwards;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .checkmark {
+            width: 60px;
+            height: 60px;
+            stroke: white;
+            stroke-width: 4;
+            fill: none;
+            stroke-linecap: round;
+            animation: drawCheck 0.5s ease 0.4s backwards;
+        }
+
+        @keyframes drawCheck {
+            from {
+                stroke-dasharray: 100;
+                stroke-dashoffset: 100;
+            }
+            to {
+                stroke-dasharray: 100;
+                stroke-dashoffset: 0;
+            }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #1a3a52;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #5a6c7d;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .info-box {
+            background: #f8f8f8;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #e8e5df;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #5a6c7d;
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #1a3a52;
+            font-weight: 700;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #E8A735;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #d49625;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(232, 167, 53, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #1a3a52;
+            border: 2px solid #1a3a52;
+        }
+
+        .btn-secondary:hover {
+            background: #1a3a52;
+            color: white;
+        }
+
+        .email-notice {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #e8f4f8;
+            border-radius: 10px;
+            color: #1a3a52;
+        }
+
+        .email-notice strong {
+            color: #E8A735;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="checkmark-circle">
+            <svg class="checkmark" viewBox="0 0 52 52">
+                <path d="M14 27l7.5 7.5L38 18" />
+            </svg>
+        </div>
+
+        <h1>Payment Successful!</h1>
+        <p class="subtitle">Welcome to Scholara! Your subscription is now active and you have full access to all your plan features.</p>
+
+        <div class="info-box">
+            <div class="info-item">
+                <span class="info-label">Plan</span>
+                <span class="info-value" id="planName">Pro Plan</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Billing</span>
+                <span class="info-value" id="billingPeriod">Monthly</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Status</span>
+                <span class="info-value" style="color: #27ae60;">Active</span>
+            </div>
+        </div>
+
+        <div class="email-notice">
+            📧 A confirmation email has been sent to your inbox with your receipt and account details.
+        </div>
+
+        <div class="button-group">
+            <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+            <a href="index.html" class="btn btn-secondary">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Get URL parameters to display plan info
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+
+        // You can fetch session details from Stripe if needed
+        // For now, we'll use localStorage or cookies to show the plan
+        const selectedPlan = localStorage.getItem('selectedPlan') || 'Pro';
+        const selectedBilling = localStorage.getItem('selectedBilling') || 'Monthly';
+
+        document.getElementById('planName').textContent = selectedPlan + ' Plan';
+        document.getElementById('billingPeriod').textContent = selectedBilling;
+
+        // Clear localStorage
+        localStorage.removeItem('selectedPlan');
+        localStorage.removeItem('selectedBilling');
+
+        // Optional: Send session_id to your backend to verify payment
+        if (sessionId) {
+            console.log('Stripe Session ID:', sessionId);
+            // fetch('/api/verify-payment', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ sessionId })
+            // });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,986 @@
+<!-- COPY EVERYTHING BELOW THIS LINE -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Scholara</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #F5F3EF;
+            color: #1a3a52;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(245, 243, 239, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a3a52;
+            letter-spacing: 1px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .settings-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.3rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-decoration: none;
+        }
+
+        .settings-icon:hover {
+            background: #E8A735;
+            transform: rotate(45deg) scale(1.1);
+            box-shadow: 0 4px 15px rgba(232, 167, 53, 0.3);
+        }
+
+        .admin-btn {
+            padding: 0.7rem 1.5rem;
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: none;
+        }
+
+        .admin-btn:hover {
+            background: linear-gradient(135deg, #c82333, #bd2130);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .plan-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .plan-free { background: #e8e5df; color: #5a6c7d; }
+        .plan-pro { background: #E8A735; color: white; }
+        .plan-premium { background: #1a3a52; color: white; }
+        .plan-admin { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+
+        .logout-btn {
+            padding: 0.7rem 1.5rem;
+            background: white;
+            color: #1a3a52;
+            border: 2px solid #1a3a52;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #1a3a52;
+            color: white;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 8rem 5% 4rem;
+        }
+
+        .welcome-section {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .welcome-section h1 {
+            font-size: 3rem;
+            color: #1a3a52;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            font-size: 1.3rem;
+            color: #5a6c7d;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .action-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            border: 3px solid transparent;
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+            border-color: #E8A735;
+        }
+
+        .action-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .action-card.locked:hover {
+            transform: none;
+            border-color: transparent;
+        }
+
+        .action-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .action-card h3 {
+            color: #1a3a52;
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .action-card p {
+            color: #5a6c7d;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .action-card .btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            color: #5a6c7d;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card .number {
+            font-size: 2.5rem;
+            color: #E8A735;
+            font-weight: 700;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #1a3a52;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .upgrade-banner {
+            background: linear-gradient(135deg, #E8A735, #d49625);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upgrade-banner h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upgrade-btn {
+            padding: 1rem 2rem;
+            background: white;
+            color: #E8A735;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .upgrade-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .template-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .template-card.locked {
+            opacity: 0.6;
+        }
+
+        .template-preview {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #e8e5df, #d8d5cf);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .template-info {
+            padding: 1.5rem;
+        }
+
+        .template-info h3 {
+            color: #1a3a52;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .template-info p {
+            color: #5a6c7d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .template-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #E8A735;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #d49625;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #1a3a52;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .lock-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .features-section {
+            margin-top: 4rem;
+        }
+
+        .status-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        footer {
+            background: white;
+            padding: 3rem 5%;
+            margin-top: 4rem;
+            border-top: 2px solid #e8e5df;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .footer-logo img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .footer-logo span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a3a52;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #5a6c7d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #E8A735;
+        }
+
+        .footer-copy {
+            width: 100%;
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e5df;
+            color: #5a6c7d;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .upgrade-banner {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+
+            .templates-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo-container">
+            <img src="https://i.imgur.com/s9222rr.png" alt="Scholara Logo" class="logo-img">
+            <div class="logo">SCHOLARA</div>
+        </a>
+        <div class="nav-right">
+            <div class="user-info">
+                <span id="userEmail"></span>
+                <span id="planBadge" class="plan-badge"></span>
+            </div>
+            <a href="admin_panel.html" class="admin-btn" id="adminBtn">🔒 Admin Panel</a>
+            <a href="settings.html" class="settings-icon" title="Account Settings">⚙️</a>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="welcome-section">
+            <h1 id="welcomeMessage">Welcome back!</h1>
+            <p>Here's what you can do today</p>
+        </div>
+
+        <div id="upgradeBanner" class="upgrade-banner" style="display: none;">
+            <div>
+                <h2>🚀 Unlock More Features</h2>
+                <p>Upgrade to Pro or Premium to access all templates and AI features</p>
+            </div>
+            <a href="index.html#pricing" class="upgrade-btn">Upgrade Now</a>
+        </div>
+
+        <!-- Quick Actions Section -->
+        <h2 class="section-title">⚡ Quick Actions</h2>
+        <div class="quick-actions" id="quickActions">
+            <!-- Quick action cards will be loaded here -->
+        </div>
+
+        <!-- Study Guides Section -->
+        <div class="features-section" id="studyGuidesSection" style="margin-top: 4rem; display: none;">
+            <h2 class="section-title">📚 My Study Guides</h2>
+            <div id="studyGuidesList" style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <!-- Study guides will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Template Library Section -->
+        <div class="features-section" style="margin-top: 4rem;">
+            <h2 class="section-title">📚 Template Library</h2>
+            <div id="templatesGrid" class="templates-grid">
+                <!-- Templates will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="features-section" style="margin-top: 4rem;">
+            <h2 class="section-title">📊 Your Stats</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Templates Available</h3>
+                    <div class="number" id="templatesCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Study Guides Created</h3>
+                    <div class="number" id="guidesCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Hours Saved</h3>
+                    <div class="number">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="https://i.imgur.com/s9222rr.png" alt="Scholara Logo">
+                <span>SCHOLARA</span>
+            </div>
+            <div class="footer-links">
+                <a href="contact.html">Contact Us</a>
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="terms.html">Terms of Service</a>
+                <a href="index.html#pricing">Pricing</a>
+            </div>
+            <div class="footer-copy">
+                © 2025 Scholara. All rights reserved. Study smarter, not harder.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://kiojxqwuxkrhkznszdvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtpb2p4cXd1eGtyaGt6bnN6ZHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwNzQxMTMsImV4cCI6MjA3NTY1MDExM30.guF9oB2LmY3GDcwSWQEe_5K6FmQ592otUPtttQW1LQQ';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let userProfile = null;
+        let templates = []; // Will be loaded from database
+        const ADMIN_EMAIL = 'talonflinders@gmail.com';
+
+        // Check authentication and subscription status
+        async function checkAuth() {
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (!user) {
+                window.location.href = 'index.html#login';
+                return;
+            }
+
+            currentUser = user;
+
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (profile) {
+                userProfile = profile;
+                
+                // Check subscription status and expiration
+                await verifySubscriptionStatus();
+                
+                // Load templates from database
+                await loadTemplatesFromDatabase();
+                
+                updateUI();
+            }
+        }
+
+        // Load templates from Supabase
+        async function loadTemplatesFromDatabase() {
+            try {
+                const { data: templatesData, error } = await supabase
+                    .from('templates')
+                    .select('*')
+                    .eq('active', true)
+                    .order('order_index', { ascending: true });
+
+                if (error) {
+                    console.error('Error loading templates:', error);
+                    templates = [];
+                    return;
+                }
+
+                // Transform database format to match expected format
+                templates = templatesData.map(t => ({
+                    id: t.id,
+                    name: t.name,
+                    icon: t.icon,
+                    description: t.description,
+                    requiredPlan: t.required_plan,
+                    fileUrl: t.file_url,
+                    category: t.category || 'general'
+                }));
+
+                console.log('Loaded', templates.length, 'templates from database');
+            } catch (err) {
+                console.error('Exception loading templates:', err);
+                templates = [];
+            }
+        }
+
+        // Verify subscription is still active
+        async function verifySubscriptionStatus() {
+            if (isAdmin()) {
+                return;
+            }
+
+            if (userProfile.subscription_plan !== 'free') {
+                const subscriptionEndDate = userProfile.subscription_end_date;
+                const subscriptionStatus = userProfile.subscription_status;
+
+                if (subscriptionStatus === 'cancelled' || subscriptionStatus === 'expired') {
+                    await supabase
+                        .from('profiles')
+                        .update({ 
+                            subscription_plan: 'free',
+                            subscription_status: 'inactive'
+                        })
+                        .eq('id', currentUser.id);
+                    
+                    userProfile.subscription_plan = 'free';
+                    alert('Your subscription has ended. You have been moved to the Free plan. Upgrade to regain access to premium features!');
+                    window.location.href = 'index.html#pricing';
+                }
+
+                if (subscriptionEndDate && new Date(subscriptionEndDate) < new Date()) {
+                    await supabase
+                        .from('profiles')
+                        .update({ 
+                            subscription_plan: 'free',
+                            subscription_status: 'expired'
+                        })
+                        .eq('id', currentUser.id);
+                    
+                    userProfile.subscription_plan = 'free';
+                    alert('Your subscription has expired. You have been moved to the Free plan. Upgrade to continue using premium features!');
+                    window.location.href = 'index.html#pricing';
+                }
+            }
+        }
+
+        // Check if user is admin
+        function isAdmin() {
+            return currentUser.email === ADMIN_EMAIL || userProfile.subscription_plan === 'admin';
+        }
+
+        // Update UI based on user plan
+        function updateUI() {
+            const email = currentUser.email;
+            let plan = userProfile.subscription_plan || 'free';
+            
+            if (isAdmin()) {
+                plan = 'admin';
+            }
+            
+            document.getElementById('userEmail').textContent = email;
+            document.getElementById('welcomeMessage').textContent = `Welcome back, ${userProfile.full_name || email.split('@')[0]}!`;
+            
+            const planBadge = document.getElementById('planBadge');
+            if (plan === 'admin') {
+                planBadge.textContent = 'Admin';
+            } else {
+                planBadge.textContent = plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
+            }
+            planBadge.className = 'plan-badge plan-' + plan;
+
+            if (isAdmin()) {
+                document.getElementById('adminBtn').style.display = 'block';
+            }
+
+            if (plan === 'free' && !isAdmin()) {
+                document.getElementById('upgradeBanner').style.display = 'flex';
+            }
+
+            // Update templates count based on loaded templates
+            const planHierarchy = { free: 0, pro: 1, premium: 2, admin: 3 };
+            const availableTemplates = templates.filter(t => planHierarchy[t.requiredPlan] <= planHierarchy[plan]);
+            document.getElementById('templatesCount').textContent = availableTemplates.length;
+
+            loadTemplates(plan);
+            loadFeatures(plan);
+        }
+
+        // Load templates based on user plan
+        function loadTemplates(userPlan) {
+            const planHierarchy = { free: 0, pro: 1, premium: 2, admin: 3 };
+            const grid = document.getElementById('templatesGrid');
+            grid.innerHTML = '';
+
+            if (templates.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #5a6c7d; padding: 2rem;">No templates available at this time. Check back soon!</p>';
+                return;
+            }
+
+            templates.forEach(template => {
+                const hasAccess = planHierarchy[template.requiredPlan] <= planHierarchy[userPlan];
+                
+                const card = document.createElement('div');
+                card.className = 'template-card' + (hasAccess ? '' : ' locked');
+                card.innerHTML = `
+                    ${!hasAccess ? `<div class="lock-overlay">🔒 ${template.requiredPlan.toUpperCase()}</div>` : ''}
+                    <div class="template-preview">${template.icon}</div>
+                    <div class="template-info">
+                        <h3>${template.name}</h3>
+                        <p>${template.description}</p>
+                        <div class="template-actions">
+                            <button class="btn btn-primary" onclick="viewTemplate('${template.id}')" ${!hasAccess ? 'disabled' : ''}>
+                                ${hasAccess ? 'View' : 'Locked'}
+                            </button>
+                            <button class="btn btn-secondary" onclick="downloadTemplate('${template.id}')" ${!hasAccess ? 'disabled' : ''}>
+                                Download
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Load features based on plan
+        function loadFeatures(userPlan) {
+            const quickActions = document.getElementById('quickActions');
+            quickActions.innerHTML = '';
+
+            const actions = [
+                { 
+                    icon: '📄',
+                    title: 'Browse Templates', 
+                    description: 'Access study templates, resumes, and planning tools for your academic needs.', 
+                    plans: ['free', 'pro', 'premium', 'admin'],
+                    action: 'scrollToTemplates()'
+                },
+                { 
+                    icon: '📤',
+                    title: 'Upload Notes', 
+                    description: 'Turn your class notes into professional study guides with our AI-powered system.', 
+                    plans: ['pro', 'premium', 'admin'],
+                    locked: userPlan === 'free',
+                    link: 'upload-notes.html'
+                },
+                { 
+                    icon: '🤖',
+                    title: 'ScholarAI Chat', 
+                    description: 'Get instant help with homework, essays, and exam prep from your personal AI tutor.', 
+                    plans: ['premium', 'admin'],
+                    locked: (userPlan !== 'premium' && userPlan !== 'admin'),
+                    link: 'scholarai.html'
+                },
+                { 
+                    icon: '📚',
+                    title: 'My Study Guides', 
+                    description: 'View and download your completed custom study guides.', 
+                    plans: ['pro', 'premium', 'admin'],
+                    locked: userPlan === 'free',
+                    action: 'scrollToStudyGuides()'
+                }
+            ];
+
+            actions.forEach(action => {
+                const hasAccess = action.plans.includes(userPlan);
+                const card = document.createElement('div');
+                card.className = 'action-card' + (action.locked ? ' locked' : '');
+                
+                let buttonHtml;
+                if (action.locked) {
+                    buttonHtml = '<button class="btn btn-secondary" disabled>🔒 Upgrade to Unlock</button>';
+                } else if (action.link) {
+                    buttonHtml = `<button class="btn btn-primary" onclick="window.location.href='${action.link}'">Get Started →</button>`;
+                } else if (action.action) {
+                    buttonHtml = `<button class="btn btn-primary" onclick="${action.action}">View →</button>`;
+                }
+                
+                card.innerHTML = `
+                    <div class="action-icon">${action.icon}</div>
+                    <h3>${action.title}</h3>
+                    <p>${action.description}</p>
+                    ${buttonHtml}
+                `;
+                quickActions.appendChild(card);
+            });
+
+            if (userPlan !== 'free') {
+                loadStudyGuides();
+                document.getElementById('studyGuidesSection').style.display = 'block';
+            }
+        }
+
+        // Scroll to templates section
+        function scrollToTemplates() {
+            document.querySelector('#templatesGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Scroll to study guides section
+        function scrollToStudyGuides() {
+            document.querySelector('#studyGuidesSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Load user's study guides
+        async function loadStudyGuides() {
+            const { data: guides, error } = await supabase
+                .from('study_guide_requests')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            const guidesList = document.getElementById('studyGuidesList');
+            
+            document.getElementById('guidesCount').textContent = guides ? guides.length : 0;
+
+            if (!guides || guides.length === 0) {
+                guidesList.innerHTML = `
+                    <p style="text-align: center; color: #5a6c7d;">
+                        No study guides yet. <a href="upload-notes.html" style="color: #E8A735; text-decoration: none; font-weight: 600;">Upload your notes</a> to get started!
+                    </p>
+                `;
+                return;
+            }
+
+            guidesList.innerHTML = guides.map(guide => `
+                <div style="background: #f8f8f8; padding: 1.5rem; border-radius: 15px; margin-bottom: 1rem; border-left: 4px solid #E8A735;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div style="font-weight: 600; color: #1a3a52; font-size: 1.1rem;">${guide.title}</div>
+                        <span class="status-badge status-${guide.status}">${guide.status.toUpperCase()}</span>
+                    </div>
+                    <div style="color: #5a6c7d; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                        ${guide.subject} • ${new Date(guide.created_at).toLocaleDateString()}
+                    </div>
+                    ${guide.status === 'completed' && guide.completed_study_guide ? `
+                        <button class="btn btn-primary" onclick="downloadCompletedGuide('${guide.id}')" style="margin-top: 1rem;">
+                            📥 Download Study Guide
+                        </button>
+                    ` : `
+                        <p style="color: #5a6c7d; font-size: 0.9rem; margin-top: 1rem;">
+                            ${guide.status === 'pending' ? '⏳ Waiting to be processed...' : '🔄 Your study guide is being created...'}
+                        </p>
+                    `}
+                </div>
+            `).join('');
+        }
+
+        // Download completed study guide
+        async function downloadCompletedGuide(guideId) {
+            const { data: guide, error } = await supabase
+                .from('study_guide_requests')
+                .select('completed_study_guide')
+                .eq('id', guideId)
+                .single();
+
+            if (error || !guide || !guide.completed_study_guide) {
+                alert('Study guide not found');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.href = guide.completed_study_guide.data;
+            link.download = guide.completed_study_guide.name;
+            link.click();
+        }
+
+        // View template - opens in new tab for viewing
+        function viewTemplate(id) {
+            const template = templates.find(t => t.id === id);
+            if (!template) {
+                alert('Template not found');
+                return;
+            }
+            
+            // Check if it's a Google Drive link
+            if (template.fileUrl.includes('drive.google.com')) {
+                // Extract file ID from various Google Drive URL formats
+                let fileId = null;
+                
+                // Format: https://drive.google.com/uc?export=download&id=FILE_ID
+                if (template.fileUrl.includes('id=')) {
+                    fileId = template.fileUrl.split('id=')[1].split('&')[0];
+                }
+                // Format: https://drive.google.com/file/d/FILE_ID/view
+                else if (template.fileUrl.includes('/file/d/')) {
+                    fileId = template.fileUrl.split('/file/d/')[1].split('/')[0];
+                }
+                
+                if (fileId) {
+                    // Use Google Drive's preview viewer
+                    const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+                    window.open(previewUrl, '_blank', 'width=1000,height=800');
+                } else {
+                    // Fallback to direct link
+                    window.open(template.fileUrl, '_blank');
+                }
+            } else {
+                // For non-Google Drive links, open directly
+                window.open(template.fileUrl, '_blank');
+            }
+        }
+
+        // Download template - actually downloads the file
+        function downloadTemplate(id) {
+            const template = templates.find(t => t.id === id);
+            if (!template) {
+                alert('Template not found');
+                return;
+            }
+            
+            // Force download
+            const link = document.createElement('a');
+            link.href = template.fileUrl;
+            link.download = template.name + '.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Logout
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>

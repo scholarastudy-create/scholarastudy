@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings - Scholara</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #F5F3EF;
+            color: #1a3a52;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(245, 243, 239, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a3a52;
+            letter-spacing: 1px;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.7rem 1.5rem;
+            background: white;
+            color: #1a3a52;
+            border: 2px solid #1a3a52;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            background: #1a3a52;
+            color: white;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 8rem 5% 4rem;
+        }
+
+        .page-header {
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: #1a3a52;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #5a6c7d;
+            font-size: 1.1rem;
+        }
+
+        .settings-grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .settings-card h2 {
+            color: #1a3a52;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #1a3a52;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e8e5df;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #E8A735;
+        }
+
+        .form-group input:disabled {
+            background: #f8f8f8;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            background: #f8f8f8;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #e8e5df;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #5a6c7d;
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #1a3a52;
+            font-weight: 500;
+        }
+
+        .plan-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        .plan-free { background: #e8e5df; color: #5a6c7d; }
+        .plan-pro { background: #E8A735; color: white; }
+        .plan-premium { background: #1a3a52; color: white; }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #E8A735;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #d49625;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #1a3a52;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .subscription-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .divider {
+            height: 2px;
+            background: #e8e5df;
+            margin: 2rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .button-group, .subscription-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo-container">
+            <img src="https://i.imgur.com/s9222rr.png" alt="Scholara Logo" class="logo-img">
+            <div class="logo">SCHOLARA</div>
+        </a>
+        <div class="nav-right">
+            <a href="dashboard.html" class="nav-btn">Dashboard</a>
+            <button class="nav-btn" onclick="handleLogout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>⚙️ Account Settings</h1>
+            <p>Manage your profile and subscription</p>
+        </div>
+
+        <div class="settings-grid">
+            <!-- Profile Settings -->
+            <div class="settings-card">
+                <h2>👤 Profile Information</h2>
+                
+                <div id="profileSuccess" class="success-message"></div>
+                <div id="profileError" class="error-message"></div>
+
+                <form id="profileForm" onsubmit="updateProfile(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="fullName" placeholder="Your name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="email" disabled>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="profileBtn">Save Changes</button>
+                </form>
+            </div>
+
+            <!-- Password Settings -->
+            <div class="settings-card">
+                <h2>🔒 Security</h2>
+                
+                <div id="passwordSuccess" class="success-message"></div>
+                <div id="passwordError" class="error-message"></div>
+
+                <form id="passwordForm" onsubmit="updatePassword(event)">
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="newPassword" placeholder="Enter new password" minlength="6">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirm new password" minlength="6">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="passwordBtn">Update Password</button>
+                </form>
+            </div>
+
+            <!-- Subscription Settings -->
+            <div class="settings-card">
+                <h2>💳 Subscription</h2>
+
+                <div class="info-box">
+                    <div class="info-row">
+                        <span class="info-label">Current Plan</span>
+                        <span class="info-value">
+                            <span id="currentPlan" class="plan-badge plan-free">Free</span>
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Status</span>
+                        <span class="info-value" id="subscriptionStatus">Active</span>
+                    </div>
+                    <div class="info-row" id="subscriptionDateRow" style="display: none;">
+                        <span class="info-label">Started</span>
+                        <span class="info-value" id="subscriptionDate">-</span>
+                    </div>
+                </div>
+
+                <div class="subscription-actions">
+                    <button class="btn btn-primary" onclick="window.location.href='index.html#pricing'">
+                        Upgrade Plan
+                    </button>
+                    <button class="btn btn-secondary" id="manageBillingBtn" onclick="manageBilling()" style="display: none;">
+                        Manage Billing Portal
+                    </button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div style="background: #f8f8f8; padding: 1.5rem; border-radius: 10px; margin-top: 1rem;">
+                    <h3 style="color: #1a3a52; font-size: 1rem; margin-bottom: 0.8rem;">What you can do in the Billing Portal:</h3>
+                    <ul style="color: #5a6c7d; font-size: 0.9rem; margin-left: 1.5rem; line-height: 1.8;">
+                        <li>Update payment method</li>
+                        <li>View payment history & invoices</li>
+                        <li>Update billing information</li>
+                        <li>Cancel subscription</li>
+                        <li>Reactivate cancelled subscription</li>
+                    </ul>
+                </div>
+
+                <div class="divider"></div>
+
+                <p style="color: #5a6c7d; font-size: 0.9rem; margin-bottom: 1rem;">
+                    Need help with billing? <a href="mailto:scholara@gmail.com" style="color: #E8A735; text-decoration: none; font-weight: 600;">Contact Support</a>
+                </p>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="settings-card" style="border: 2px solid #dc3545;">
+                <h2>⚠️ Danger Zone</h2>
+                
+                <p style="color: #5a6c7d; margin-bottom: 1.5rem;">
+                    Once you delete your account, there is no going back. Please be certain.
+                </p>
+
+                <button class="btn btn-danger" onclick="confirmDeleteAccount()">
+                    Delete Account
+                </button>
+            </div>
+
+            <!-- Help & Support -->
+            <div class="settings-card">
+                <h2>❓ Help & Support</h2>
+                
+                <p style="color: #5a6c7d; margin-bottom: 1.5rem;">
+                    Need help getting started? Restart the onboarding tour to learn the basics.
+                </p>
+
+                <button class="btn btn-secondary" onclick="restartTour()">
+                    🎯 Restart Onboarding Tour
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://kiojxqwuxkrhkznszdvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtpb2p4cXd1eGtyaGt6bnN6ZHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwNzQxMTMsImV4cCI6MjA3NTY1MDExM30.guF9oB2LmY3GDcwSWQEe_5K6FmQ592otUPtttQW1LQQ';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let userProfile = null;
+
+        // Check authentication
+        async function checkAuth() {
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (!user) {
+                window.location.href = 'index.html#login';
+                return;
+            }
+
+            currentUser = user;
+
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (profile) {
+                userProfile = profile;
+                loadUserData();
+            }
+        }
+
+        // Load user data into form
+        function loadUserData() {
+            document.getElementById('email').value = currentUser.email;
+            document.getElementById('fullName').value = userProfile.full_name || '';
+
+            // Update subscription info
+            const plan = userProfile.subscription_plan || 'free';
+            const planBadge = document.getElementById('currentPlan');
+            planBadge.textContent = plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
+            planBadge.className = 'plan-badge plan-' + plan;
+
+            document.getElementById('subscriptionStatus').textContent = 
+                userProfile.subscription_status === 'active' ? 'Active' : 'Inactive';
+
+            if (userProfile.subscription_start_date) {
+                document.getElementById('subscriptionDateRow').style.display = 'flex';
+                document.getElementById('subscriptionDate').textContent = 
+                    new Date(userProfile.subscription_start_date).toLocaleDateString();
+            }
+
+            // Show manage billing button for paid plans
+            if (plan !== 'free') {
+                document.getElementById('manageBillingBtn').style.display = 'block';
+            }
+        }
+
+        // Update profile
+        async function updateProfile(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('profileBtn');
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            const fullName = document.getElementById('fullName').value;
+
+            try {
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({ 
+                        full_name: fullName,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', currentUser.id);
+
+                if (error) throw error;
+
+                showMessage('profileSuccess', 'Profile updated successfully!');
+                userProfile.full_name = fullName;
+
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('profileError', 'Failed to update profile. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Save Changes';
+            }
+        }
+
+        // Update password
+        async function updatePassword(e) {
+            e.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                showMessage('passwordError', 'Passwords do not match!');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showMessage('passwordError', 'Password must be at least 6 characters long.');
+                return;
+            }
+
+            const btn = document.getElementById('passwordBtn');
+            btn.disabled = true;
+            btn.textContent = 'Updating...';
+
+            try {
+                const { error } = await supabase.auth.updateUser({
+                    password: newPassword
+                });
+
+                if (error) throw error;
+
+                showMessage('passwordSuccess', 'Password updated successfully!');
+                document.getElementById('passwordForm').reset();
+
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('passwordError', 'Failed to update password. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Update Password';
+            }
+        }
+
+        // Show message
+        function showMessage(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+
+        // Manage billing (redirect to Stripe portal)
+        async function manageBilling() {
+            const btn = document.getElementById('manageBillingBtn');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Opening...';
+
+            try {
+                // Get auth token
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (!session) {
+                    alert('Please log in again to manage billing.');
+                    window.location.href = 'index.html#login';
+                    return;
+                }
+
+                // Call Netlify function to create Stripe portal session
+                const response = await fetch('/.netlify/functions/stripe-billing-portal', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + session.access_token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to open billing portal');
+                }
+
+                // Redirect to Stripe Customer Portal
+                window.location.href = data.url;
+
+            } catch (error) {
+                console.error('Billing portal error:', error);
+                alert(error.message || 'Unable to open billing portal. Please contact support.');
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+
+        // Confirm delete account
+        function confirmDeleteAccount() {
+            const confirmed = confirm(
+                '⚠️ WARNING ⚠️\n\n' +
+                'This will permanently delete your account and all associated data.\n\n' +
+                'This action CANNOT be undone.\n\n' +
+                'Are you absolutely sure?'
+            );
+
+            if (confirmed) {
+                const doubleConfirm = confirm(
+                    'Final confirmation:\n\n' +
+                    'Type DELETE in the next prompt to confirm account deletion.'
+                );
+
+                if (doubleConfirm) {
+                    const typed = prompt('Type DELETE to confirm:');
+                    if (typed === 'DELETE') {
+                        deleteAccount();
+                    } else {
+                        alert('Account deletion cancelled.');
+                    }
+                }
+            }
+        }
+
+        // Delete account
+        async function deleteAccount() {
+            try {
+                // Delete user profile
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .delete()
+                    .eq('id', currentUser.id);
+
+                if (profileError) throw profileError;
+
+                // Delete auth user (admin function - needs backend)
+                alert('Account deletion initiated. Please contact support@scholara.com to complete the process.');
+                
+                // Log out
+                await supabase.auth.signOut();
+                window.location.href = 'index.html';
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to delete account. Please contact support.');
+            }
+        }
+
+        // Logout
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        // Restart tour
+        function restartTour() {
+            localStorage.removeItem('scholara_tour_completed');
+            alert('Tour reset! Go back to your dashboard to start the tour again.');
+            window.location.href = 'dashboard.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>
