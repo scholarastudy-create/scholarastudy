@@ -2,7 +2,6 @@ const fetch = require('node-fetch');
 const FormData = require('form-data');
 
 exports.handler = async (event, context) => {
-  // Handle CORS
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -35,9 +34,19 @@ exports.handler = async (event, context) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'OpenAI-Beta': 'assistants=v2'
-        }
+        },
+        body: JSON.stringify({
+          tool_resources: {
+            file_search: {
+              vector_stores: [{
+                file_ids: []
+              }]
+            }
+          }
+        })
       });
       const data = await response.json();
+      console.log('Thread created with vector store:', data);
       return {
         statusCode: 200,
         headers,
@@ -45,24 +54,21 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // UPLOAD FILE - FIXED VERSION
+    // UPLOAD FILE
     if (action === 'uploadFile') {
       try {
-        // Convert base64 to buffer
         const base64Data = fileContent.split(',')[1];
         const buffer = Buffer.from(base64Data, 'base64');
         
         console.log('Uploading file:', fileName, 'Size:', buffer.length, 'bytes');
         
-        // Create form data
         const form = new FormData();
         form.append('file', buffer, {
           filename: fileName,
           contentType: 'application/octet-stream'
         });
-        form.append('purpose', purpose || 'assistants');
+        form.append('purpose', 'assistants');
 
-        // Upload to OpenAI
         const response = await fetch('https://api.openai.com/v1/files', {
           method: 'POST',
           headers: {
@@ -73,15 +79,14 @@ exports.handler = async (event, context) => {
         });
 
         const data = await response.json();
-        
-        console.log('OpenAI file upload response:', data);
+        console.log('File uploaded:', data);
         
         if (!response.ok) {
-          console.error('OpenAI error:', data);
+          console.error('Upload failed:', data);
           return {
             statusCode: response.status,
             headers,
-            body: JSON.stringify({ error: 'OpenAI file upload failed', details: data })
+            body: JSON.stringify({ error: 'File upload failed', details: data })
           };
         }
 
@@ -91,30 +96,33 @@ exports.handler = async (event, context) => {
           body: JSON.stringify(data)
         };
       } catch (error) {
-        console.error('File upload exception:', error);
+        console.error('Upload exception:', error);
         return {
           statusCode: 500,
           headers,
-          body: JSON.stringify({ error: 'File upload failed', message: error.message })
+          body: JSON.stringify({ error: error.message })
         };
       }
     }
 
-    // ADD MESSAGE (with optional file attachments)
+    // ADD MESSAGE WITH FILES
     if (action === 'addMessage') {
       const messageBody = {
         role: 'user',
         content: message
       };
 
-      // Add file attachments if provided
+      // Attach files using the new attachments format
       if (fileIds && fileIds.length > 0) {
         messageBody.attachments = fileIds.map(fileId => ({
           file_id: fileId,
-          tools: [{ type: 'file_search' }]
+          tools: [
+            { type: 'file_search' },
+            { type: 'code_interpreter' }
+          ]
         }));
         
-        console.log('Adding message with file attachments:', messageBody);
+        console.log('Adding message with attachments:', JSON.stringify(messageBody, null, 2));
       }
 
       const response = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
@@ -128,7 +136,7 @@ exports.handler = async (event, context) => {
       });
       
       const data = await response.json();
-      console.log('Message added response:', data);
+      console.log('Message added:', data);
       
       return {
         statusCode: 200,
@@ -139,6 +147,12 @@ exports.handler = async (event, context) => {
 
     // RUN ASSISTANT
     if (action === 'runAssistant') {
+      // Include additional instructions to force file reading
+      const runBody = {
+        assistant_id: ASSISTANT_ID,
+        additional_instructions: 'IMPORTANT: Check if any files are attached to the latest message. If files are present, read them immediately and reference their content in your response.'
+      };
+
       const response = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
         method: 'POST',
         headers: {
@@ -146,13 +160,11 @@ exports.handler = async (event, context) => {
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'OpenAI-Beta': 'assistants=v2'
         },
-        body: JSON.stringify({
-          assistant_id: ASSISTANT_ID
-        })
+        body: JSON.stringify(runBody)
       });
-      const data = await response.json();
       
-      console.log('Assistant run started:', data);
+      const data = await response.json();
+      console.log('Run started:', data);
       
       return {
         statusCode: 200,
@@ -204,7 +216,7 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: error.message, details: error.toString() })
+      body: JSON.stringify({ error: error.message })
     };
   }
 };
