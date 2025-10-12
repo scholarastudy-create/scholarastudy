@@ -596,8 +596,15 @@
 
         let currentUser = null;
         let userProfile = null;
-        let templates = []; // Will be loaded from database
+        let templates = [];
         const ADMIN_EMAIL = 'talonflinders@gmail.com';
+
+        // Helper function to check if user is admin
+        function isAdmin() {
+            if (!currentUser || !userProfile) return false;
+            return currentUser.email === ADMIN_EMAIL || 
+                   userProfile.subscription_plan === 'admin';
+        }
 
         // Check authentication and subscription status
         async function checkAuth() {
@@ -644,7 +651,6 @@
                     return;
                 }
 
-                // Transform database format to match expected format
                 templates = templatesData.map(t => ({
                     id: t.id,
                     name: t.name,
@@ -664,7 +670,9 @@
 
         // Verify subscription is still active
         async function verifySubscriptionStatus() {
+            // Skip verification for admin users
             if (isAdmin()) {
+                console.log('Admin user - skipping subscription verification');
                 return;
             }
 
@@ -702,11 +710,6 @@
             }
         }
 
-        // Check if user is admin
-        function isAdmin() {
-            return currentUser.email === ADMIN_EMAIL || userProfile.subscription_plan === 'admin';
-        }
-
         // Update UI based on user plan
         function updateUI() {
             const email = currentUser.email;
@@ -735,7 +738,6 @@
                 document.getElementById('upgradeBanner').style.display = 'flex';
             }
 
-            // Update templates count based on loaded templates
             const planHierarchy = { free: 0, pro: 1, premium: 2, admin: 3 };
             const availableTemplates = templates.filter(t => planHierarchy[t.requiredPlan] <= planHierarchy[plan]);
             document.getElementById('templatesCount').textContent = availableTemplates.length;
@@ -848,17 +850,14 @@
             }
         }
 
-        // Scroll to templates section
         function scrollToTemplates() {
             document.querySelector('#templatesGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // Scroll to study guides section
         function scrollToStudyGuides() {
             document.querySelector('#studyGuidesSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // Load user's study guides
         async function loadStudyGuides() {
             const { data: guides, error } = await supabase
                 .from('study_guide_requests')
@@ -901,7 +900,6 @@
             `).join('');
         }
 
-        // Download completed study guide
         async function downloadCompletedGuide(guideId) {
             const { data: guide, error } = await supabase
                 .from('study_guide_requests')
@@ -920,7 +918,6 @@
             link.click();
         }
 
-        // View template - opens in new tab for viewing
         function viewTemplate(id) {
             const template = templates.find(t => t.id === id);
             if (!template) {
@@ -928,35 +925,27 @@
                 return;
             }
             
-            // Check if it's a Google Drive link
             if (template.fileUrl.includes('drive.google.com')) {
-                // Extract file ID from various Google Drive URL formats
                 let fileId = null;
                 
-                // Format: https://drive.google.com/uc?export=download&id=FILE_ID
                 if (template.fileUrl.includes('id=')) {
                     fileId = template.fileUrl.split('id=')[1].split('&')[0];
                 }
-                // Format: https://drive.google.com/file/d/FILE_ID/view
                 else if (template.fileUrl.includes('/file/d/')) {
                     fileId = template.fileUrl.split('/file/d/')[1].split('/')[0];
                 }
                 
                 if (fileId) {
-                    // Use Google Drive's preview viewer
                     const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
                     window.open(previewUrl, '_blank', 'width=1000,height=800');
                 } else {
-                    // Fallback to direct link
                     window.open(template.fileUrl, '_blank');
                 }
             } else {
-                // For non-Google Drive links, open directly
                 window.open(template.fileUrl, '_blank');
             }
         }
 
-        // Download template - actually downloads the file
         function downloadTemplate(id) {
             const template = templates.find(t => t.id === id);
             if (!template) {
@@ -964,7 +953,6 @@
                 return;
             }
             
-            // Force download
             const link = document.createElement('a');
             link.href = template.fileUrl;
             link.download = template.name + '.pdf';
@@ -973,13 +961,11 @@
             document.body.removeChild(link);
         }
 
-        // Logout
         async function handleLogout() {
             await supabase.auth.signOut();
             window.location.href = 'index.html';
         }
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', checkAuth);
     </script>
 </body>

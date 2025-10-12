@@ -434,9 +434,32 @@
         let userProfile = null;
         let selectedFiles = [];
 
-        // Admin email - YOUR account has access to everything
         const ADMIN_EMAIL = 'talonflinders@gmail.com';
-        let isAdmin = false;
+
+        // Helper function to check if user is admin
+        function isAdmin() {
+            if (!currentUser || !userProfile) return false;
+            return currentUser.email === ADMIN_EMAIL || 
+                   userProfile.subscription_plan === 'admin';
+        }
+
+        // Helper function to check plan access
+        function hasAccess(requiredPlan) {
+            if (isAdmin()) return true;
+            if (!userProfile) return false;
+            
+            const planHierarchy = {
+                'free': 0,
+                'pro': 1,
+                'premium': 2,
+                'admin': 3
+            };
+            
+            const userPlanLevel = planHierarchy[userProfile.subscription_plan] || 0;
+            const requiredPlanLevel = planHierarchy[requiredPlan] || 0;
+            
+            return userPlanLevel >= requiredPlanLevel;
+        }
 
         // Check authentication and plan
         async function checkAuth() {
@@ -449,12 +472,6 @@
 
             currentUser = user;
 
-            // Check if user is admin
-            if (user.email === ADMIN_EMAIL) {
-                isAdmin = true;
-                console.log('Admin access granted');
-            }
-
             const { data: profile } = await supabase
                 .from('profiles')
                 .select('*')
@@ -464,13 +481,14 @@
             if (profile) {
                 userProfile = profile;
                 
-                // Check if user has Pro or Premium plan OR is admin
-                if (profile.subscription_plan === 'free' && !isAdmin) {
+                // Check if user has Pro, Premium, or Admin access
+                if (!hasAccess('pro')) {
                     alert('This feature requires a Pro or Premium plan. Please upgrade to continue.');
                     window.location.href = 'dashboard.html';
                     return;
                 }
                 
+                console.log('Access granted:', isAdmin() ? 'Admin' : userProfile.subscription_plan);
                 loadSubmissions();
             }
         }
@@ -651,9 +669,22 @@
         }
 
         // Download study guide
-        function downloadStudyGuide(submissionId) {
-            alert('Downloading study guide...\n\nIn production, this would download the completed study guide PDF.');
-            // In production, you would fetch the study guide file and trigger download
+        async function downloadStudyGuide(submissionId) {
+            const { data: guide, error } = await supabase
+                .from('study_guide_requests')
+                .select('completed_study_guide')
+                .eq('id', submissionId)
+                .single();
+
+            if (error || !guide || !guide.completed_study_guide) {
+                alert('Study guide not found');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.href = guide.completed_study_guide.data;
+            link.download = guide.completed_study_guide.name;
+            link.click();
         }
 
         // Logout

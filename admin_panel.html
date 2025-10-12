@@ -666,6 +666,8 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtpb2p4cXd1eGtyaGt6bnN6ZHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwNzQxMTMsImV4cCI6MjA3NTY1MDExM30.guF9oB2LmY3GDcwSWQEe_5K6FmQ592otUPtttQW1LQQ';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        const ADMIN_EMAIL = 'talonflinders@gmail.com';
+
         let selectedGuideFile = null;
         let allSubmissions = [];
         let allTemplates = [];
@@ -673,18 +675,34 @@
         async function checkAuth() {
             const { data: { user } } = await supabase.auth.getUser();
             
-            if (user && user.email === 'talonflinders@gmail.com') {
-                console.log('Admin access granted');
-                loadSubmissions();
-            } else {
-                const password = prompt('Enter admin password:');
-                if (password !== 'scholara2024') {
-                    alert('Access denied');
-                    window.location.href = 'index.html';
-                    return;
-                }
-                loadSubmissions();
+            if (!user) {
+                window.location.href = 'index.html#login';
+                return;
             }
+            
+            // Check admin by email
+            if (user.email === ADMIN_EMAIL) {
+                console.log('Admin access granted by email');
+                loadSubmissions();
+                return;
+            }
+            
+            // Check admin by subscription_plan
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+            
+            if (profile && profile.subscription_plan === 'admin') {
+                console.log('Admin access granted by subscription_plan');
+                loadSubmissions();
+                return;
+            }
+            
+            // Not admin - deny access
+            alert('Access denied. This page is for administrators only.');
+            window.location.href = 'dashboard.html';
         }
 
         async function loadSubmissions() {
@@ -1034,7 +1052,6 @@
 
             try {
                 if (editingId) {
-                    // Update existing template
                     const { error } = await supabase
                         .from('templates')
                         .update(templateData)
@@ -1043,7 +1060,6 @@
                     if (error) throw error;
                     alert('Template updated successfully!');
                 } else {
-                    // Create new template
                     const { error } = await supabase
                         .from('templates')
                         .insert([{
@@ -1071,7 +1087,6 @@
             try {
                 console.log('Toggling template:', id, 'to status:', newStatus);
                 
-                // Direct Supabase update (works with RLS policy)
                 const { data, error } = await supabase
                     .from('templates')
                     .update({ active: newStatus })

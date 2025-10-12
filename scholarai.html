@@ -431,9 +431,10 @@
 
             currentUser = user;
 
+            // Check admin by email first
             if (user.email === ADMIN_EMAIL) {
                 isAdmin = true;
-                console.log('Admin access granted');
+                console.log('Admin access granted by email');
                 await createThread();
                 return;
             }
@@ -447,6 +448,15 @@
             if (profile) {
                 userProfile = profile;
                 
+                // Check admin by subscription_plan
+                if (profile.subscription_plan === 'admin') {
+                    isAdmin = true;
+                    console.log('Admin access granted via subscription_plan');
+                    await createThread();
+                    return;
+                }
+                
+                // Check premium subscription
                 if (profile.subscription_plan !== 'premium') {
                     alert('ScholarAI requires a Premium plan. Please upgrade to continue.');
                     window.location.href = 'dashboard.html';
