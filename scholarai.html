@@ -260,18 +260,60 @@
         .input-area {
             padding: 1.5rem 2rem;
             border-top: 2px solid #f0f0f0;
+        }
+
+        .file-attachments {
             display: flex;
-            gap: 1rem;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .file-chip {
+            display: flex;
             align-items: center;
+            gap: 0.5rem;
+            background: #f8f8f8;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #1a3a52;
+        }
+
+        .file-chip-remove {
+            cursor: pointer;
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .file-chip-remove:hover {
+            color: #c82333;
         }
 
         .input-wrapper {
-            flex: 1;
             display: flex;
             gap: 0.5rem;
             background: #f8f8f8;
             padding: 0.5rem;
             border-radius: 15px;
+            align-items: flex-end;
+        }
+
+        .attach-btn {
+            padding: 0.8rem;
+            background: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .attach-btn:hover {
+            background: #e8e5df;
         }
 
         #messageInput {
@@ -328,6 +370,10 @@
             30% { transform: translateY(-10px); }
         }
 
+        #fileInput {
+            display: none;
+        }
+
         @media (max-width: 968px) {
             .sidebar {
                 display: none;
@@ -368,6 +414,7 @@
                 <div class="feature-item">✓ Research help</div>
                 <div class="feature-item">✓ Homework support</div>
                 <div class="feature-item">✓ Study strategies</div>
+                <div class="feature-item">✓ Document analysis</div>
             </div>
         </aside>
 
@@ -380,7 +427,7 @@
                 <div class="welcome-message">
                     <img src="https://i.imgur.com/wQNnhiG.png" alt="Scholara Logo" style="width: 120px; height: 120px; margin: 0 auto 2rem; display: block;">
                     <h2>Welcome to ScholarAI</h2>
-                    <p>Your personal AI study assistant powered by OpenAI. Ask me anything about your coursework, essays, or research.</p>
+                    <p>Your personal AI study assistant powered by OpenAI. Ask me anything about your coursework, essays, or research. You can also upload documents for analysis!</p>
                     
                     <div class="welcome-suggestions">
                         <div class="suggestion-card" onclick="sendSuggestion('Help me write an essay about climate change')">
@@ -396,15 +443,20 @@
             </div>
 
             <div class="input-area">
+                <div id="fileAttachments" class="file-attachments"></div>
                 <div class="input-wrapper">
+                    <button class="attach-btn" onclick="document.getElementById('fileInput').click()" title="Attach files">
+                        📎
+                    </button>
                     <textarea 
                         id="messageInput" 
                         placeholder="Ask me anything about your studies..." 
                         rows="1"
                         onkeydown="handleKeyPress(event)"
                     ></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
                 </div>
-                <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+                <input type="file" id="fileInput" multiple accept=".pdf,.docx,.txt,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
             </div>
         </main>
     </div>
@@ -420,6 +472,8 @@
         let userProfile = null;
         let currentThreadId = null;
         let isAdmin = false;
+        let attachedFiles = [];
+        let uploadedFileIds = [];
 
         async function checkAuth() {
             const { data: { user } } = await supabase.auth.getUser();
@@ -431,7 +485,6 @@
 
             currentUser = user;
 
-            // Check admin by email first
             if (user.email === ADMIN_EMAIL) {
                 isAdmin = true;
                 console.log('Admin access granted by email');
@@ -448,7 +501,6 @@
             if (profile) {
                 userProfile = profile;
                 
-                // Check admin by subscription_plan
                 if (profile.subscription_plan === 'admin') {
                     isAdmin = true;
                     console.log('Admin access granted via subscription_plan');
@@ -456,7 +508,6 @@
                     return;
                 }
                 
-                // Check premium subscription
                 if (profile.subscription_plan !== 'premium') {
                     alert('ScholarAI requires a Premium plan. Please upgrade to continue.');
                     window.location.href = 'dashboard.html';
@@ -484,7 +535,79 @@
                 console.log('Thread created:', currentThreadId);
             } catch (error) {
                 console.error('Error creating thread:', error);
+                alert('Failed to initialize chat. Please check your connection and try again.');
             }
+        }
+
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            files.forEach(file => {
+                // Check file size (10MB max)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`${file.name} is too large. Maximum file size is 10MB.`);
+                    return;
+                }
+                
+                attachedFiles.push(file);
+                displayFileChip(file);
+            });
+            
+            // Reset input
+            event.target.value = '';
+        }
+
+        function displayFileChip(file) {
+            const container = document.getElementById('fileAttachments');
+            const chip = document.createElement('div');
+            chip.className = 'file-chip';
+            chip.innerHTML = `
+                <span>📄 ${file.name}</span>
+                <span class="file-chip-remove" onclick="removeFile('${file.name}')">×</span>
+            `;
+            container.appendChild(chip);
+        }
+
+        function removeFile(fileName) {
+            attachedFiles = attachedFiles.filter(f => f.name !== fileName);
+            const container = document.getElementById('fileAttachments');
+            container.innerHTML = '';
+            attachedFiles.forEach(file => displayFileChip(file));
+        }
+
+        async function uploadFiles() {
+            if (attachedFiles.length === 0) return [];
+
+            const fileIds = [];
+            
+            for (const file of attachedFiles) {
+                try {
+                    const reader = new FileReader();
+                    const fileContent = await new Promise((resolve) => {
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(file);
+                    });
+
+                    const response = await fetch('/.netlify/functions/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'uploadFile',
+                            fileContent: fileContent,
+                            fileName: file.name,
+                            purpose: 'assistants'
+                        })
+                    });
+
+                    const data = await response.json();
+                    fileIds.push(data.id);
+                } catch (error) {
+                    console.error('Error uploading file:', file.name, error);
+                }
+            }
+
+            return fileIds;
         }
 
         function sendSuggestion(text) {
@@ -503,7 +626,7 @@
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
 
-            if (!message) return;
+            if (!message && attachedFiles.length === 0) return;
 
             const sendBtn = document.getElementById('sendBtn');
             sendBtn.disabled = true;
@@ -513,11 +636,23 @@
             const welcomeMsg = document.querySelector('.welcome-message');
             if (welcomeMsg) welcomeMsg.remove();
 
-            addMessage(message, 'user');
+            // Upload files first if any
+            let fileIds = [];
+            if (attachedFiles.length > 0) {
+                addMessage(`Uploading ${attachedFiles.length} file(s)...`, 'user');
+                fileIds = await uploadFiles();
+                attachedFiles = [];
+                document.getElementById('fileAttachments').innerHTML = '';
+            }
+
+            if (message) {
+                addMessage(message, 'user');
+            }
+
             showTypingIndicator();
 
             try {
-                const aiResponse = await getAIResponse(message);
+                const aiResponse = await getAIResponse(message || 'Please analyze the uploaded files.', fileIds);
                 hideTypingIndicator();
                 addMessage(aiResponse, 'ai');
             } catch (error) {
@@ -529,8 +664,9 @@
             }
         }
 
-        async function getAIResponse(userMessage) {
+        async function getAIResponse(userMessage, fileIds = []) {
             try {
+                // Add message to thread
                 await fetch('/.netlify/functions/chat', {
                     method: 'POST',
                     headers: {
@@ -539,10 +675,12 @@
                     body: JSON.stringify({
                         action: 'addMessage',
                         threadId: currentThreadId,
-                        message: userMessage
+                        message: userMessage,
+                        fileIds: fileIds
                     })
                 });
 
+                // Run assistant
                 const runResponse = await fetch('/.netlify/functions/chat', {
                     method: 'POST',
                     headers: {
@@ -557,6 +695,7 @@
                 const runData = await runResponse.json();
                 const runId = runData.id;
 
+                // Poll for completion
                 let runStatus = 'queued';
                 let attempts = 0;
                 const maxAttempts = 60;
@@ -589,6 +728,7 @@
                     throw new Error('Request timed out');
                 }
 
+                // Get messages
                 const messagesResponse = await fetch('/.netlify/functions/chat', {
                     method: 'POST',
                     headers: {
@@ -672,7 +812,7 @@
                 <div class="welcome-message">
                     <img src="https://i.imgur.com/wQNnhiG.png" alt="Scholara Logo" style="width: 120px; height: 120px; margin: 0 auto 2rem; display: block;">
                     <h2>Welcome to ScholarAI</h2>
-                    <p>Your personal AI study assistant powered by OpenAI. Ask me anything about your coursework, essays, or research.</p>
+                    <p>Your personal AI study assistant powered by OpenAI. Ask me anything about your coursework, essays, or research. You can also upload documents for analysis!</p>
                     
                     <div class="welcome-suggestions">
                         <div class="suggestion-card" onclick="sendSuggestion('Help me write an essay about climate change')">
@@ -686,6 +826,11 @@
                     </div>
                 </div>
             `;
+
+            // Clear attached files
+            attachedFiles = [];
+            uploadedFileIds = [];
+            document.getElementById('fileAttachments').innerHTML = '';
 
             await createThread();
         }
