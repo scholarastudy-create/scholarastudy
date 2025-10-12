@@ -473,7 +473,6 @@
         let currentThreadId = null;
         let isAdmin = false;
         let attachedFiles = [];
-        let uploadedFileIds = [];
 
         async function checkAuth() {
             const { data: { user } } = await supabase.auth.getUser();
@@ -542,7 +541,6 @@
         function handleFileSelect(event) {
             const files = Array.from(event.target.files);
             files.forEach(file => {
-                // Check file size (10MB max)
                 if (file.size > 10 * 1024 * 1024) {
                     alert(`${file.name} is too large. Maximum file size is 10MB.`);
                     return;
@@ -552,7 +550,6 @@
                 displayFileChip(file);
             });
             
-            // Reset input
             event.target.value = '';
         }
 
@@ -581,11 +578,16 @@
             
             for (const file of attachedFiles) {
                 try {
+                    console.log('Uploading file:', file.name);
+                    
                     const reader = new FileReader();
-                    const fileContent = await new Promise((resolve) => {
+                    const fileContent = await new Promise((resolve, reject) => {
                         reader.onload = (e) => resolve(e.target.result);
+                        reader.onerror = (e) => reject(e);
                         reader.readAsDataURL(file);
                     });
+
+                    console.log('File read, sending to API...');
 
                     const response = await fetch('/.netlify/functions/chat', {
                         method: 'POST',
@@ -600,13 +602,27 @@
                         })
                     });
 
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Upload failed:', errorText);
+                        throw new Error(`Upload failed: ${response.status}`);
+                    }
+
                     const data = await response.json();
-                    fileIds.push(data.id);
+                    console.log('File uploaded successfully:', data);
+                    
+                    if (data.id) {
+                        fileIds.push(data.id);
+                    } else {
+                        console.error('No file ID in response:', data);
+                    }
                 } catch (error) {
                     console.error('Error uploading file:', file.name, error);
+                    throw error;
                 }
             }
 
+            console.log('All files uploaded. IDs:', fileIds);
             return fileIds;
         }
 
@@ -631,28 +647,53 @@
             const sendBtn = document.getElementById('sendBtn');
             sendBtn.disabled = true;
 
+            const originalMessage = message;
             input.value = '';
 
             const welcomeMsg = document.querySelector('.welcome-message');
             if (welcomeMsg) welcomeMsg.remove();
 
-            // Upload files first if any
             let fileIds = [];
             if (attachedFiles.length > 0) {
-                addMessage(`Uploading ${attachedFiles.length} file(s)...`, 'user');
-                fileIds = await uploadFiles();
+                addMessage(`📤 Uploading ${attachedFiles.length} file(s)...`, 'user');
+                
+                try {
+                    fileIds = await uploadFiles();
+                    console.log('Files uploaded, IDs:', fileIds);
+                    
+                    const messages = document.querySelectorAll('.message');
+                    const lastMessage = messages[messages.length - 1];
+                    if (lastMessage && lastMessage.textContent.includes('Uploading')) {
+                        lastMessage.remove();
+                    }
+                    
+                    const fileNames = attachedFiles.map(f => f.name).join(', ');
+                    addMessage(`📎 Attached: ${fileNames}`, 'user');
+                    
+                } catch (error) {
+                    console.error('File upload error:', error);
+                    addMessage('❌ Failed to upload files. Please try again.', 'user');
+                    attachedFiles = [];
+                    document.getElementById('fileAttachments').innerHTML = '';
+                    sendBtn.disabled = false;
+                    return;
+                }
+                
                 attachedFiles = [];
                 document.getElementById('fileAttachments').innerHTML = '';
             }
 
-            if (message) {
-                addMessage(message, 'user');
+            if (originalMessage) {
+                addMessage(originalMessage, 'user');
             }
 
             showTypingIndicator();
 
             try {
-                const aiResponse = await getAIResponse(message || 'Please analyze the uploaded files.', fileIds);
+                const aiResponse = await getAIResponse(
+                    originalMessage || 'Please analyze the uploaded files and tell me what they contain.', 
+                    fileIds
+                );
                 hideTypingIndicator();
                 addMessage(aiResponse, 'ai');
             } catch (error) {
@@ -666,8 +707,9 @@
 
         async function getAIResponse(userMessage, fileIds = []) {
             try {
-                // Add message to thread
-                await fetch('/.netlify/functions/chat', {
+                console.log('Adding message to thread:', { message: userMessage, fileIds });
+                
+                const addMessageResponse = await fetch('/.netlify/functions/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -676,11 +718,20 @@
                         action: 'addMessage',
                         threadId: currentThreadId,
                         message: userMessage,
-                        fileIds: fileIds
+                        fileIds: fileIds.length > 0 ? fileIds : undefined
                     })
                 });
 
-                // Run assistant
+                if (!addMessageResponse.ok) {
+                    const errorText = await addMessageResponse.text();
+                    console.error('Failed to add message:', errorText);
+                    throw new Error('Failed to add message');
+                }
+
+                const messageData = await addMessageResponse.json();
+                console.log('Message added successfully:', messageData);
+
+                console.log('Running assistant...');
                 const runResponse = await fetch('/.netlify/functions/chat', {
                     method: 'POST',
                     headers: {
@@ -694,8 +745,8 @@
 
                 const runData = await runResponse.json();
                 const runId = runData.id;
+                console.log('Run started:', runId);
 
-                // Poll for completion
                 let runStatus = 'queued';
                 let attempts = 0;
                 const maxAttempts = 60;
@@ -719,7 +770,10 @@
                     runStatus = statusData.status;
                     attempts++;
 
+                    console.log('Run status:', runStatus, 'attempt:', attempts);
+
                     if (runStatus === 'failed' || runStatus === 'cancelled' || runStatus === 'expired') {
+                        console.error('Run failed with status:', runStatus, statusData);
                         throw new Error('Assistant run failed: ' + runStatus);
                     }
                 }
@@ -728,7 +782,6 @@
                     throw new Error('Request timed out');
                 }
 
-                // Get messages
                 const messagesResponse = await fetch('/.netlify/functions/chat', {
                     method: 'POST',
                     headers: {
@@ -741,6 +794,8 @@
                 });
 
                 const messagesData = await messagesResponse.json();
+                console.log('Messages received:', messagesData);
+                
                 const assistantMessage = messagesData.data.find(msg => msg.role === 'assistant');
                 
                 if (assistantMessage && assistantMessage.content && assistantMessage.content.length > 0) {
@@ -827,9 +882,7 @@
                 </div>
             `;
 
-            // Clear attached files
             attachedFiles = [];
-            uploadedFileIds = [];
             document.getElementById('fileAttachments').innerHTML = '';
 
             await createThread();
