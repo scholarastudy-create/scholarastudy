@@ -64,6 +64,9 @@ exports.handler = async (event, context) => {
       });
 
       const data = await response.json();
+      
+      console.log('File uploaded:', data);
+      
       return {
         statusCode: 200,
         headers,
@@ -84,6 +87,8 @@ exports.handler = async (event, context) => {
           file_id: fileId,
           tools: [{ type: 'file_search' }]
         }));
+        
+        console.log('Adding message with files:', messageBody);
       }
 
       const response = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
@@ -95,7 +100,10 @@ exports.handler = async (event, context) => {
         },
         body: JSON.stringify(messageBody)
       });
+      
       const data = await response.json();
+      console.log('Message added:', data);
+      
       return {
         statusCode: 200,
         headers,
@@ -117,6 +125,9 @@ exports.handler = async (event, context) => {
         })
       });
       const data = await response.json();
+      
+      console.log('Assistant run started:', data);
+      
       return {
         statusCode: 200,
         headers,
@@ -167,7 +178,7 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: error.message })
+      body: JSON.stringify({ error: error.message, details: error.toString() })
     };
   }
 };
