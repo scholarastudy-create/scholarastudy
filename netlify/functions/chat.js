@@ -35,18 +35,10 @@ exports.handler = async (event, context) => {
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'OpenAI-Beta': 'assistants=v2'
         },
-        body: JSON.stringify({
-          tool_resources: {
-            file_search: {
-              vector_stores: [{
-                file_ids: []
-              }]
-            }
-          }
-        })
+        body: JSON.stringify({})
       });
       const data = await response.json();
-      console.log('Thread created with vector store:', data);
+      console.log('Thread created:', data);
       return {
         statusCode: 200,
         headers,
@@ -112,13 +104,13 @@ exports.handler = async (event, context) => {
         content: message
       };
 
-      // Attach files using the new attachments format
+      // Attach files using attachments format for Assistants v2
       if (fileIds && fileIds.length > 0) {
         messageBody.attachments = fileIds.map(fileId => ({
           file_id: fileId,
           tools: [
             { type: 'file_search' },
-            { type: 'code_interpreter' }
+            { type: 'code_interpreter' }  // Required for images and data files
           ]
         }));
         
@@ -138,6 +130,15 @@ exports.handler = async (event, context) => {
       const data = await response.json();
       console.log('Message added:', data);
       
+      if (!response.ok) {
+        console.error('Failed to add message:', data);
+        return {
+          statusCode: response.status,
+          headers,
+          body: JSON.stringify({ error: 'Failed to add message', details: data })
+        };
+      }
+      
       return {
         statusCode: 200,
         headers,
@@ -147,10 +148,9 @@ exports.handler = async (event, context) => {
 
     // RUN ASSISTANT
     if (action === 'runAssistant') {
-      // Include additional instructions to force file reading
       const runBody = {
         assistant_id: ASSISTANT_ID,
-        additional_instructions: 'IMPORTANT: Check if any files are attached to the latest message. If files are present, read them immediately and reference their content in your response.'
+        instructions: 'You are ScholarAI, a helpful study assistant. If the user has attached any files, analyze them thoroughly and reference specific content from the files in your response. For images, describe what you see. For documents, summarize key points and answer questions about the content.'
       };
 
       const response = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
@@ -165,6 +165,15 @@ exports.handler = async (event, context) => {
       
       const data = await response.json();
       console.log('Run started:', data);
+      
+      if (!response.ok) {
+        console.error('Failed to start run:', data);
+        return {
+          statusCode: response.status,
+          headers,
+          body: JSON.stringify({ error: 'Failed to start run', details: data })
+        };
+      }
       
       return {
         statusCode: 200,
@@ -182,6 +191,12 @@ exports.handler = async (event, context) => {
         }
       });
       const data = await response.json();
+      
+      // Log if there are any errors
+      if (data.last_error) {
+        console.error('Run error:', data.last_error);
+      }
+      
       return {
         statusCode: 200,
         headers,
@@ -216,7 +231,7 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: error.message })
+      body: JSON.stringify({ error: error.message, stack: error.stack })
     };
   }
 };
