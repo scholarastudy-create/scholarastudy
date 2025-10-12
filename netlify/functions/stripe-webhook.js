@@ -109,11 +109,35 @@ exports.handler = async (event, context) => {
 async function handleCheckoutCompleted(session, supabase) {
     console.log('Checkout completed:', session.id);
     
-    const customerEmail = session.customer_email;
+    // Try multiple ways to get the customer email
+    let customerEmail = session.customer_email || 
+                       (session.customer_details && session.customer_details.email) ||
+                       null;
+    
+    console.log('Session data:', {
+        customer_email: session.customer_email,
+        customer_details: session.customer_details,
+        final_email: customerEmail
+    });
     
     if (!customerEmail) {
         console.error('No customer email in checkout session');
-        return;
+        
+        // Try to get email from customer object if customer ID exists
+        if (session.customer) {
+            try {
+                const customer = await stripe.customers.retrieve(session.customer);
+                customerEmail = customer.email;
+                console.log('Retrieved email from customer object:', customerEmail);
+            } catch (err) {
+                console.error('Could not retrieve customer:', err);
+            }
+        }
+        
+        if (!customerEmail) {
+            console.error('Still no email found, cannot process subscription');
+            return;
+        }
     }
     
     // Get line items to determine the plan
