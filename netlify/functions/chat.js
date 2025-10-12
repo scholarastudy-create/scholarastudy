@@ -54,12 +54,18 @@ exports.handler = async (event, context) => {
         
         console.log('Uploading file:', fileName, 'Size:', buffer.length, 'bytes');
         
+        // Determine purpose based on file type
+        const fileExtension = fileName.toLowerCase().split('.').pop();
+        const imagePurpose = ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(fileExtension) ? 'vision' : 'assistants';
+        
+        console.log('File purpose:', imagePurpose);
+        
         const form = new FormData();
         form.append('file', buffer, {
           filename: fileName,
           contentType: 'application/octet-stream'
         });
-        form.append('purpose', 'assistants');
+        form.append('purpose', imagePurpose);
 
         const response = await fetch('https://api.openai.com/v1/files', {
           method: 'POST',
