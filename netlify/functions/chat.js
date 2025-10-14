@@ -46,7 +46,7 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // UPLOAD FILE
+    // UPLOAD FILE - Use vision purpose for images
     if (action === 'uploadFile') {
       try {
         const base64Data = fileContent.split(',')[1];
@@ -54,18 +54,19 @@ exports.handler = async (event, context) => {
         
         console.log('Uploading file:', fileName, 'Size:', buffer.length, 'bytes');
         
-        // Determine purpose based on file type
+        // Check if it's an image
         const fileExtension = fileName.toLowerCase().split('.').pop();
-        const imagePurpose = ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(fileExtension) ? 'vision' : 'assistants';
+        const isImage = ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(fileExtension);
+        const uploadPurpose = isImage ? 'vision' : 'assistants';
         
-        console.log('File purpose:', imagePurpose);
+        console.log('File type:', fileExtension, 'Is image:', isImage, 'Purpose:', uploadPurpose);
         
         const form = new FormData();
         form.append('file', buffer, {
           filename: fileName,
           contentType: 'application/octet-stream'
         });
-        form.append('purpose', imagePurpose);
+        form.append('purpose', uploadPurpose);
 
         const response = await fetch('https://api.openai.com/v1/files', {
           method: 'POST',
@@ -88,10 +89,15 @@ exports.handler = async (event, context) => {
           };
         }
 
+        // Return file info with metadata
         return {
           statusCode: 200,
           headers,
-          body: JSON.stringify(data)
+          body: JSON.stringify({
+            ...data,
+            isImage: isImage,
+            fileName: fileName
+          })
         };
       } catch (error) {
         console.error('Upload exception:', error);
@@ -103,25 +109,47 @@ exports.handler = async (event, context) => {
       }
     }
 
-    // ADD MESSAGE WITH FILES
+    // ADD MESSAGE WITH FILES - Different handling for images vs documents
     if (action === 'addMessage') {
+      let messageContent;
+      let attachments;
+
+      // Parse fileIds to separate images from documents
+      const files = fileIds || [];
+      const imageFiles = [];
+      const documentFiles = [];
+
+      // Note: Frontend should pass metadata to distinguish
+      // For now, we'll handle all as content with image_file type
+      
+      if (files.length > 0) {
+        // Build content array with text and images
+        messageContent = [
+          {
+            type: 'text',
+            text: message || 'Please analyze these files.'
+          }
+        ];
+
+        // Add each file as an image_file
+        files.forEach(fileId => {
+          messageContent.push({
+            type: 'image_file',
+            image_file: {
+              file_id: fileId
+            }
+          });
+        });
+
+        console.log('Message content with images:', JSON.stringify(messageContent, null, 2));
+      } else {
+        messageContent = message;
+      }
+
       const messageBody = {
         role: 'user',
-        content: message
+        content: messageContent
       };
-
-      // Attach files using attachments format for Assistants v2
-      if (fileIds && fileIds.length > 0) {
-        messageBody.attachments = fileIds.map(fileId => ({
-          file_id: fileId,
-          tools: [
-            { type: 'file_search' },
-            { type: 'code_interpreter' }  // Required for images and data files
-          ]
-        }));
-        
-        console.log('Adding message with attachments:', JSON.stringify(messageBody, null, 2));
-      }
 
       const response = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
         method: 'POST',
@@ -134,7 +162,7 @@ exports.handler = async (event, context) => {
       });
       
       const data = await response.json();
-      console.log('Message added:', data);
+      console.log('Message added response:', JSON.stringify(data, null, 2));
       
       if (!response.ok) {
         console.error('Failed to add message:', data);
@@ -156,7 +184,7 @@ exports.handler = async (event, context) => {
     if (action === 'runAssistant') {
       const runBody = {
         assistant_id: ASSISTANT_ID,
-        instructions: 'You are ScholarAI, a helpful study assistant. If the user has attached any files, analyze them thoroughly and reference specific content from the files in your response. For images, describe what you see. For documents, summarize key points and answer questions about the content.'
+        instructions: 'You are ScholarAI, a helpful study assistant. When users share images, describe what you see in detail and help them understand the content. For documents, analyze and summarize the key information.'
       };
 
       const response = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
