@@ -700,7 +700,14 @@
                     fileMetadata
                 );
                 hideTypingIndicator();
-                addMessage(aiResponse, 'ai');
+                
+                // Add text response
+                addMessage(aiResponse.text, 'ai');
+                
+                // Add download buttons for any generated files
+                if (aiResponse.files && aiResponse.files.length > 0) {
+                    addFileDownloadButtons(aiResponse.files);
+                }
             } catch (error) {
                 console.error('Error:', error);
                 hideTypingIndicator();
@@ -804,10 +811,25 @@
                 const assistantMessage = messagesData.data.find(msg => msg.role === 'assistant');
                 
                 if (assistantMessage && assistantMessage.content && assistantMessage.content.length > 0) {
-                    return assistantMessage.content[0].text.value;
+                    let responseText = assistantMessage.content[0].text.value;
+                    
+                    // Check if assistant generated any files
+                    let generatedFiles = [];
+                    if (assistantMessage.attachments && assistantMessage.attachments.length > 0) {
+                        generatedFiles = assistantMessage.attachments;
+                        console.log('Assistant generated files:', generatedFiles);
+                    }
+                    
+                    return {
+                        text: responseText,
+                        files: generatedFiles
+                    };
                 }
 
-                return 'Sorry, I could not generate a response. Please try again.';
+                return {
+                    text: 'Sorry, I could not generate a response. Please try again.',
+                    files: []
+                };
 
             } catch (error) {
                 console.error('Error getting AI response:', error);
@@ -864,6 +886,85 @@
         function hideTypingIndicator() {
             const indicator = document.getElementById('typingIndicator');
             if (indicator) indicator.remove();
+        }
+
+        function addFileDownloadButtons(files) {
+            const messagesArea = document.getElementById('messagesArea');
+            const downloadDiv = document.createElement('div');
+            downloadDiv.className = 'message ai';
+            
+            let buttonsHTML = '<div class="message-avatar">🤖</div><div class="message-content" style="display: flex; flex-direction: column; gap: 0.5rem;">';
+            buttonsHTML += '<p style="margin-bottom: 0.5rem;"><strong>📄 Generated Files:</strong></p>';
+            
+            files.forEach((file, index) => {
+                const fileName = file.file_id || `document_${index + 1}`;
+                buttonsHTML += `
+                    <button 
+                        onclick="downloadGeneratedFile('${file.file_id}')" 
+                        style="
+                            padding: 0.8rem 1.2rem;
+                            background: #E8A735;
+                            color: white;
+                            border: none;
+                            border-radius: 10px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            text-align: left;
+                            display: flex;
+                            align-items: center;
+                            gap: 0.5rem;
+                        "
+                        onmouseover="this.style.background='#d49625'"
+                        onmouseout="this.style.background='#E8A735'"
+                    >
+                        <span>⬇️</span>
+                        <span>Download ${fileName.substring(0, 20)}...</span>
+                    </button>
+                `;
+            });
+            
+            buttonsHTML += '</div>';
+            downloadDiv.innerHTML = buttonsHTML;
+            
+            messagesArea.appendChild(downloadDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        async function downloadGeneratedFile(fileId) {
+            try {
+                console.log('Downloading file:', fileId);
+                
+                const response = await fetch('/.netlify/functions/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'downloadFile',
+                        fileId: fileId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Download failed');
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `scholarai_${fileId}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                console.log('File downloaded successfully');
+            } catch (error) {
+                console.error('Download error:', error);
+                alert('Failed to download file. Please try again.');
+            }
         }
 
         async function startNewChat() {

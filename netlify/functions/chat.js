@@ -23,7 +23,8 @@ exports.handler = async (event, context) => {
   const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
   const ASSISTANT_ID = process.env.ASSISTANT_ID;
 
-  const { action, threadId, message, runId, fileContent, fileName, purpose, fileIds } = JSON.parse(event.body);
+  const body = JSON.parse(event.body);
+  const { action, threadId, message, runId, fileContent, fileName, purpose, fileIds, fileId } = body;
 
   try {
     // CREATE THREAD
@@ -278,10 +279,43 @@ exports.handler = async (event, context) => {
         }
       });
       const data = await response.json();
+      
+      // Check if assistant generated any files
+      if (data.data && data.data.length > 0) {
+        const assistantMessage = data.data.find(msg => msg.role === 'assistant');
+        if (assistantMessage && assistantMessage.attachments && assistantMessage.attachments.length > 0) {
+          console.log('Assistant generated files:', assistantMessage.attachments);
+        }
+      }
+      
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify(data)
+      };
+    }
+
+    // DOWNLOAD FILE - New action to retrieve generated files
+    if (action === 'downloadFile') {
+      const { fileId } = JSON.parse(event.body);
+      
+      const response = await fetch(`https://api.openai.com/v1/files/${fileId}/content`, {
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`
+        }
+      });
+      
+      const fileContent = await response.buffer();
+      
+      return {
+        statusCode: 200,
+        headers: {
+          ...headers,
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': 'attachment; filename="document.pdf"'
+        },
+        body: fileContent.toString('base64'),
+        isBase64Encoded: true
       };
     }
 
