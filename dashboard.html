@@ -1,4 +1,3 @@
-<!-- COPY EVERYTHING BELOW THIS LINE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -475,15 +474,108 @@
             font-size: 0.9rem;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 968px) {
+            nav {
+                padding: 1rem 3%;
+                flex-wrap: wrap;
+            }
+
+            .logo-img {
+                width: 35px;
+                height: 35px;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .nav-right {
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+
+            .user-info {
+                gap: 0.5rem;
+                font-size: 0.85rem;
+                flex-wrap: wrap;
+            }
+
+            .plan-badge {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .settings-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 1.1rem;
+            }
+
+            .logout-btn, .admin-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.85rem;
+            }
+
+            .container {
+                padding: 6rem 3% 3rem;
+            }
+
+            .welcome-section h1 {
+                font-size: 2rem;
+            }
+
+            .welcome-section p {
+                font-size: 1.1rem;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .action-card {
+                padding: 2rem;
+            }
+
+            .action-icon {
+                font-size: 2.5rem;
+            }
+
+            .action-card h3 {
+                font-size: 1.2rem;
+            }
+
             .upgrade-banner {
                 flex-direction: column;
                 gap: 1.5rem;
                 text-align: center;
+                padding: 1.5rem;
+            }
+
+            .upgrade-banner h2 {
+                font-size: 1.3rem;
             }
 
             .templates-grid {
                 grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1.5rem;
+            }
+
+            .stat-card .number {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.6rem;
             }
 
             .footer-content {
@@ -493,6 +585,90 @@
 
             .footer-links {
                 justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 1rem 3%;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .logo-img {
+                width: 30px;
+                height: 30px;
+            }
+
+            .nav-right {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 0.5rem;
+            }
+
+            .user-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.3rem;
+            }
+
+            .container {
+                padding: 5.5rem 3% 2rem;
+            }
+
+            .welcome-section {
+                margin-bottom: 2rem;
+            }
+
+            .welcome-section h1 {
+                font-size: 1.6rem;
+            }
+
+            .welcome-section p {
+                font-size: 1rem;
+            }
+
+            .action-card {
+                padding: 1.5rem;
+            }
+
+            .action-icon {
+                font-size: 2rem;
+            }
+
+            .action-card h3 {
+                font-size: 1.1rem;
+            }
+
+            .action-card p {
+                font-size: 0.9rem;
+            }
+
+            .upgrade-banner {
+                padding: 1.2rem;
+            }
+
+            .upgrade-banner h2 {
+                font-size: 1.1rem;
+            }
+
+            .upgrade-banner p {
+                font-size: 0.9rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
             }
         }
     </style>
@@ -528,29 +704,22 @@
             <a href="index.html#pricing" class="upgrade-btn">Upgrade Now</a>
         </div>
 
-        <!-- Quick Actions Section -->
         <h2 class="section-title">⚡ Quick Actions</h2>
         <div class="quick-actions" id="quickActions">
-            <!-- Quick action cards will be loaded here -->
         </div>
 
-        <!-- Study Guides Section -->
         <div class="features-section" id="studyGuidesSection" style="margin-top: 4rem; display: none;">
             <h2 class="section-title">📚 My Study Guides</h2>
             <div id="studyGuidesList" style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                <!-- Study guides will be loaded here -->
             </div>
         </div>
 
-        <!-- Template Library Section -->
         <div class="features-section" style="margin-top: 4rem;">
             <h2 class="section-title">📚 Template Library</h2>
             <div id="templatesGrid" class="templates-grid">
-                <!-- Templates will be loaded here -->
             </div>
         </div>
 
-        <!-- Stats Section -->
         <div class="features-section" style="margin-top: 4rem;">
             <h2 class="section-title">📊 Your Stats</h2>
             <div class="stats-grid">
@@ -588,8 +757,8 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Initialize Supabase
         const SUPABASE_URL = 'https://kiojxqwuxkrhkznszdvo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtpb2p4cXd1eGtyaGt6bnN6ZHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwNzQxMTMsImV4cCI6MjA3NTY1MDExM30.guF9oB2LmY3GDcwSWQEe_5K6FmQ592otUPtttQW1LQQ';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -599,14 +768,12 @@
         let templates = [];
         const ADMIN_EMAIL = 'talonflinders@gmail.com';
 
-        // Helper function to check if user is admin
         function isAdmin() {
             if (!currentUser || !userProfile) return false;
             return currentUser.email === ADMIN_EMAIL || 
                    userProfile.subscription_plan === 'admin';
         }
 
-        // Check authentication and subscription status
         async function checkAuth() {
             const { data: { user } } = await supabase.auth.getUser();
             
@@ -625,18 +792,12 @@
 
             if (profile) {
                 userProfile = profile;
-                
-                // Check subscription status and expiration
                 await verifySubscriptionStatus();
-                
-                // Load templates from database
                 await loadTemplatesFromDatabase();
-                
                 updateUI();
             }
         }
 
-        // Load templates from Supabase
         async function loadTemplatesFromDatabase() {
             try {
                 const { data: templatesData, error } = await supabase
@@ -668,9 +829,7 @@
             }
         }
 
-        // Verify subscription is still active
         async function verifySubscriptionStatus() {
-            // Skip verification for admin users
             if (isAdmin()) {
                 console.log('Admin user - skipping subscription verification');
                 return;
@@ -710,7 +869,6 @@
             }
         }
 
-        // Update UI based on user plan
         function updateUI() {
             const email = currentUser.email;
             let plan = userProfile.subscription_plan || 'free';
@@ -746,7 +904,6 @@
             loadFeatures(plan);
         }
 
-        // Load templates based on user plan
         function loadTemplates(userPlan) {
             const planHierarchy = { free: 0, pro: 1, premium: 2, admin: 3 };
             const grid = document.getElementById('templatesGrid');
@@ -782,7 +939,6 @@
             });
         }
 
-        // Load features based on plan
         function loadFeatures(userPlan) {
             const quickActions = document.getElementById('quickActions');
             quickActions.innerHTML = '';
@@ -880,7 +1036,7 @@
 
             guidesList.innerHTML = guides.map(guide => `
                 <div style="background: #f8f8f8; padding: 1.5rem; border-radius: 15px; margin-bottom: 1rem; border-left: 4px solid #E8A735;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
                         <div style="font-weight: 600; color: #1a3a52; font-size: 1.1rem;">${guide.title}</div>
                         <span class="status-badge status-${guide.status}">${guide.status.toUpperCase()}</span>
                     </div>
@@ -888,7 +1044,7 @@
                         ${guide.subject} • ${new Date(guide.created_at).toLocaleDateString()}
                     </div>
                     ${guide.status === 'completed' && guide.completed_study_guide ? `
-                        <button class="btn btn-primary" onclick="downloadCompletedGuide('${guide.id}')" style="margin-top: 1rem;">
+                        <button class="btn btn-primary" onclick="downloadCompletedGuide('${guide.id}')" style="margin-top: 1rem; width: 100%;">
                             📥 Download Study Guide
                         </button>
                     ` : `

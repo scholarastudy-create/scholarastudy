@@ -29,6 +29,7 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+            flex-shrink: 0;
         }
 
         .logo {
@@ -81,6 +82,7 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            flex-shrink: 0;
         }
 
         .sidebar h2 {
@@ -137,6 +139,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            min-width: 0;
         }
 
         .chat-header {
@@ -145,6 +148,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .chat-header h1 {
@@ -259,6 +263,7 @@
         .input-area {
             padding: 1.5rem 2rem;
             border-top: 2px solid #f0f0f0;
+            flex-shrink: 0;
         }
 
         .file-attachments {
@@ -309,6 +314,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .attach-btn:hover {
@@ -325,6 +331,7 @@
             resize: none;
             outline: none;
             max-height: 120px;
+            min-width: 0;
         }
 
         .send-btn {
@@ -336,6 +343,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .send-btn:hover {
@@ -373,17 +381,228 @@
             display: none;
         }
 
+        .chat-history {
+            padding-top: 1rem;
+            border-top: 2px solid #f0f0f0;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .chat-history h3 {
+            color: #1a3a52;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .history-item {
+            padding: 0.8rem;
+            background: #f8f8f8;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            color: #5a6c7d;
+        }
+
+        .history-item:hover {
+            background: #e8e5df;
+            transform: translateX(5px);
+        }
+
+        .history-item-title {
+            font-weight: 600;
+            color: #1a3a52;
+            margin-bottom: 0.3rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .history-item-date {
+            font-size: 0.75rem;
+            color: #5a6c7d;
+        }
+
+        .clear-history-btn {
+            width: 100%;
+            padding: 0.7rem;
+            background: #f0f0f0;
+            color: #1a3a52;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .clear-history-btn:hover {
+            background: #dc3545;
+            color: white;
+        }
+
         @media (max-width: 968px) {
-            .sidebar {
-                display: none;
+            nav {
+                padding: 1rem 3%;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .nav-right {
+                gap: 0.8rem;
+            }
+
+            .nav-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
             }
 
             .chat-container {
                 padding: 1rem;
+                flex-direction: column;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .chat-header {
+                padding: 1rem 1.5rem;
+            }
+
+            .chat-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .messages-area {
+                padding: 1.5rem;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+
+            .welcome-message {
+                padding: 2rem 1rem;
+            }
+
+            .welcome-message h2 {
+                font-size: 1.5rem;
             }
 
             .welcome-suggestions {
                 grid-template-columns: 1fr;
+            }
+
+            .input-area {
+                padding: 1rem 1.5rem;
+            }
+
+            .send-btn {
+                padding: 0.8rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                flex-direction: column;
+                gap: 0.8rem;
+                padding: 1rem 3%;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .nav-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .chat-container {
+                padding: 0.5rem;
+            }
+
+            .main-chat {
+                border-radius: 15px;
+            }
+
+            .chat-header {
+                padding: 1rem;
+            }
+
+            .chat-header h1 {
+                font-size: 1.2rem;
+            }
+
+            .messages-area {
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .message {
+                max-width: 95%;
+            }
+
+            .message-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+
+            .message-content {
+                padding: 0.8rem 1rem;
+                font-size: 0.95rem;
+            }
+
+            .welcome-message {
+                padding: 1.5rem 0.5rem;
+            }
+
+            .welcome-message h2 {
+                font-size: 1.3rem;
+            }
+
+            .welcome-message p {
+                font-size: 0.9rem;
+            }
+
+            .suggestion-card {
+                padding: 1rem;
+            }
+
+            .suggestion-card h3 {
+                font-size: 0.9rem;
+            }
+
+            .suggestion-card p {
+                font-size: 0.8rem;
+            }
+
+            .input-area {
+                padding: 0.8rem;
+            }
+
+            .attach-btn {
+                padding: 0.6rem;
+                font-size: 1rem;
+            }
+
+            #messageInput {
+                padding: 0.6rem;
+                font-size: 0.95rem;
+            }
+
+            .send-btn {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -414,6 +633,12 @@
                 <div class="feature-item">✓ Homework support</div>
                 <div class="feature-item">✓ Study strategies</div>
                 <div class="feature-item">✓ Document analysis</div>
+            </div>
+
+            <div class="chat-history">
+                <h3>Chat History</h3>
+                <div id="chatHistoryList"></div>
+                <button class="clear-history-btn" onclick="clearAllHistory()">🗑️ Clear History</button>
             </div>
         </aside>
 
@@ -470,8 +695,14 @@
         let currentUser = null;
         let userProfile = null;
         let currentThreadId = null;
+        let currentChatId = null;
         let isAdmin = false;
         let attachedFiles = [];
+        
+        let chatSessions = [];
+        let currentSession = null;
+        const MAX_SESSIONS = 10;
+        const MAX_MESSAGES_PER_SESSION = 50;
 
         async function checkAuth() {
             const { data: { user } } = await supabase.auth.getUser();
@@ -486,6 +717,7 @@
             if (user.email === ADMIN_EMAIL) {
                 isAdmin = true;
                 console.log('Admin access granted by email');
+                await loadChatSessions();
                 await createThread();
                 return;
             }
@@ -502,6 +734,7 @@
                 if (profile.subscription_plan === 'admin') {
                     isAdmin = true;
                     console.log('Admin access granted via subscription_plan');
+                    await loadChatSessions();
                     await createThread();
                     return;
                 }
@@ -513,7 +746,128 @@
                 }
             }
 
+            await loadChatSessions();
             await createThread();
+        }
+
+        async function loadChatSessions() {
+            const storageKey = `scholarai_sessions_${currentUser.id}`;
+            const stored = localStorage.getItem(storageKey);
+            
+            if (stored) {
+                try {
+                    chatSessions = JSON.parse(stored);
+                    console.log(`Loaded ${chatSessions.length} chat sessions`);
+                    
+                    if (chatSessions.length > 0) {
+                        currentSession = chatSessions[0];
+                        currentChatId = currentSession.id;
+                        restoreSession(currentSession);
+                    }
+                    
+                    updateHistoryList();
+                } catch (e) {
+                    console.error('Error loading chat sessions:', e);
+                    chatSessions = [];
+                }
+            }
+        }
+
+        function saveChatSessions() {
+            const storageKey = `scholarai_sessions_${currentUser.id}`;
+            
+            if (chatSessions.length > MAX_SESSIONS) {
+                chatSessions = chatSessions.slice(0, MAX_SESSIONS);
+            }
+            
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(chatSessions));
+                console.log(`Saved ${chatSessions.length} chat sessions`);
+                updateHistoryList();
+            } catch (e) {
+                console.error('Error saving chat sessions:', e);
+            }
+        }
+
+        function createNewSession() {
+            const newSession = {
+                id: Date.now().toString(),
+                title: 'New Chat',
+                messages: [],
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            chatSessions.unshift(newSession);
+            currentSession = newSession;
+            currentChatId = newSession.id;
+            
+            saveChatSessions();
+            return newSession;
+        }
+
+        function restoreSession(session) {
+            const messagesArea = document.getElementById('messagesArea');
+            messagesArea.innerHTML = '';
+            
+            const welcomeMsg = document.querySelector('.welcome-message');
+            if (welcomeMsg && session.messages.length > 0) {
+                welcomeMsg.remove();
+            }
+            
+            session.messages.forEach(msg => {
+                addMessage(msg.content, msg.role, false);
+            });
+        }
+
+        function loadSession(sessionId) {
+            const session = chatSessions.find(s => s.id === sessionId);
+            if (!session) return;
+            
+            currentSession = session;
+            currentChatId = session.id;
+            
+            restoreSession(session);
+            
+            chatSessions = [session, ...chatSessions.filter(s => s.id !== sessionId)];
+            saveChatSessions();
+        }
+
+        function updateHistoryList() {
+            const historyList = document.getElementById('chatHistoryList');
+            
+            if (chatSessions.length === 0) {
+                historyList.innerHTML = '<p style="color: #5a6c7d; font-size: 0.85rem; text-align: center;">No chat history yet</p>';
+                return;
+            }
+            
+            historyList.innerHTML = chatSessions.map(session => {
+                const date = new Date(session.updatedAt);
+                const dateStr = date.toLocaleDateString();
+                const isActive = currentChatId === session.id;
+                
+                return `
+                    <div class="history-item" onclick="loadSession('${session.id}')" style="${isActive ? 'background: #E8A735; color: white;' : ''}">
+                        <div class="history-item-title" style="${isActive ? 'color: white;' : ''}">${session.title}</div>
+                        <div class="history-item-date" style="${isActive ? 'color: rgba(255,255,255,0.8);' : ''}">${dateStr}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function clearAllHistory() {
+            if (!confirm('Are you sure you want to clear all chat history? This cannot be undone.')) {
+                return;
+            }
+            
+            const storageKey = `scholarai_sessions_${currentUser.id}`;
+            localStorage.removeItem(storageKey);
+            chatSessions = [];
+            currentSession = null;
+            currentChatId = null;
+            
+            updateHistoryList();
+            startNewChat();
         }
 
         async function createThread() {
@@ -586,8 +940,6 @@
                         reader.readAsDataURL(file);
                     });
 
-                    console.log('File read, sending to API...');
-
                     const response = await fetch('/.netlify/functions/chat', {
                         method: 'POST',
                         headers: {
@@ -602,24 +954,16 @@
                     });
 
                     if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('Upload failed:', errorText);
                         throw new Error(`Upload failed: ${response.status}`);
                     }
 
                     const data = await response.json();
-                    console.log('File uploaded successfully:', data);
                     
                     if (data.id) {
-                        // Store file metadata including isImage flag from backend
-                        const fileInfo = {
+                        uploadedFiles.push({
                             id: data.id,
                             isImage: data.isImage === true
-                        };
-                        console.log('File info to store:', fileInfo);
-                        uploadedFiles.push(fileInfo);
-                    } else {
-                        console.error('No file ID in response:', data);
+                        });
                     }
                 } catch (error) {
                     console.error('Error uploading file:', file.name, error);
@@ -627,7 +971,6 @@
                 }
             }
 
-            console.log('All files uploaded:', uploadedFiles);
             return uploadedFiles;
         }
 
@@ -649,6 +992,10 @@
 
             if (!message && attachedFiles.length === 0) return;
 
+            if (!currentSession) {
+                createNewSession();
+            }
+
             const sendBtn = document.getElementById('sendBtn');
             sendBtn.disabled = true;
 
@@ -664,7 +1011,6 @@
                 
                 try {
                     fileMetadata = await uploadFiles();
-                    console.log('Files uploaded, metadata:', fileMetadata);
                     
                     const messages = document.querySelectorAll('.message');
                     const lastMessage = messages[messages.length - 1];
@@ -690,6 +1036,11 @@
 
             if (originalMessage) {
                 addMessage(originalMessage, 'user');
+                
+                if (currentSession.messages.length === 1) {
+                    currentSession.title = originalMessage.substring(0, 30) + (originalMessage.length > 30 ? '...' : '');
+                    saveChatSessions();
+                }
             }
 
             showTypingIndicator();
@@ -701,10 +1052,8 @@
                 );
                 hideTypingIndicator();
                 
-                // Add text response
                 addMessage(aiResponse.text, 'ai');
                 
-                // Add download buttons for any generated files
                 if (aiResponse.files && aiResponse.files.length > 0) {
                     addFileDownloadButtons(aiResponse.files);
                 }
@@ -719,8 +1068,6 @@
 
         async function getAIResponse(userMessage, fileIds = []) {
             try {
-                console.log('Adding message to thread:', { message: userMessage, fileIds });
-                
                 const addMessageResponse = await fetch('/.netlify/functions/chat', {
                     method: 'POST',
                     headers: {
@@ -735,15 +1082,9 @@
                 });
 
                 if (!addMessageResponse.ok) {
-                    const errorText = await addMessageResponse.text();
-                    console.error('Failed to add message:', errorText);
                     throw new Error('Failed to add message');
                 }
 
-                const messageData = await addMessageResponse.json();
-                console.log('Message added successfully:', messageData);
-
-                console.log('Running assistant...');
                 const runResponse = await fetch('/.netlify/functions/chat', {
                     method: 'POST',
                     headers: {
@@ -757,21 +1098,19 @@
 
                 const runData = await runResponse.json();
                 const runId = runData.id;
-                console.log('Run started:', runId);
 
                 let runStatus = 'queued';
                 let attempts = 0;
-                const maxAttempts = 90; // Increased to 90 seconds max
-                let pollInterval = 500; // Start with 500ms polling
+                const maxAttempts = 90;
+                let pollInterval = 500;
 
                 while ((runStatus === 'queued' || runStatus === 'in_progress') && attempts < maxAttempts) {
-                    // Use adaptive polling - start fast, then slow down
                     if (attempts < 5) {
-                        pollInterval = 500; // 0.5s for first 2.5 seconds
+                        pollInterval = 500;
                     } else if (attempts < 15) {
-                        pollInterval = 1000; // 1s for next 10 seconds
+                        pollInterval = 1000;
                     } else {
-                        pollInterval = 2000; // 2s after that
+                        pollInterval = 2000;
                     }
                     
                     await new Promise(resolve => setTimeout(resolve, pollInterval));
@@ -792,10 +1131,7 @@
                     runStatus = statusData.status;
                     attempts++;
 
-                    console.log('Run status:', runStatus, 'attempt:', attempts, 'interval:', pollInterval + 'ms');
-
                     if (runStatus === 'failed' || runStatus === 'cancelled' || runStatus === 'expired') {
-                        console.error('Run failed with status:', runStatus, statusData);
                         throw new Error('Assistant run failed: ' + runStatus);
                     }
                 }
@@ -816,18 +1152,14 @@
                 });
 
                 const messagesData = await messagesResponse.json();
-                console.log('Messages received:', messagesData);
-                
                 const assistantMessage = messagesData.data.find(msg => msg.role === 'assistant');
                 
                 if (assistantMessage && assistantMessage.content && assistantMessage.content.length > 0) {
                     let responseText = assistantMessage.content[0].text.value;
                     
-                    // Check if assistant generated any files
                     let generatedFiles = [];
                     if (assistantMessage.attachments && assistantMessage.attachments.length > 0) {
                         generatedFiles = assistantMessage.attachments;
-                        console.log('Assistant generated files:', generatedFiles);
                     }
                     
                     return {
@@ -847,7 +1179,7 @@
             }
         }
 
-        function addMessage(content, sender) {
+        function addMessage(content, sender, saveToSession = true) {
             const messagesArea = document.getElementById('messagesArea');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}`;
@@ -862,6 +1194,21 @@
             
             messagesArea.appendChild(messageDiv);
             messagesArea.scrollTop = messagesArea.scrollHeight;
+            
+            if (saveToSession && currentSession) {
+                currentSession.messages.push({
+                    role: sender,
+                    content: content,
+                    timestamp: new Date().toISOString()
+                });
+                
+                if (currentSession.messages.length > MAX_MESSAGES_PER_SESSION) {
+                    currentSession.messages = currentSession.messages.slice(-MAX_MESSAGES_PER_SESSION);
+                }
+                
+                currentSession.updatedAt = new Date().toISOString();
+                saveChatSessions();
+            }
         }
 
         function formatMessage(text) {
@@ -1000,6 +1347,8 @@
 
             attachedFiles = [];
             document.getElementById('fileAttachments').innerHTML = '';
+
+            createNewSession();
 
             await createThread();
         }

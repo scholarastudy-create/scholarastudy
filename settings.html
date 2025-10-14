@@ -267,13 +267,114 @@
             margin: 2rem 0;
         }
 
-        @media (max-width: 768px) {
-            .button-group, .subscription-actions {
+        @media (max-width: 968px) {
+            nav {
+                padding: 1rem 3%;
+                flex-wrap: wrap;
+            }
+
+            .logo-img {
+                width: 35px;
+                height: 35px;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .nav-right {
+                gap: 0.8rem;
+            }
+
+            .nav-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .container {
+                padding: 6rem 3% 3rem;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .page-header p {
+                font-size: 1rem;
+            }
+
+            .settings-card {
+                padding: 2rem;
+            }
+
+            .settings-card h2 {
+                font-size: 1.3rem;
+            }
+
+            .button-group, 
+            .subscription-actions {
                 flex-direction: column;
             }
 
             .btn {
                 width: 100%;
+            }
+
+            .info-row {
+                flex-direction: column;
+                gap: 0.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem 3%;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .logo-img {
+                width: 30px;
+                height: 30px;
+            }
+
+            .nav-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .container {
+                padding: 5.5rem 3% 2rem;
+            }
+
+            .page-header {
+                margin-bottom: 2rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.6rem;
+            }
+
+            .settings-card {
+                padding: 1.5rem;
+            }
+
+            .settings-card h2 {
+                font-size: 1.2rem;
+            }
+
+            .form-group input {
+                padding: 0.9rem;
+                font-size: 0.95rem;
+            }
+
+            .btn {
+                padding: 0.9rem 1.5rem;
+                font-size: 0.95rem;
             }
         }
     </style>
@@ -297,7 +398,6 @@
         </div>
 
         <div class="settings-grid">
-            <!-- Profile Settings -->
             <div class="settings-card">
                 <h2>👤 Profile Information</h2>
                 
@@ -319,7 +419,6 @@
                 </form>
             </div>
 
-            <!-- Password Settings -->
             <div class="settings-card">
                 <h2>🔒 Security</h2>
                 
@@ -341,7 +440,6 @@
                 </form>
             </div>
 
-            <!-- Subscription Settings -->
             <div class="settings-card">
                 <h2>💳 Subscription</h2>
 
@@ -391,7 +489,6 @@
                 </p>
             </div>
 
-            <!-- Danger Zone -->
             <div class="settings-card" style="border: 2px solid #dc3545;">
                 <h2>⚠️ Danger Zone</h2>
                 
@@ -404,7 +501,6 @@
                 </button>
             </div>
 
-            <!-- Help & Support -->
             <div class="settings-card">
                 <h2>❓ Help & Support</h2>
                 
@@ -420,7 +516,6 @@
     </div>
 
     <script>
-        // Initialize Supabase
         const SUPABASE_URL = 'https://kiojxqwuxkrhkznszdvo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtpb2p4cXd1eGtyaGt6bnN6ZHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwNzQxMTMsImV4cCI6MjA3NTY1MDExM30.guF9oB2LmY3GDcwSWQEe_5K6FmQ592otUPtttQW1LQQ';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -428,7 +523,6 @@
         let currentUser = null;
         let userProfile = null;
 
-        // Check authentication
         async function checkAuth() {
             const { data: { user } } = await supabase.auth.getUser();
             
@@ -451,12 +545,10 @@
             }
         }
 
-        // Load user data into form
         function loadUserData() {
             document.getElementById('email').value = currentUser.email;
             document.getElementById('fullName').value = userProfile.full_name || '';
 
-            // Update subscription info
             const plan = userProfile.subscription_plan || 'free';
             const planBadge = document.getElementById('currentPlan');
             planBadge.textContent = plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
@@ -471,13 +563,11 @@
                     new Date(userProfile.subscription_start_date).toLocaleDateString();
             }
 
-            // Show manage billing button for paid plans
             if (plan !== 'free') {
                 document.getElementById('manageBillingBtn').style.display = 'block';
             }
         }
 
-        // Update profile
         async function updateProfile(e) {
             e.preventDefault();
             
@@ -510,7 +600,6 @@
             }
         }
 
-        // Update password
         async function updatePassword(e) {
             e.preventDefault();
             
@@ -550,7 +639,6 @@
             }
         }
 
-        // Show message
         function showMessage(elementId, message) {
             const element = document.getElementById(elementId);
             element.textContent = message;
@@ -561,7 +649,6 @@
             }, 5000);
         }
 
-        // Manage billing (redirect to Stripe portal)
         async function manageBilling() {
             const btn = document.getElementById('manageBillingBtn');
             const originalText = btn.textContent;
@@ -569,7 +656,6 @@
             btn.textContent = 'Opening...';
 
             try {
-                // Get auth token
                 const { data: { session } } = await supabase.auth.getSession();
                 
                 if (!session) {
@@ -578,7 +664,6 @@
                     return;
                 }
 
-                // Call Netlify function to create Stripe portal session
                 const response = await fetch('/.netlify/functions/stripe-billing-portal', {
                     method: 'POST',
                     headers: {
@@ -593,7 +678,6 @@
                     throw new Error(data.error || 'Failed to open billing portal');
                 }
 
-                // Redirect to Stripe Customer Portal
                 window.location.href = data.url;
 
             } catch (error) {
@@ -604,7 +688,6 @@
             }
         }
 
-        // Confirm delete account
         function confirmDeleteAccount() {
             const confirmed = confirm(
                 '⚠️ WARNING ⚠️\n\n' +
@@ -630,10 +713,8 @@
             }
         }
 
-        // Delete account
         async function deleteAccount() {
             try {
-                // Delete user profile
                 const { error: profileError } = await supabase
                     .from('profiles')
                     .delete()
@@ -641,10 +722,8 @@
 
                 if (profileError) throw profileError;
 
-                // Delete auth user (admin function - needs backend)
                 alert('Account deletion initiated. Please contact support@scholara.com to complete the process.');
                 
-                // Log out
                 await supabase.auth.signOut();
                 window.location.href = 'index.html';
 
@@ -654,20 +733,17 @@
             }
         }
 
-        // Logout
         async function handleLogout() {
             await supabase.auth.signOut();
             window.location.href = 'index.html';
         }
 
-        // Restart tour
         function restartTour() {
             localStorage.removeItem('scholara_tour_completed');
             alert('Tour reset! Go back to your dashboard to start the tour again.');
             window.location.href = 'dashboard.html';
         }
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', checkAuth);
     </script>
 </body>

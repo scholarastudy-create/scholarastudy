@@ -179,6 +179,98 @@
         .email-notice strong {
             color: #E8A735;
         }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1.5rem;
+            }
+
+            .success-container {
+                padding: 3rem 2rem;
+                border-radius: 20px;
+            }
+
+            .checkmark-circle {
+                width: 100px;
+                height: 100px;
+            }
+
+            .checkmark {
+                width: 50px;
+                height: 50px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+                margin-bottom: 2rem;
+            }
+
+            .info-box {
+                padding: 1.5rem;
+            }
+
+            .info-item {
+                flex-direction: column;
+                gap: 0.3rem;
+                padding: 0.6rem 0;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .btn {
+                padding: 0.9rem 1.5rem;
+                font-size: 0.95rem;
+            }
+
+            .email-notice {
+                padding: 1.2rem;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+
+            .success-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .checkmark-circle {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 1.5rem;
+            }
+
+            .checkmark {
+                width: 40px;
+                height: 40px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .info-box {
+                padding: 1.2rem;
+            }
+
+            .info-label, .info-value {
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -218,30 +310,20 @@
     </div>
 
     <script>
-        // Get URL parameters to display plan info
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('session_id');
 
-        // You can fetch session details from Stripe if needed
-        // For now, we'll use localStorage or cookies to show the plan
         const selectedPlan = localStorage.getItem('selectedPlan') || 'Pro';
         const selectedBilling = localStorage.getItem('selectedBilling') || 'Monthly';
 
         document.getElementById('planName').textContent = selectedPlan + ' Plan';
         document.getElementById('billingPeriod').textContent = selectedBilling;
 
-        // Clear localStorage
         localStorage.removeItem('selectedPlan');
         localStorage.removeItem('selectedBilling');
 
-        // Optional: Send session_id to your backend to verify payment
         if (sessionId) {
             console.log('Stripe Session ID:', sessionId);
-            // fetch('/api/verify-payment', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ sessionId })
-            // });
         }
     </script>
 </body>
