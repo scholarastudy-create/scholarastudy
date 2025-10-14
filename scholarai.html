@@ -761,10 +761,20 @@
 
                 let runStatus = 'queued';
                 let attempts = 0;
-                const maxAttempts = 60;
+                const maxAttempts = 90; // Increased to 90 seconds max
+                let pollInterval = 500; // Start with 500ms polling
 
                 while ((runStatus === 'queued' || runStatus === 'in_progress') && attempts < maxAttempts) {
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    // Use adaptive polling - start fast, then slow down
+                    if (attempts < 5) {
+                        pollInterval = 500; // 0.5s for first 2.5 seconds
+                    } else if (attempts < 15) {
+                        pollInterval = 1000; // 1s for next 10 seconds
+                    } else {
+                        pollInterval = 2000; // 2s after that
+                    }
+                    
+                    await new Promise(resolve => setTimeout(resolve, pollInterval));
 
                     const statusResponse = await fetch('/.netlify/functions/chat', {
                         method: 'POST',
@@ -782,7 +792,7 @@
                     runStatus = statusData.status;
                     attempts++;
 
-                    console.log('Run status:', runStatus, 'attempt:', attempts);
+                    console.log('Run status:', runStatus, 'attempt:', attempts, 'interval:', pollInterval + 'ms');
 
                     if (runStatus === 'failed' || runStatus === 'cancelled' || runStatus === 'expired') {
                         console.error('Run failed with status:', runStatus, statusData);
