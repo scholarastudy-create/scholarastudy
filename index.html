@@ -483,17 +483,24 @@
             margin: 4rem 0;
             position: relative;
             overflow: hidden;
+            text-align: center;
         }
 
         .mission-section::before {
             content: '';
             position: absolute;
             top: -50%;
-            left: -20%;
+            left: 50%;
+            transform: translateX(-50%);
             width: 400px;
             height: 400px;
             background: radial-gradient(circle, rgba(232, 167, 53, 0.15) 0%, transparent 70%);
-            animation: float 8s ease-in-out infinite;
+            animation: floatMission 8s ease-in-out infinite;
+        }
+
+        @keyframes floatMission {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-30px); }
         }
 
         .mission-content {
@@ -508,12 +515,15 @@
             font-size: 2.5rem;
             margin-bottom: 2rem;
             color: #E8A735;
+            text-align: center;
         }
 
         .mission-content p {
             font-size: 1.3rem;
             line-height: 1.8;
             color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin: 0 auto;
         }
 
         .auth-page {
@@ -817,6 +827,18 @@
 
             .footer-links {
                 justify-content: center;
+            }
+
+            .mission-section {
+                padding: 3rem 2rem;
+            }
+
+            .mission-content h2 {
+                font-size: 2rem;
+            }
+
+            .mission-content p {
+                font-size: 1.1rem;
             }
         }
     </style>
