@@ -611,11 +611,13 @@
                     console.log('File uploaded successfully:', data);
                     
                     if (data.id) {
-                        // Store file metadata including isImage flag
-                        uploadedFiles.push({
+                        // Store file metadata including isImage flag from backend
+                        const fileInfo = {
                             id: data.id,
-                            isImage: data.isImage || false
-                        });
+                            isImage: data.isImage === true
+                        };
+                        console.log('File info to store:', fileInfo);
+                        uploadedFiles.push(fileInfo);
                     } else {
                         console.error('No file ID in response:', data);
                     }
@@ -656,13 +658,13 @@
             const welcomeMsg = document.querySelector('.welcome-message');
             if (welcomeMsg) welcomeMsg.remove();
 
-            let fileIds = [];
+            let fileMetadata = [];
             if (attachedFiles.length > 0) {
                 addMessage(`📤 Uploading ${attachedFiles.length} file(s)...`, 'user');
                 
                 try {
-                    fileIds = await uploadFiles();
-                    console.log('Files uploaded with metadata:', fileIds);
+                    fileMetadata = await uploadFiles();
+                    console.log('Files uploaded, metadata:', fileMetadata);
                     
                     const messages = document.querySelectorAll('.message');
                     const lastMessage = messages[messages.length - 1];
@@ -695,7 +697,7 @@
             try {
                 const aiResponse = await getAIResponse(
                     originalMessage || 'Please analyze the uploaded files and tell me what they contain.', 
-                    fileIds
+                    fileMetadata
                 );
                 hideTypingIndicator();
                 addMessage(aiResponse, 'ai');
@@ -899,4 +901,10 @@
         const textarea = document.getElementById('messageInput');
         textarea.addEventListener('input', function() {
             this.style.height = 'auto';
-            
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>
