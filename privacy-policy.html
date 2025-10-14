@@ -26,6 +26,9 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .logo {
@@ -46,6 +49,7 @@
             cursor: pointer;
             text-decoration: none;
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .nav-btn:hover {
@@ -131,6 +135,13 @@
             width: 100%;
             border-collapse: collapse;
             margin: 1.5rem 0;
+            display: block;
+            overflow-x: auto;
+        }
+
+        .data-table table {
+            width: 100%;
+            min-width: 600px;
         }
 
         .data-table th,
@@ -166,6 +177,145 @@
         footer a:hover {
             text-decoration: underline;
         }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 4%;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .nav-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .container {
+                padding: 2rem 4%;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 2rem 1.5rem;
+                border-radius: 15px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+                margin: 1.5rem 0 0.8rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .highlight {
+                padding: 1rem;
+                font-size: 0.95rem;
+            }
+
+            ul {
+                margin-left: 1.5rem;
+            }
+
+            .data-table {
+                font-size: 0.9rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 0.8rem 3%;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .nav-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .container {
+                padding: 1.5rem 3%;
+            }
+
+            .header {
+                margin-bottom: 2rem;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .last-updated {
+                font-size: 0.85rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+                border-radius: 12px;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+                margin: 1.2rem 0 0.6rem;
+            }
+
+            h3 {
+                font-size: 1.1rem;
+                margin: 1rem 0 0.5rem;
+            }
+
+            p {
+                font-size: 0.95rem;
+            }
+
+            ul {
+                margin-left: 1.2rem;
+                font-size: 0.95rem;
+            }
+
+            li {
+                margin-bottom: 0.4rem;
+            }
+
+            .highlight {
+                padding: 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .data-table {
+                font-size: 0.85rem;
+                margin: 1rem -1rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.6rem 0.4rem;
+                font-size: 0.8rem;
+            }
+
+            .data-table table {
+                min-width: 500px;
+            }
+
+            footer {
+                padding: 1.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -188,37 +338,39 @@
             <h2>1. Information We Collect</h2>
             
             <h3>Information You Provide to Us</h3>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Data Type</th>
-                        <th>Examples</th>
-                        <th>Purpose</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Account Information</strong></td>
-                        <td>Name, email address, password</td>
-                        <td>Create and manage your account</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Payment Information</strong></td>
-                        <td>Credit card details, billing address</td>
-                        <td>Process subscription payments (via Stripe)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Uploaded Content</strong></td>
-                        <td>Notes, documents, study materials</td>
-                        <td>Create custom study guides</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Communications</strong></td>
-                        <td>Support messages, feedback</td>
-                        <td>Provide customer support</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data Type</th>
+                            <th>Examples</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Account Information</strong></td>
+                            <td>Name, email address, password</td>
+                            <td>Create and manage your account</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Payment Information</strong></td>
+                            <td>Credit card details, billing address</td>
+                            <td>Process subscription payments (via Stripe)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Uploaded Content</strong></td>
+                            <td>Notes, documents, study materials</td>
+                            <td>Create custom study guides</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Communications</strong></td>
+                            <td>Support messages, feedback</td>
+                            <td>Provide customer support</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <h3>Information Collected Automatically</h3>
             <ul>
