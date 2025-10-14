@@ -214,8 +214,8 @@ exports.handler = async (event, context) => {
     // RUN ASSISTANT
     if (action === 'runAssistant') {
       const runBody = {
-        assistant_id: ASSISTANT_ID,
-        instructions: 'You are ScholarAI, a helpful study assistant. When users share images, describe what you see in detail and help them understand the content. For documents, analyze and summarize the key information.'
+        assistant_id: ASSISTANT_ID
+        // Removed instructions - let the Assistant use its configured system prompt
       };
 
       const response = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
