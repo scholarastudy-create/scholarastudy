@@ -46,7 +46,7 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // UPLOAD FILE - Use vision purpose for images
+    // UPLOAD FILE - Use vision purpose for images, assistants for documents
     if (action === 'uploadFile') {
       try {
         const base64Data = fileContent.split(',')[1];
@@ -54,7 +54,7 @@ exports.handler = async (event, context) => {
         
         console.log('Uploading file:', fileName, 'Size:', buffer.length, 'bytes');
         
-        // Check if it's an image
+        // Check if it's an image (these use vision purpose and go in message content)
         const fileExtension = fileName.toLowerCase().split('.').pop();
         const isImage = ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(fileExtension);
         const uploadPurpose = isImage ? 'vision' : 'assistants';
@@ -89,7 +89,7 @@ exports.handler = async (event, context) => {
           };
         }
 
-        // Return file info with metadata
+        // Return file info with metadata so frontend knows how to handle it
         return {
           statusCode: 200,
           headers,
@@ -111,19 +111,35 @@ exports.handler = async (event, context) => {
 
     // ADD MESSAGE WITH FILES - Different handling for images vs documents
     if (action === 'addMessage') {
+      // fileIds should be an array of objects: [{id: 'file-xxx', isImage: true/false}]
+      // Or just strings for backwards compatibility
+      const files = fileIds || [];
+      
+      let imageFiles = [];
+      let documentFiles = [];
+      
+      // Separate images from documents based on metadata
+      files.forEach(file => {
+        if (typeof file === 'object') {
+          if (file.isImage) {
+            imageFiles.push(file.id);
+          } else {
+            documentFiles.push(file.id);
+          }
+        } else {
+          // Fallback: assume it's a document if no metadata
+          documentFiles.push(file);
+        }
+      });
+
+      console.log('Processing files - Images:', imageFiles.length, 'Documents:', documentFiles.length);
+
       let messageContent;
       let attachments;
 
-      // Parse fileIds to separate images from documents
-      const files = fileIds || [];
-      const imageFiles = [];
-      const documentFiles = [];
-
-      // Note: Frontend should pass metadata to distinguish
-      // For now, we'll handle all as content with image_file type
-      
-      if (files.length > 0) {
-        // Build content array with text and images
+      // Build message content
+      if (imageFiles.length > 0) {
+        // Start with text
         messageContent = [
           {
             type: 'text',
@@ -131,8 +147,8 @@ exports.handler = async (event, context) => {
           }
         ];
 
-        // Add each file as an image_file
-        files.forEach(fileId => {
+        // Add images to content
+        imageFiles.forEach(fileId => {
           messageContent.push({
             type: 'image_file',
             image_file: {
@@ -140,16 +156,31 @@ exports.handler = async (event, context) => {
             }
           });
         });
-
-        console.log('Message content with images:', JSON.stringify(messageContent, null, 2));
       } else {
-        messageContent = message;
+        messageContent = message || 'Please analyze these files.';
+      }
+
+      // Add document attachments if any
+      if (documentFiles.length > 0) {
+        attachments = documentFiles.map(fileId => ({
+          file_id: fileId,
+          tools: [
+            { type: 'file_search' },
+            { type: 'code_interpreter' }
+          ]
+        }));
       }
 
       const messageBody = {
         role: 'user',
         content: messageContent
       };
+
+      if (attachments) {
+        messageBody.attachments = attachments;
+      }
+
+      console.log('Sending message body:', JSON.stringify(messageBody, null, 2));
 
       const response = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
         method: 'POST',
