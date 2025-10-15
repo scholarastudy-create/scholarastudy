@@ -475,19 +475,50 @@
         }
 
         /* Tour System Styles */
-        .tour-overlay {
+        .tour-card {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: calc(100% - 40px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 10001;
+            display: none;
+            animation: tourCardAppear 0.4s ease;
+        }
+
+        .tour-card.active {
+            display: block;
+        }
+
+        @keyframes tourCardAppear {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -45%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .tour-backdrop {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: 9998;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
             display: none;
             animation: fadeIn 0.3s ease;
         }
 
-        .tour-overlay.active {
+        .tour-backdrop.active {
             display: block;
         }
 
@@ -496,150 +527,139 @@
             to { opacity: 1; }
         }
 
-        .tour-spotlight {
-            position: absolute;
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75);
-            border-radius: 12px;
-            z-index: 9999;
-            pointer-events: none;
-            transition: all 0.4s ease;
-            display: none;
-        }
-
-        .tour-tooltip {
-            position: fixed;
-            background: white;
-            border-radius: 15px;
-            padding: 1.8rem;
-            max-width: 420px;
-            width: calc(100% - 40px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            z-index: 10000;
-            animation: tooltipSlideIn 0.4s ease;
-            display: none;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        @keyframes tooltipSlideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-
-        .tour-tooltip h3 {
+        .tour-card h3 {
             color: #1a3a52;
-            font-size: 1.3rem;
-            margin-bottom: 0.8rem;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
             line-height: 1.3;
         }
 
-        .tour-tooltip p {
+        .tour-card .tour-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .tour-card p {
             color: #5a6c7d;
-            line-height: 1.6;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .tour-progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e8e5df;
+            border-radius: 10px;
             margin-bottom: 1.5rem;
-            font-size: 0.95rem;
+            overflow: hidden;
+        }
+
+        .tour-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #E8A735, #d49625);
+            border-radius: 10px;
+            transition: width 0.4s ease;
         }
 
         .tour-controls {
             display: flex;
             gap: 0.8rem;
             align-items: center;
-            flex-wrap: wrap;
         }
 
-        .tour-progress {
+        .tour-step-indicator {
             color: #5a6c7d;
-            font-size: 0.85rem;
-            width: 100%;
-            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
             text-align: center;
+            font-weight: 500;
         }
 
         .tour-btn {
-            padding: 0.8rem 1.2rem;
+            padding: 0.9rem 1.5rem;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             white-space: nowrap;
         }
 
         .tour-btn-primary {
-            background: #E8A735;
+            background: linear-gradient(135deg, #E8A735, #d49625);
             color: white;
             flex: 1;
-            min-width: 120px;
         }
 
         .tour-btn-primary:hover {
-            background: #d49625;
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 167, 53, 0.4);
         }
 
         .tour-btn-secondary {
             background: #f0f0f0;
             color: #1a3a52;
-            padding: 0.8rem 1rem;
+            padding: 0.9rem 1.2rem;
         }
 
         .tour-btn-secondary:hover {
             background: #e0e0e0;
         }
 
-        @media (max-width: 768px) {
-            .tour-tooltip {
-                max-width: calc(100% - 30px);
-                padding: 1.5rem;
-                width: auto;
-                left: 15px;
-                right: 15px;
-                transform: none;
-            }
+        .tour-skip {
+            text-align: center;
+            margin-top: 1rem;
+        }
 
-            @keyframes tooltipSlideIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
+        .tour-skip button {
+            background: none;
+            border: none;
+            color: #5a6c7d;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .tour-skip button:hover {
+            color: #1a3a52;
+        }
+
+        @media (max-width: 768px) {
+            .tour-card {
+                padding: 2rem;
+                width: calc(100% - 30px);
+                max-width: 100%;
             }
             
-            .tour-tooltip h3 {
-                font-size: 1.2rem;
+            .tour-card h3 {
+                font-size: 1.3rem;
             }
 
-            .tour-tooltip p {
-                font-size: 0.9rem;
+            .tour-card .tour-icon {
+                font-size: 2.5rem;
+            }
+
+            .tour-card p {
+                font-size: 0.95rem;
+                margin-bottom: 1.5rem;
             }
 
             .tour-btn {
-                font-size: 0.85rem;
-                padding: 0.7rem 1rem;
+                font-size: 0.9rem;
+                padding: 0.8rem 1.2rem;
             }
 
-            .tour-btn-primary {
-                width: 100%;
-                order: 1;
+            .tour-controls {
+                flex-direction: column;
             }
-            
+
+            .tour-btn-primary,
             .tour-btn-secondary {
-                flex: 1;
-                order: 2;
-            }
-
-            .tour-spotlight {
-                border-radius: 8px;
+                width: 100%;
             }
 
             nav {
@@ -756,29 +776,27 @@
         }
 
         @media (max-width: 480px) {
-            .tour-tooltip {
-                padding: 1.2rem;
-                max-width: calc(100% - 20px);
-                left: 10px;
-                right: 10px;
+            .tour-card {
+                padding: 1.5rem;
+                width: calc(100% - 20px);
             }
 
-            .tour-tooltip h3 {
-                font-size: 1.1rem;
+            .tour-card h3 {
+                font-size: 1.2rem;
             }
 
-            .tour-tooltip p {
-                font-size: 0.85rem;
-                margin-bottom: 1.2rem;
+            .tour-card .tour-icon {
+                font-size: 2rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .tour-card p {
+                font-size: 0.9rem;
             }
 
             .tour-btn {
-                padding: 0.65rem 0.8rem;
-                font-size: 0.8rem;
-            }
-
-            .tour-progress {
-                font-size: 0.8rem;
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
             }
 
             nav {
@@ -867,9 +885,8 @@
 </head>
 <body>
     <!-- Tour System Elements -->
-    <div class="tour-overlay" id="tourOverlay"></div>
-    <div class="tour-spotlight" id="tourSpotlight"></div>
-    <div class="tour-tooltip" id="tourTooltip"></div>
+    <div class="tour-backdrop" id="tourBackdrop"></div>
+    <div class="tour-card" id="tourCard"></div>
 
     <nav>
         <a href="index.html" class="logo-container">
@@ -968,40 +985,34 @@
         // Tour System Variables
         const tourSteps = [
             {
-                target: '.welcome-section',
-                title: '👋 Welcome to Scholara!',
-                content: 'Let\'s take a quick tour to help you get started. This will only take a minute!',
-                position: 'bottom'
+                icon: '👋',
+                title: 'Welcome to Scholara!',
+                content: 'Let\'s take a quick tour to help you get started with all the amazing features available to you.'
             },
             {
-                target: '.quick-actions',
-                title: '⚡ Quick Actions',
-                content: 'Here you can quickly access your most-used features: browse templates, upload notes, chat with ScholarAI, and view your study guides.',
-                position: 'bottom'
+                icon: '⚡',
+                title: 'Quick Actions',
+                content: 'Your dashboard gives you instant access to browse templates, upload notes, chat with ScholarAI, and view your study guides.'
             },
             {
-                target: '#templatesGrid',
-                title: '📚 Template Library',
-                content: 'Access a variety of study templates, resumes, and planning tools. Templates are organized by subscription tier - upgrade to unlock more!',
-                position: 'top'
+                icon: '📚',
+                title: 'Template Library',
+                content: 'Access a variety of study templates, resumes, and planning tools. Higher subscription tiers unlock even more templates!'
             },
             {
-                target: '.plan-badge',
-                title: '💳 Your Subscription',
-                content: 'Your current plan is shown here. You can upgrade anytime to unlock premium features like custom study guides and ScholarAI assistance.',
-                position: 'bottom'
+                icon: '💳',
+                title: 'Subscription Plans',
+                content: 'Upgrade your plan anytime to unlock premium features like custom AI-generated study guides and ScholarAI tutoring.'
             },
             {
-                target: '.settings-icon',
-                title: '⚙️ Account Settings',
-                content: 'Manage your profile, update your password, and control your subscription from the settings menu.',
-                position: 'bottom'
+                icon: '⚙️',
+                title: 'Account Settings',
+                content: 'Manage your profile, update your password, and control your subscription from the settings menu in the top right.'
             },
             {
-                target: '.welcome-section',
-                title: '🎉 You\'re All Set!',
-                content: 'That\'s it! You\'re ready to start using Scholara. Remember, you can restart this tour anytime from Settings. Happy studying!',
-                position: 'bottom'
+                icon: '🎉',
+                title: 'You\'re All Set!',
+                content: 'That\'s it! You\'re ready to start using Scholara to study smarter. You can restart this tour anytime from Settings.'
             }
         ];
 
@@ -1025,72 +1036,33 @@
 
             currentTourStep = stepIndex;
             const step = tourSteps[stepIndex];
-            const targetElement = document.querySelector(step.target);
 
-            if (!targetElement) {
-                showTourStep(stepIndex + 1);
-                return;
-            }
+            const backdrop = document.getElementById('tourBackdrop');
+            const card = document.getElementById('tourCard');
+            
+            backdrop.classList.add('active');
+            card.classList.add('active');
 
-            // Scroll element into view first
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const progress = ((stepIndex + 1) / tourSteps.length) * 100;
 
-            // Wait for scroll to complete before positioning
-            setTimeout(() => {
-                const overlay = document.getElementById('tourOverlay');
-                overlay.classList.add('active');
-
-                const spotlight = document.getElementById('tourSpotlight');
-                const rect = targetElement.getBoundingClientRect();
-                const padding = 10;
-                
-                spotlight.style.top = (rect.top - padding + window.scrollY) + 'px';
-                spotlight.style.left = (rect.left - padding) + 'px';
-                spotlight.style.width = (rect.width + padding * 2) + 'px';
-                spotlight.style.height = (rect.height + padding * 2) + 'px';
-                spotlight.style.display = 'block';
-
-                const tooltip = document.getElementById('tourTooltip');
-                tooltip.innerHTML = `
-                    <h3>${step.title}</h3>
-                    <p>${step.content}</p>
-                    <div class="tour-controls">
-                        <span class="tour-progress">Step ${stepIndex + 1} of ${tourSteps.length}</span>
-                        <button class="tour-btn tour-btn-primary" onclick="nextTourStep()">
-                            ${stepIndex === tourSteps.length - 1 ? 'Finish ✓' : 'Next →'}
-                        </button>
-                        ${stepIndex > 0 ? '<button class="tour-btn tour-btn-secondary" onclick="previousTourStep()">← Back</button>' : ''}
-                        <button class="tour-btn tour-btn-secondary" onclick="skipTour()">Skip</button>
-                    </div>
-                `;
-
-                tooltip.style.display = 'block';
-
-                // Position tooltip
-                const isMobile = window.innerWidth <= 768;
-                let top;
-
-                if (isMobile) {
-                    // On mobile, position at bottom of screen
-                    top = window.innerHeight - tooltip.offsetHeight - 20;
-                } else {
-                    // On desktop, position relative to element
-                    if (step.position === 'bottom') {
-                        top = rect.bottom + window.scrollY + 20;
-                    } else {
-                        top = rect.top + window.scrollY - tooltip.offsetHeight - 20;
-                    }
-
-                    // Keep tooltip on screen
-                    const maxTop = window.innerHeight + window.scrollY - tooltip.offsetHeight - 20;
-                    const minTop = window.scrollY + 20;
-                    
-                    if (top > maxTop) top = maxTop;
-                    if (top < minTop) top = minTop;
-                }
-
-                tooltip.style.top = top + 'px';
-            }, 600);
+            card.innerHTML = `
+                <div class="tour-icon">${step.icon}</div>
+                <h3>${step.title}</h3>
+                <div class="tour-step-indicator">Step ${stepIndex + 1} of ${tourSteps.length}</div>
+                <div class="tour-progress-bar">
+                    <div class="tour-progress-fill" style="width: ${progress}%"></div>
+                </div>
+                <p>${step.content}</p>
+                <div class="tour-controls">
+                    ${stepIndex > 0 ? '<button class="tour-btn tour-btn-secondary" onclick="previousTourStep()">← Back</button>' : ''}
+                    <button class="tour-btn tour-btn-primary" onclick="nextTourStep()">
+                        ${stepIndex === tourSteps.length - 1 ? 'Get Started! ✓' : 'Next →'}
+                    </button>
+                </div>
+                <div class="tour-skip">
+                    <button onclick="skipTour()">Skip tour</button>
+                </div>
+            `;
         }
 
         function nextTourStep() {
@@ -1110,9 +1082,8 @@
         }
 
         function endTour() {
-            document.getElementById('tourOverlay').classList.remove('active');
-            document.getElementById('tourSpotlight').style.display = 'none';
-            document.getElementById('tourTooltip').style.display = 'none';
+            document.getElementById('tourBackdrop').classList.remove('active');
+            document.getElementById('tourCard').classList.remove('active');
             localStorage.setItem('scholara_tour_completed', 'true');
         }
 
@@ -1143,7 +1114,7 @@
                 await verifySubscriptionStatus();
                 await loadTemplatesFromDatabase();
                 updateUI();
-                startTour(); // Start tour for first-time users
+                startTour();
             }
         }
 
