@@ -481,7 +481,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             z-index: 9998;
             display: none;
             animation: fadeIn 0.3s ease;
@@ -498,8 +498,8 @@
 
         .tour-spotlight {
             position: absolute;
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
-            border-radius: 15px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75);
+            border-radius: 12px;
             z-index: 9999;
             pointer-events: none;
             transition: all 0.4s ease;
@@ -510,22 +510,25 @@
             position: fixed;
             background: white;
             border-radius: 15px;
-            padding: 2rem;
-            max-width: 400px;
+            padding: 1.8rem;
+            max-width: 420px;
+            width: calc(100% - 40px);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             z-index: 10000;
             animation: tooltipSlideIn 0.4s ease;
             display: none;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         @keyframes tooltipSlideIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateX(-50%) translateY(20px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateX(-50%) translateY(0);
             }
         }
 
@@ -533,80 +536,110 @@
             color: #1a3a52;
             font-size: 1.3rem;
             margin-bottom: 0.8rem;
+            line-height: 1.3;
         }
 
         .tour-tooltip p {
             color: #5a6c7d;
             line-height: 1.6;
             margin-bottom: 1.5rem;
+            font-size: 0.95rem;
         }
 
         .tour-controls {
             display: flex;
             gap: 0.8rem;
             align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .tour-progress {
+            color: #5a6c7d;
+            font-size: 0.85rem;
+            width: 100%;
+            margin-bottom: 0.5rem;
+            text-align: center;
         }
 
         .tour-btn {
-            padding: 0.8rem 1.5rem;
+            padding: 0.8rem 1.2rem;
             border: none;
             border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
 
         .tour-btn-primary {
             background: #E8A735;
             color: white;
             flex: 1;
+            min-width: 120px;
         }
 
         .tour-btn-primary:hover {
             background: #d49625;
+            transform: translateY(-2px);
         }
 
         .tour-btn-secondary {
             background: #f0f0f0;
             color: #1a3a52;
+            padding: 0.8rem 1rem;
         }
 
         .tour-btn-secondary:hover {
             background: #e0e0e0;
         }
 
-        .tour-progress {
-            color: #5a6c7d;
-            font-size: 0.85rem;
-            margin-right: auto;
-        }
-
-        @media (max-width: 968px) {
+        @media (max-width: 768px) {
             .tour-tooltip {
-                max-width: 90%;
-                left: 5% !important;
-                right: 5% !important;
+                max-width: calc(100% - 30px);
                 padding: 1.5rem;
+                width: auto;
+                left: 15px;
+                right: 15px;
+                transform: none;
+            }
+
+            @keyframes tooltipSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
             
-            .tour-controls {
-                flex-wrap: wrap;
+            .tour-tooltip h3 {
+                font-size: 1.2rem;
             }
-            
+
+            .tour-tooltip p {
+                font-size: 0.9rem;
+            }
+
+            .tour-btn {
+                font-size: 0.85rem;
+                padding: 0.7rem 1rem;
+            }
+
             .tour-btn-primary {
-                order: 1;
                 width: 100%;
+                order: 1;
             }
             
             .tour-btn-secondary {
+                flex: 1;
                 order: 2;
             }
-            
-            .tour-progress {
-                order: 0;
-                width: 100%;
-                margin-bottom: 0.8rem;
+
+            .tour-spotlight {
+                border-radius: 8px;
             }
 
             nav {
@@ -723,6 +756,31 @@
         }
 
         @media (max-width: 480px) {
+            .tour-tooltip {
+                padding: 1.2rem;
+                max-width: calc(100% - 20px);
+                left: 10px;
+                right: 10px;
+            }
+
+            .tour-tooltip h3 {
+                font-size: 1.1rem;
+            }
+
+            .tour-tooltip p {
+                font-size: 0.85rem;
+                margin-bottom: 1.2rem;
+            }
+
+            .tour-btn {
+                padding: 0.65rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .tour-progress {
+                font-size: 0.8rem;
+            }
+
             nav {
                 padding: 1rem 3%;
             }
@@ -974,53 +1032,65 @@
                 return;
             }
 
-            const overlay = document.getElementById('tourOverlay');
-            overlay.classList.add('active');
-
-            const spotlight = document.getElementById('tourSpotlight');
-            const rect = targetElement.getBoundingClientRect();
-            const padding = 10;
-            
-            spotlight.style.top = (rect.top - padding + window.scrollY) + 'px';
-            spotlight.style.left = (rect.left - padding) + 'px';
-            spotlight.style.width = (rect.width + padding * 2) + 'px';
-            spotlight.style.height = (rect.height + padding * 2) + 'px';
-            spotlight.style.display = 'block';
-
-            const tooltip = document.getElementById('tourTooltip');
-            tooltip.innerHTML = `
-                <h3>${step.title}</h3>
-                <p>${step.content}</p>
-                <div class="tour-controls">
-                    <span class="tour-progress">Step ${stepIndex + 1} of ${tourSteps.length}</span>
-                    ${stepIndex > 0 ? '<button class="tour-btn tour-btn-secondary" onclick="previousTourStep()">Back</button>' : ''}
-                    <button class="tour-btn tour-btn-primary" onclick="nextTourStep()">
-                        ${stepIndex === tourSteps.length - 1 ? 'Finish' : 'Next'}
-                    </button>
-                    <button class="tour-btn tour-btn-secondary" onclick="skipTour()">Skip Tour</button>
-                </div>
-            `;
-
-            const tooltipRect = tooltip.getBoundingClientRect();
-            let top, left;
-
-            if (step.position === 'bottom') {
-                top = rect.bottom + window.scrollY + 20;
-                left = rect.left + (rect.width / 2) - 200;
-            } else {
-                top = rect.top + window.scrollY - tooltipRect.height - 20;
-                left = rect.left + (rect.width / 2) - 200;
-            }
-
-            if (left < 20) left = 20;
-            if (left + 400 > window.innerWidth - 20) left = window.innerWidth - 420;
-            if (top < 20) top = 20;
-
-            tooltip.style.top = top + 'px';
-            tooltip.style.left = left + 'px';
-            tooltip.style.display = 'block';
-
+            // Scroll element into view first
             targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Wait for scroll to complete before positioning
+            setTimeout(() => {
+                const overlay = document.getElementById('tourOverlay');
+                overlay.classList.add('active');
+
+                const spotlight = document.getElementById('tourSpotlight');
+                const rect = targetElement.getBoundingClientRect();
+                const padding = 10;
+                
+                spotlight.style.top = (rect.top - padding + window.scrollY) + 'px';
+                spotlight.style.left = (rect.left - padding) + 'px';
+                spotlight.style.width = (rect.width + padding * 2) + 'px';
+                spotlight.style.height = (rect.height + padding * 2) + 'px';
+                spotlight.style.display = 'block';
+
+                const tooltip = document.getElementById('tourTooltip');
+                tooltip.innerHTML = `
+                    <h3>${step.title}</h3>
+                    <p>${step.content}</p>
+                    <div class="tour-controls">
+                        <span class="tour-progress">Step ${stepIndex + 1} of ${tourSteps.length}</span>
+                        <button class="tour-btn tour-btn-primary" onclick="nextTourStep()">
+                            ${stepIndex === tourSteps.length - 1 ? 'Finish ✓' : 'Next →'}
+                        </button>
+                        ${stepIndex > 0 ? '<button class="tour-btn tour-btn-secondary" onclick="previousTourStep()">← Back</button>' : ''}
+                        <button class="tour-btn tour-btn-secondary" onclick="skipTour()">Skip</button>
+                    </div>
+                `;
+
+                tooltip.style.display = 'block';
+
+                // Position tooltip
+                const isMobile = window.innerWidth <= 768;
+                let top;
+
+                if (isMobile) {
+                    // On mobile, position at bottom of screen
+                    top = window.innerHeight - tooltip.offsetHeight - 20;
+                } else {
+                    // On desktop, position relative to element
+                    if (step.position === 'bottom') {
+                        top = rect.bottom + window.scrollY + 20;
+                    } else {
+                        top = rect.top + window.scrollY - tooltip.offsetHeight - 20;
+                    }
+
+                    // Keep tooltip on screen
+                    const maxTop = window.innerHeight + window.scrollY - tooltip.offsetHeight - 20;
+                    const minTop = window.scrollY + 20;
+                    
+                    if (top > maxTop) top = maxTop;
+                    if (top < minTop) top = minTop;
+                }
+
+                tooltip.style.top = top + 'px';
+            }, 600);
         }
 
         function nextTourStep() {
