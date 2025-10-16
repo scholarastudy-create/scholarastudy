@@ -627,6 +627,33 @@
             border-color: #E8A735;
         }
 
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 3rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #5a6c7d;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            transition: color 0.3s ease;
+            user-select: none;
+        }
+
+        .password-toggle:hover {
+            color: #1a3a52;
+        }
+
         .remember-me {
             display: flex;
             align-items: center;
@@ -1035,6 +1062,11 @@
                 font-size: 0.95rem;
             }
 
+            .password-toggle {
+                font-size: 1rem;
+                right: 0.8rem;
+            }
+
             .auth-button {
                 padding: 0.9rem;
                 font-size: 1rem;
@@ -1169,7 +1201,12 @@
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('loginPassword', this)" tabindex="-1">
+                            👁️
+                        </button>
+                    </div>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                     <div class="remember-me">
@@ -1198,19 +1235,29 @@
             <form id="signupForm" class="hidden" onsubmit="handleSignup(event)">
                 <div class="form-group">
                     <label>Full Name</label>
-                    <input type="text" placeholder="John Doe" required>
+                    <input type="text" id="signupName" placeholder="John Doe" required>
                 </div>
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" placeholder="your.email@example.com" required>
+                    <input type="email" id="signupEmail" placeholder="your.email@example.com" required>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" placeholder="Create a password" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="signupPassword" placeholder="Create a password" required minlength="6">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('signupPassword', this)" tabindex="-1">
+                            👁️
+                        </button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Confirm Password</label>
-                    <input type="password" placeholder="Confirm your password" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="signupConfirmPassword" placeholder="Confirm your password" required minlength="6">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('signupConfirmPassword', this)" tabindex="-1">
+                            👁️
+                        </button>
+                    </div>
                 </div>
                 <div class="form-group" style="display: flex; align-items: flex-start; gap: 0.5rem;">
                     <input type="checkbox" id="agreeTerms" required style="width: auto; margin-top: 0.3rem;">
@@ -1254,12 +1301,11 @@
         let userProfile = null;
         let isMonthly = true;
         
-        // YOUR STRIPE PAYMENT LINKS - UPDATED WITH RECURRING SEMESTER PLANS!
         const paymentLinks = {
             proMonthly: 'https://buy.stripe.com/8x23cpbZU9ehc2Bap4enS02',
-            proSemester: 'https://buy.stripe.com/9B600dfc6bmp3w51SyenS05',        // NEW: Recurring every 6 months
+            proSemester: 'https://buy.stripe.com/9B600dfc6bmp3w51SyenS05',
             premiumMonthly: 'https://buy.stripe.com/9B65kx6FA8ad6Ih7cSenS00',
-            premiumSemester: 'https://buy.stripe.com/fZu4gt1lg7694A9bt8enS04'     // NEW: Recurring every 6 months
+            premiumSemester: 'https://buy.stripe.com/fZu4gt1lg7694A9bt8enS04'
         };
         
         async function checkAuth() {
@@ -1297,7 +1343,6 @@
                 window.location.href = 'dashboard.html';
             };
             
-            // Update pricing buttons based on user's current plan
             updatePricingButtons();
         }
         
@@ -1309,7 +1354,6 @@
             ctaButton.textContent = 'Get Started Free';
             ctaButton.href = '#login';
             
-            // Reset pricing buttons to default
             resetPricingButtons();
         }
 
@@ -1318,7 +1362,6 @@
             
             const currentPlan = userProfile.subscription_plan || 'free';
             
-            // Update Free button
             const freeBtn = document.getElementById('freeBtn');
             if (currentPlan === 'free') {
                 freeBtn.textContent = '✓ Current Plan';
@@ -1337,7 +1380,6 @@
                 freeBtn.style.cursor = 'not-allowed';
             }
             
-            // Update Pro button
             const proBtn = document.getElementById('proCheckoutBtn');
             if (currentPlan === 'pro' || currentPlan === 'admin') {
                 proBtn.textContent = '✓ Current Plan';
@@ -1351,7 +1393,6 @@
                 proBtn.textContent = 'Upgrade to Pro';
             }
             
-            // Update Premium button
             const premiumBtn = document.getElementById('premiumCheckoutBtn');
             if (currentPlan === 'premium' || currentPlan === 'admin') {
                 premiumBtn.textContent = '✓ Current Plan';
@@ -1460,7 +1501,6 @@
 
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
-                // Skip if it's the CTA button going to dashboard
                 if (this.getAttribute('href') === 'dashboard.html') {
                     return;
                 }
@@ -1525,7 +1565,6 @@
             const authHeader = document.querySelector('.auth-header h2');
             const footerText = document.getElementById('authFooterText');
 
-            // Hide all forms and tabs
             loginForm.classList.add('hidden');
             signupForm.classList.add('hidden');
             forgotPasswordForm.classList.remove('hidden');
@@ -1595,11 +1634,10 @@
 
         async function handleSignup(e) {
             e.preventDefault();
-            const form = e.target;
-            const fullName = form.querySelector('input[placeholder="John Doe"]').value;
-            const email = form.querySelector('input[type="email"]').value;
-            const password = form.querySelectorAll('input[type="password"]')[0].value;
-            const confirmPassword = form.querySelectorAll('input[type="password"]')[1].value;
+            const fullName = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
             
             if (password !== confirmPassword) {
                 alert('Passwords do not match!');
@@ -1611,7 +1649,7 @@
                 return;
             }
             
-            const submitButton = form.querySelector('button[type="submit"]');
+            const submitButton = e.target.querySelector('button[type="submit"]');
             submitButton.disabled = true;
             submitButton.textContent = 'Creating account...';
             
@@ -1647,7 +1685,6 @@
             window.location.href = 'index.html';
         }
 
-        // Google Sign-In
         async function signInWithGoogle() {
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
@@ -1662,7 +1699,6 @@
             }
         }
 
-        // Apple Sign-In
         async function signInWithApple() {
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: 'apple',
@@ -1674,6 +1710,19 @@
             if (error) {
                 console.error('Apple sign-in error:', error);
                 alert('Apple sign-in failed. Please try again.');
+            }
+        }
+
+        function togglePasswordVisibility(inputId, button) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = '🙈';
+                button.setAttribute('aria-label', 'Hide password');
+            } else {
+                input.type = 'password';
+                button.textContent = '👁️';
+                button.setAttribute('aria-label', 'Show password');
             }
         }
 
