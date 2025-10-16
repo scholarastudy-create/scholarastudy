@@ -566,14 +566,17 @@
         let userProfile = null;
 
         async function checkAuth() {
+            console.log('Checking authentication...');
             const { data: { user } } = await supabase.auth.getUser();
             
             if (!user) {
+                console.log('No user found, redirecting to login');
                 window.location.href = 'index.html#login';
                 return;
             }
 
             currentUser = user;
+            console.log('User authenticated:', user.email);
 
             const { data: profile } = await supabase
                 .from('profiles')
@@ -583,11 +586,15 @@
 
             if (profile) {
                 userProfile = profile;
+                console.log('Profile loaded:', profile);
                 loadUserData();
+            } else {
+                console.log('No profile found');
             }
         }
 
         function loadUserData() {
+            console.log('Loading user data into form...');
             document.getElementById('email').value = currentUser.email;
             document.getElementById('fullName').value = userProfile.full_name || '';
 
@@ -608,10 +615,13 @@
             if (plan !== 'free') {
                 document.getElementById('manageBillingBtn').style.display = 'block';
             }
+            
+            console.log('User data loaded successfully');
         }
 
         async function updateProfile(e) {
             e.preventDefault();
+            console.log('Updating profile...');
             
             const btn = document.getElementById('profileBtn');
             btn.disabled = true;
@@ -630,11 +640,12 @@
 
                 if (error) throw error;
 
+                console.log('Profile updated successfully');
                 showMessage('profileSuccess', 'Profile updated successfully!');
                 userProfile.full_name = fullName;
 
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Profile update error:', error);
                 showMessage('profileError', 'Failed to update profile. Please try again.');
             } finally {
                 btn.disabled = false;
@@ -644,6 +655,7 @@
 
         async function updatePassword(e) {
             e.preventDefault();
+            console.log('Updating password...');
             
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
@@ -669,11 +681,12 @@
 
                 if (error) throw error;
 
+                console.log('Password updated successfully');
                 showMessage('passwordSuccess', 'Password updated successfully!');
                 document.getElementById('passwordForm').reset();
 
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Password update error:', error);
                 showMessage('passwordError', 'Failed to update password. Please try again.');
             } finally {
                 btn.disabled = false;
@@ -689,4 +702,167 @@
             setTimeout(() => {
                 element.style.display = 'none';
             }, 5000);
-        
+        }
+
+        async function manageBilling() {
+            console.log('Opening billing portal...');
+            const btn = document.getElementById('manageBillingBtn');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Opening...';
+
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (!session) {
+                    alert('Please log in again to manage billing.');
+                    window.location.href = 'index.html#login';
+                    return;
+                }
+
+                const response = await fetch('/.netlify/functions/stripe-billing-portal', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + session.access_token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to open billing portal');
+                }
+
+                console.log('Redirecting to billing portal');
+                window.location.href = data.url;
+
+            } catch (error) {
+                console.error('Billing portal error:', error);
+                alert(error.message || 'Unable to open billing portal. Please contact support.');
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+
+        function confirmDeleteAccount() {
+            console.log('Delete account initiated');
+            const confirmed = confirm(
+                '⚠️ WARNING ⚠️\n\n' +
+                'This will permanently delete your account and all associated data including:\n\n' +
+                '• Your profile information\n' +
+                '• All study guide requests\n' +
+                '• Chat history (if applicable)\n' +
+                '• All uploaded files\n\n' +
+                'This action CANNOT be undone.\n\n' +
+                'Are you absolutely sure you want to continue?'
+            );
+
+            if (confirmed) {
+                const doubleConfirm = confirm(
+                    'FINAL CONFIRMATION\n\n' +
+                    'This is your last chance to cancel.\n\n' +
+                    'Click OK to permanently delete your account, or Cancel to go back.'
+                );
+
+                if (doubleConfirm) {
+                    const typed = prompt('To confirm deletion, please type DELETE in all caps:');
+                    if (typed === 'DELETE') {
+                        console.log('Confirmation validated, proceeding with deletion');
+                        deleteAccount();
+                    } else {
+                        console.log('Deletion cancelled - text did not match');
+                        alert('Account deletion cancelled. The text did not match.');
+                    }
+                }
+            }
+        }
+
+        async function deleteAccount() {
+            try {
+                console.log('Starting account deletion process...');
+                
+                const deleteBtn = document.querySelector('.btn-danger');
+                deleteBtn.disabled = true;
+                deleteBtn.textContent = 'Deleting account...';
+
+                console.log('Step 1: Deleting study guide requests...');
+                const { error: requestsError } = await supabase
+                    .from('study_guide_requests')
+                    .delete()
+                    .eq('user_id', currentUser.id);
+
+                if (requestsError) {
+                    console.warn('Study guide requests deletion warning:', requestsError);
+                }
+
+                console.log('Step 2: Deleting user profile...');
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .delete()
+                    .eq('id', currentUser.id);
+
+                if (profileError) {
+                    console.error('Profile deletion error:', profileError);
+                    throw new Error('Failed to delete profile data: ' + profileError.message);
+                }
+
+                console.log('Step 3: Signing out user...');
+                await supabase.auth.signOut();
+                
+                console.log('Account deletion successful');
+                alert(
+                    '✅ Account Deleted Successfully\n\n' +
+                    'Your account data has been permanently removed from our system.\n\n' +
+                    'Thank you for using Scholara. You will now be redirected to the home page.'
+                );
+                
+                window.location.href = 'index.html';
+
+            } catch (error) {
+                console.error('Account deletion error:', error);
+                
+                const deleteBtn = document.querySelector('.btn-danger');
+                deleteBtn.disabled = false;
+                deleteBtn.textContent = 'Delete Account';
+                
+                alert(
+                    '❌ Account Deletion Failed\n\n' +
+                    'Error: ' + error.message + '\n\n' +
+                    'Please try again or contact support at scholara@gmail.com for assistance.'
+                );
+            }
+        }
+
+        function togglePasswordVisibility(inputId, button) {
+            console.log('Toggling password visibility for:', inputId);
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = '🙈';
+                button.setAttribute('aria-label', 'Hide password');
+            } else {
+                input.type = 'password';
+                button.textContent = '👁️';
+                button.setAttribute('aria-label', 'Show password');
+            }
+        }
+
+        async function handleLogout() {
+            console.log('Logging out...');
+            await supabase.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        function restartTour() {
+            console.log('Restarting tour...');
+            localStorage.removeItem('scholara_tour_completed');
+            alert('Tour reset! Go back to your dashboard to start the tour again.');
+            window.location.href = 'dashboard.html';
+        }
+
+        console.log('Settings page script loaded, checking auth...');
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>
