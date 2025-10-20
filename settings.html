@@ -781,51 +781,56 @@
         async function deleteAccount() {
             try {
                 console.log('Starting account deletion process...');
-                
+
                 const deleteBtn = document.querySelector('.btn-danger');
                 deleteBtn.disabled = true;
                 deleteBtn.textContent = 'Deleting account...';
 
-                console.log('Step 1: Deleting study guide requests...');
-                const { error: requestsError } = await supabase
-                    .from('study_guide_requests')
-                    .delete()
-                    .eq('user_id', currentUser.id);
+                // Get the current session
+                const { data: { session } } = await supabase.auth.getSession();
 
-                if (requestsError) {
-                    console.warn('Study guide requests deletion warning:', requestsError);
+                if (!session) {
+                    alert('Please log in again to delete your account.');
+                    window.location.href = 'index.html#login';
+                    return;
                 }
 
-                console.log('Step 2: Deleting user profile...');
-                const { error: profileError } = await supabase
-                    .from('profiles')
-                    .delete()
-                    .eq('id', currentUser.id);
+                console.log('Calling delete account function...');
+                // Call the Netlify function to delete the account
+                const response = await fetch('/.netlify/functions/delete-account', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + session.access_token,
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-                if (profileError) {
-                    console.error('Profile deletion error:', profileError);
-                    throw new Error('Failed to delete profile data: ' + profileError.message);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to delete account');
                 }
 
-                console.log('Step 3: Signing out user...');
-                await supabase.auth.signOut();
-                
                 console.log('Account deletion successful');
+
+                // Sign out the user
+                await supabase.auth.signOut();
+
                 alert(
                     '✅ Account Deleted Successfully\n\n' +
-                    'Your account data has been permanently removed from our system.\n\n' +
+                    'Your account and all data have been permanently removed from our system.\n\n' +
                     'Thank you for using Scholara. You will now be redirected to the home page.'
                 );
-                
+
                 window.location.href = 'index.html';
 
             } catch (error) {
                 console.error('Account deletion error:', error);
-                
+
                 const deleteBtn = document.querySelector('.btn-danger');
                 deleteBtn.disabled = false;
                 deleteBtn.textContent = 'Delete Account';
-                
+
                 alert(
                     '❌ Account Deletion Failed\n\n' +
                     'Error: ' + error.message + '\n\n' +
