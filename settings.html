@@ -545,7 +545,7 @@
 
             <div class="settings-card">
                 <h2>❓ Help & Support</h2>
-                
+
                 <p style="color: #5a6c7d; margin-bottom: 1.5rem;">
                     Need help getting started? Restart the onboarding tour to learn the basics.
                 </p>
@@ -553,6 +553,22 @@
                 <button class="btn btn-secondary" onclick="restartTour()">
                     🎯 Restart Onboarding Tour
                 </button>
+            </div>
+
+            <div class="settings-card" style="border: 2px solid #E8A735;">
+                <h2>🔧 Debug: Test Account Deletion</h2>
+
+                <p style="color: #5a6c7d; margin-bottom: 1.5rem;">
+                    This is a TEST function that will show detailed logs about the deletion process. Use this to debug why deletion isn't working.
+                </p>
+
+                <button class="btn btn-primary" onclick="testDeleteAccount()" style="background: #dc3545;">
+                    🧪 Test Delete (Show Logs)
+                </button>
+
+                <div id="debugLogs" style="margin-top: 1rem; padding: 1rem; background: #f8f8f8; border-radius: 10px; display: none; max-height: 400px; overflow-y: auto;">
+                    <pre id="debugOutput" style="font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word;"></pre>
+                </div>
             </div>
         </div>
     </div>
@@ -781,55 +797,82 @@
         async function deleteAccount() {
             try {
                 console.log('Starting account deletion process...');
-                
+
                 const deleteBtn = document.querySelector('.btn-danger');
                 deleteBtn.disabled = true;
                 deleteBtn.textContent = 'Deleting account...';
 
-                console.log('Step 1: Deleting study guide requests...');
-                const { error: requestsError } = await supabase
-                    .from('study_guide_requests')
-                    .delete()
-                    .eq('user_id', currentUser.id);
+                // Get current session token
+                const { data: { session } } = await supabase.auth.getSession();
 
-                if (requestsError) {
-                    console.warn('Study guide requests deletion warning:', requestsError);
+                if (!session) {
+                    alert('Please log in again to delete your account.');
+                    window.location.href = 'index.html#login';
+                    return;
                 }
 
-                console.log('Step 2: Deleting user profile...');
-                const { error: profileError } = await supabase
-                    .from('profiles')
-                    .delete()
-                    .eq('id', currentUser.id);
+                console.log('User session token obtained');
+                console.log('Calling account deletion endpoint...');
 
-                if (profileError) {
-                    console.error('Profile deletion error:', profileError);
-                    throw new Error('Failed to delete profile data: ' + profileError.message);
+                // Call the Netlify function to delete the account
+                const response = await fetch('/.netlify/functions/delete-account', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + session.access_token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('Response status:', response.status);
+
+                let data;
+                try {
+                    data = await response.json();
+                } catch (jsonError) {
+                    console.error('Failed to parse response:', jsonError);
+                    throw new Error('Server returned invalid response. Status: ' + response.status);
                 }
 
-                console.log('Step 3: Signing out user...');
+                console.log('Response data:', data);
+
+                if (!response.ok) {
+                    const errorMsg = data.error || 'Failed to delete account';
+                    const details = data.details ? '\n\nDetails: ' + data.details : '';
+                    throw new Error(errorMsg + details);
+                }
+
+                console.log('Account deletion successful, response:', data);
+
+                // Sign out locally
                 await supabase.auth.signOut();
-                
-                console.log('Account deletion successful');
+
                 alert(
                     '✅ Account Deleted Successfully\n\n' +
-                    'Your account data has been permanently removed from our system.\n\n' +
+                    'Your account has been permanently removed from our system.\n\n' +
                     'Thank you for using Scholara. You will now be redirected to the home page.'
                 );
-                
+
                 window.location.href = 'index.html';
 
             } catch (error) {
                 console.error('Account deletion error:', error);
-                
+                console.error('Error details:', error.stack);
+
                 const deleteBtn = document.querySelector('.btn-danger');
                 deleteBtn.disabled = false;
                 deleteBtn.textContent = 'Delete Account';
-                
+
+                let errorMessage = error.message;
+
+                // Check if it's a network error
+                if (error.message.includes('fetch')) {
+                    errorMessage = 'Network error - Could not connect to server. Please check your internet connection.';
+                }
+
                 alert(
                     '❌ Account Deletion Failed\n\n' +
-                    'Error: ' + error.message + '\n\n' +
-                    'Please try again or contact support at scholara@gmail.com for assistance.'
+                    'Error: ' + errorMessage + '\n\n' +
+                    'Please check the browser console for more details, or contact support at scholara@gmail.com for assistance.'
                 );
             }
         }
@@ -859,6 +902,67 @@
             localStorage.removeItem('scholara_tour_completed');
             alert('Tour reset! Go back to your dashboard to start the tour again.');
             window.location.href = 'dashboard.html';
+        }
+
+        async function testDeleteAccount() {
+            try {
+                const debugLogsDiv = document.getElementById('debugLogs');
+                const debugOutput = document.getElementById('debugOutput');
+                debugLogsDiv.style.display = 'block';
+                debugOutput.textContent = 'Running test deletion...\n\n';
+
+                const { data: { session } } = await supabase.auth.getSession();
+
+                if (!session) {
+                    debugOutput.textContent = 'ERROR: No session found. Please log in again.';
+                    return;
+                }
+
+                debugOutput.textContent += 'Calling test endpoint...\n';
+
+                const response = await fetch('/.netlify/functions/test-delete-user', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + session.access_token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                debugOutput.textContent += '\n=== TEST RESULTS ===\n\n';
+                debugOutput.textContent += 'Response Status: ' + response.status + '\n\n';
+                debugOutput.textContent += JSON.stringify(data, null, 2);
+
+                if (data.logs) {
+                    debugOutput.textContent += '\n\n=== DETAILED LOGS ===\n\n';
+                    data.logs.forEach((log, index) => {
+                        debugOutput.textContent += `[${index + 1}] ${log.message}\n`;
+                        if (log.data) {
+                            debugOutput.textContent += '    Data: ' + JSON.stringify(log.data, null, 2) + '\n';
+                        }
+                        debugOutput.textContent += '\n';
+                    });
+                }
+
+                // Important warning
+                if (data.success) {
+                    debugOutput.textContent += '\n\n⚠️ WARNING: This test actually deleted your account!\n';
+                    debugOutput.textContent += 'You will be signed out in 5 seconds...\n';
+
+                    setTimeout(async () => {
+                        await supabase.auth.signOut();
+                        window.location.href = 'index.html';
+                    }, 5000);
+                } else {
+                    debugOutput.textContent += '\n\n❌ Account was NOT deleted. Check the logs above for details.\n';
+                }
+
+            } catch (error) {
+                const debugOutput = document.getElementById('debugOutput');
+                debugOutput.textContent += '\n\nERROR: ' + error.message + '\n';
+                debugOutput.textContent += 'Stack: ' + error.stack;
+            }
         }
 
         console.log('Settings page script loaded, checking auth...');
