@@ -795,6 +795,7 @@
                     return;
                 }
 
+                console.log('User session token obtained');
                 console.log('Calling account deletion endpoint...');
 
                 // Call the Netlify function to delete the account
@@ -806,13 +807,25 @@
                     }
                 });
 
-                const data = await response.json();
+                console.log('Response status:', response.status);
 
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to delete account');
+                let data;
+                try {
+                    data = await response.json();
+                } catch (jsonError) {
+                    console.error('Failed to parse response:', jsonError);
+                    throw new Error('Server returned invalid response. Status: ' + response.status);
                 }
 
-                console.log('Account deletion successful');
+                console.log('Response data:', data);
+
+                if (!response.ok) {
+                    const errorMsg = data.error || 'Failed to delete account';
+                    const details = data.details ? '\n\nDetails: ' + data.details : '';
+                    throw new Error(errorMsg + details);
+                }
+
+                console.log('Account deletion successful, response:', data);
 
                 // Sign out locally
                 await supabase.auth.signOut();
@@ -827,15 +840,23 @@
 
             } catch (error) {
                 console.error('Account deletion error:', error);
+                console.error('Error details:', error.stack);
 
                 const deleteBtn = document.querySelector('.btn-danger');
                 deleteBtn.disabled = false;
                 deleteBtn.textContent = 'Delete Account';
 
+                let errorMessage = error.message;
+
+                // Check if it's a network error
+                if (error.message.includes('fetch')) {
+                    errorMessage = 'Network error - Could not connect to server. Please check your internet connection.';
+                }
+
                 alert(
                     '❌ Account Deletion Failed\n\n' +
-                    'Error: ' + error.message + '\n\n' +
-                    'Please try again or contact support at scholara@gmail.com for assistance.'
+                    'Error: ' + errorMessage + '\n\n' +
+                    'Please check the browser console for more details, or contact support at scholara@gmail.com for assistance.'
                 );
             }
         }
