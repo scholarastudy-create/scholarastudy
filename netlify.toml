@@ -1,0 +1,16 @@
+# Netlify Configuration
+[build]
+  publish = "."
+
+# Force HTTPS redirects
+[[redirects]]
+  from = "http://*"
+  to = "https://:splat"
+  status = 301
+  force = true
+
+# Security headers are defined in _headers file
+
+# Environment settings
+[build.environment]
+  NODE_VERSION = "18"
