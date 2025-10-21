@@ -52,20 +52,69 @@ exports.handler = async (event, context) => {
       try {
         const base64Data = fileContent.split(',')[1];
         const buffer = Buffer.from(base64Data, 'base64');
-        
+
         console.log('Uploading file:', fileName, 'Size:', buffer.length, 'bytes');
-        
-        // Check if it's an image (these use vision purpose and go in message content)
+
+        // Get file extension and determine MIME type
         const fileExtension = fileName.toLowerCase().split('.').pop();
-        const isImage = ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(fileExtension);
+
+        // MIME type mapping for all supported file types
+        const mimeTypes = {
+          // Images
+          'png': 'image/png',
+          'jpg': 'image/jpeg',
+          'jpeg': 'image/jpeg',
+          'gif': 'image/gif',
+          'webp': 'image/webp',
+          // Documents
+          'pdf': 'application/pdf',
+          'txt': 'text/plain',
+          'md': 'text/markdown',
+          'doc': 'application/msword',
+          'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'xls': 'application/vnd.ms-excel',
+          'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'ppt': 'application/vnd.ms-powerpoint',
+          'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+          'csv': 'text/csv',
+          'json': 'application/json',
+          'xml': 'application/xml',
+          'html': 'text/html',
+          'htm': 'text/html',
+          // Code files
+          'py': 'text/x-python',
+          'js': 'text/javascript',
+          'ts': 'text/typescript',
+          'java': 'text/x-java',
+          'c': 'text/x-c',
+          'cpp': 'text/x-c++',
+          'h': 'text/x-c',
+          'css': 'text/css',
+          'php': 'text/x-php',
+          'rb': 'text/x-ruby',
+          'go': 'text/x-go',
+          'rs': 'text/x-rust',
+          'sh': 'text/x-sh',
+          // Archives and data
+          'zip': 'application/zip',
+          'tar': 'application/x-tar',
+          'gz': 'application/gzip'
+        };
+
+        // Check if it's an image (these use vision purpose and go in message content)
+        const imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
+        const isImage = imageExtensions.includes(fileExtension);
         const uploadPurpose = isImage ? 'vision' : 'assistants';
-        
-        console.log('File type:', fileExtension, 'Is image:', isImage, 'Purpose:', uploadPurpose);
-        
+
+        // Get proper MIME type or default to octet-stream
+        const mimeType = mimeTypes[fileExtension] || 'application/octet-stream';
+
+        console.log('File type:', fileExtension, 'MIME:', mimeType, 'Is image:', isImage, 'Purpose:', uploadPurpose);
+
         const form = new FormData();
         form.append('file', buffer, {
           filename: fileName,
-          contentType: 'application/octet-stream'
+          contentType: mimeType
         });
         form.append('purpose', uploadPurpose);
 
@@ -80,13 +129,17 @@ exports.handler = async (event, context) => {
 
         const data = await response.json();
         console.log('File uploaded:', data);
-        
+
         if (!response.ok) {
           console.error('Upload failed:', data);
           return {
             statusCode: response.status,
             headers,
-            body: JSON.stringify({ error: 'File upload failed', details: data })
+            body: JSON.stringify({
+              error: 'File upload failed',
+              details: data,
+              message: `Failed to upload ${fileName}. ${data.error?.message || 'Unknown error'}`
+            })
           };
         }
 
@@ -97,7 +150,8 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...data,
             isImage: isImage,
-            fileName: fileName
+            fileName: fileName,
+            mimeType: mimeType
           })
         };
       } catch (error) {
@@ -105,7 +159,10 @@ exports.handler = async (event, context) => {
         return {
           statusCode: 500,
           headers,
-          body: JSON.stringify({ error: error.message })
+          body: JSON.stringify({
+            error: error.message,
+            message: `Failed to process file upload: ${error.message}`
+          })
         };
       }
     }

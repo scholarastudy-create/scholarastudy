@@ -573,7 +573,7 @@
                     ></textarea>
                     <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
                 </div>
-                <input type="file" id="fileInput" multiple accept=".pdf,.docx,.txt,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
+                <input type="file" id="fileInput" multiple accept=".pdf,.txt,.md,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv,.json,.xml,.html,.htm,.py,.js,.ts,.java,.c,.cpp,.h,.css,.php,.rb,.go,.rs,.sh,.jpg,.jpeg,.png,.gif,.webp,.zip,.tar,.gz" onchange="handleFileSelect(event)">
             </div>
         </div>
     </div>
@@ -868,21 +868,26 @@
                         })
                     });
 
-                    if (!response.ok) {
-                        throw new Error(`Upload failed: ${response.status}`);
-                    }
-
                     const data = await response.json();
+
+                    if (!response.ok) {
+                        const errorMsg = data.message || data.error || `Upload failed with status ${response.status}`;
+                        console.error('Upload failed for', file.name, ':', data);
+                        throw new Error(`Failed to upload ${file.name}: ${errorMsg}`);
+                    }
 
                     if (data.id) {
                         uploadedFiles.push({
                             id: data.id,
                             isImage: data.isImage === true
                         });
+                        console.log(`Successfully uploaded ${file.name} (${data.mimeType || 'unknown type'})`);
+                    } else {
+                        throw new Error(`No file ID returned for ${file.name}`);
                     }
                 } catch (error) {
                     console.error('Error uploading file:', file.name, error);
-                    throw error;
+                    throw new Error(`Error uploading ${file.name}: ${error.message}`);
                 }
             }
 
@@ -916,14 +921,15 @@
             if (welcomeMsg) welcomeMsg.remove();
 
             let fileMetadata = [];
+            let fileNames = '';
             if (attachedFiles.length > 0) {
                 try {
                     fileMetadata = await uploadFiles();
-                    const fileNames = attachedFiles.map(f => f.name).join(', ');
-                    addMessage(`📎 Attached: ${fileNames}`, 'user');
+                    fileNames = attachedFiles.map(f => f.name).join(', ');
                 } catch (error) {
                     console.error('File upload error:', error);
-                    addMessage('❌ Failed to upload files. Please try again.', 'user');
+                    const errorMsg = error.message || 'Unknown error occurred';
+                    addMessage(`❌ ${errorMsg}\n\nPlease check the file type and size (max 10MB), then try again.`, 'user');
                     attachedFiles = [];
                     document.getElementById('filePreviewArea').innerHTML = '';
                     sendBtn.disabled = false;
@@ -934,11 +940,22 @@
                 document.getElementById('filePreviewArea').innerHTML = '';
             }
 
-            if (originalMessage) {
-                addMessage(originalMessage, 'user');
+            // Combine file attachment info with message text
+            let displayMessage = '';
+            if (fileNames && originalMessage) {
+                displayMessage = `📎 Attached: ${fileNames}\n\n${originalMessage}`;
+            } else if (fileNames) {
+                displayMessage = `📎 Attached: ${fileNames}`;
+            } else if (originalMessage) {
+                displayMessage = originalMessage;
+            }
+
+            if (displayMessage) {
+                addMessage(displayMessage, 'user');
 
                 if (currentSession.messages.length === 1) {
-                    currentSession.title = originalMessage.substring(0, 30) + (originalMessage.length > 30 ? '...' : '');
+                    const titleText = originalMessage || fileNames;
+                    currentSession.title = titleText.substring(0, 30) + (titleText.length > 30 ? '...' : '');
                     saveChatSessions();
                 }
             }
