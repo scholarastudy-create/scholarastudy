@@ -916,11 +916,11 @@
             if (welcomeMsg) welcomeMsg.remove();
 
             let fileMetadata = [];
+            let fileNames = '';
             if (attachedFiles.length > 0) {
                 try {
                     fileMetadata = await uploadFiles();
-                    const fileNames = attachedFiles.map(f => f.name).join(', ');
-                    addMessage(`📎 Attached: ${fileNames}`, 'user');
+                    fileNames = attachedFiles.map(f => f.name).join(', ');
                 } catch (error) {
                     console.error('File upload error:', error);
                     addMessage('❌ Failed to upload files. Please try again.', 'user');
@@ -934,11 +934,22 @@
                 document.getElementById('filePreviewArea').innerHTML = '';
             }
 
-            if (originalMessage) {
-                addMessage(originalMessage, 'user');
+            // Combine file attachment info with message text
+            let displayMessage = '';
+            if (fileNames && originalMessage) {
+                displayMessage = `📎 Attached: ${fileNames}\n\n${originalMessage}`;
+            } else if (fileNames) {
+                displayMessage = `📎 Attached: ${fileNames}`;
+            } else if (originalMessage) {
+                displayMessage = originalMessage;
+            }
+
+            if (displayMessage) {
+                addMessage(displayMessage, 'user');
 
                 if (currentSession.messages.length === 1) {
-                    currentSession.title = originalMessage.substring(0, 30) + (originalMessage.length > 30 ? '...' : '');
+                    const titleText = originalMessage || fileNames;
+                    currentSession.title = titleText.substring(0, 30) + (titleText.length > 30 ? '...' : '');
                     saveChatSessions();
                 }
             }
