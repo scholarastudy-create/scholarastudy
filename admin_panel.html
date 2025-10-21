@@ -24,6 +24,11 @@
     <!-- End Meta Pixel Code -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Quill Rich Text Editor -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -462,11 +467,59 @@
                 display: block;
                 overflow-x: auto;
             }
-            
+
             .filters {
                 flex-direction: column;
                 align-items: stretch;
             }
+        }
+
+        /* Template Editor Styles */
+        #templateQuillEditor {
+            height: 400px;
+            background: white;
+            margin-bottom: 1rem;
+        }
+
+        .content-editor-wrapper {
+            margin: 1.5rem 0;
+        }
+
+        .content-editor-wrapper label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1a3a52;
+        }
+
+        .editor-help {
+            font-size: 0.9rem;
+            color: #5a6c7d;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper label {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        /* Make modal bigger for content editor */
+        .modal-content {
+            max-width: 1000px;
+            max-height: 90vh;
         }
     </style>
 </head>
@@ -671,6 +724,21 @@
                     <input type="text" id="templateCategory" placeholder="e.g., Academic, Resume, Study" value="general">
                 </div>
 
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="templateIsEditable">
+                    <label for="templateIsEditable">✏️ Allow users to edit this template (requires template content below)</label>
+                </div>
+
+                <div class="content-editor-wrapper">
+                    <label>Template Content (for editable templates)</label>
+                    <div id="templateQuillEditor"></div>
+                    <p class="editor-help">
+                        💡 <strong>Tip:</strong> If you enable editing above, users will be able to customize this template.
+                        Paste or type your template content here using the formatting toolbar.
+                        You can copy/paste from Word or Google Docs!
+                    </p>
+                </div>
+
                 <button type="submit" class="submit-guide-btn" id="saveTemplateBtn">
                     Save Template
                 </button>
@@ -690,6 +758,7 @@
         let selectedGuideFile = null;
         let allSubmissions = [];
         let allTemplates = [];
+        let templateQuillEditor = null;
 
         async function checkAuth() {
             const { data: { user } } = await supabase.auth.getUser();
@@ -1024,10 +1093,39 @@
             `).join('');
         }
 
+        // Initialize Quill Editor for Templates
+        function initializeTemplateQuill() {
+            if (!templateQuillEditor) {
+                templateQuillEditor = new Quill('#templateQuillEditor', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            [{ 'header': [1, 2, 3, false] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            [{ 'indent': '-1'}, { 'indent': '+1' }],
+                            [{ 'align': [] }],
+                            ['link', 'image'],
+                            ['clean']
+                        ]
+                    },
+                    placeholder: 'Paste or type your template content here. You can copy/paste from Word or Google Docs!'
+                });
+            }
+        }
+
         function showAddTemplateModal() {
             document.getElementById('templateModalTitle').textContent = 'Add New Template';
             document.getElementById('templateForm').reset();
             document.getElementById('editingTemplateId').value = '';
+
+            // Initialize Quill if not already done
+            initializeTemplateQuill();
+
+            // Clear editor
+            templateQuillEditor.setContents([]);
+            document.getElementById('templateIsEditable').checked = false;
+
             document.getElementById('templateModal').style.display = 'block';
         }
 
@@ -1043,6 +1141,19 @@
             document.getElementById('templateFileUrl').value = template.file_url;
             document.getElementById('templateCategory').value = template.category || 'general';
             document.getElementById('editingTemplateId').value = id;
+
+            // Initialize Quill if not already done
+            initializeTemplateQuill();
+
+            // Load content and is_editable
+            document.getElementById('templateIsEditable').checked = template.is_editable || false;
+
+            if (template.content) {
+                templateQuillEditor.root.innerHTML = template.content;
+            } else {
+                templateQuillEditor.setContents([]);
+            }
+
             document.getElementById('templateModal').style.display = 'block';
         }
 
@@ -1058,13 +1169,18 @@
             btn.disabled = true;
             btn.textContent = 'Saving...';
 
+            const isEditable = document.getElementById('templateIsEditable').checked;
+            const content = templateQuillEditor ? templateQuillEditor.root.innerHTML : '';
+
             const templateData = {
                 name: document.getElementById('templateName').value,
                 description: document.getElementById('templateDescription').value,
                 icon: document.getElementById('templateIcon').value || '📄',
                 required_plan: document.getElementById('templatePlan').value,
                 file_url: document.getElementById('templateFileUrl').value,
-                category: document.getElementById('templateCategory').value || 'general'
+                category: document.getElementById('templateCategory').value || 'general',
+                is_editable: isEditable,
+                content: isEditable ? content : null
             };
 
             const editingId = document.getElementById('editingTemplateId').value;
@@ -1075,7 +1191,7 @@
                         .from('templates')
                         .update(templateData)
                         .eq('id', editingId);
-                    
+
                     if (error) throw error;
                     alert('Template updated successfully!');
                 } else {
@@ -1086,7 +1202,7 @@
                             active: true,
                             order_index: 999
                         }]);
-                    
+
                     if (error) throw error;
                     alert('Template created successfully!');
                 }
