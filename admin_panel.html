@@ -29,6 +29,9 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
+    <!-- Mammoth.js for Word document conversion -->
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -521,6 +524,52 @@
             max-width: 1000px;
             max-height: 90vh;
         }
+
+        /* Word Upload Button */
+        .upload-docx-btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-docx-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .upload-docx-btn:active {
+            transform: translateY(0);
+        }
+
+        #docxFileInput {
+            display: none;
+        }
+
+        .upload-status {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .upload-status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .upload-status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
@@ -731,11 +780,18 @@
 
                 <div class="content-editor-wrapper">
                     <label>Template Content (for editable templates)</label>
+
+                    <!-- Word Document Upload -->
+                    <input type="file" id="docxFileInput" accept=".docx" onchange="handleDocxUpload(event)" />
+                    <button type="button" class="upload-docx-btn" onclick="document.getElementById('docxFileInput').click()">
+                        📄 Upload Word Document (.docx)
+                    </button>
+                    <div id="uploadStatus"></div>
+
                     <div id="templateQuillEditor"></div>
                     <p class="editor-help">
-                        💡 <strong>Tip:</strong> If you enable editing above, users will be able to customize this template.
-                        Paste or type your template content here using the formatting toolbar.
-                        You can copy/paste from Word or Google Docs!
+                        💡 <strong>Tip:</strong> Upload a Word document (.docx) to automatically convert it to editable content,
+                        or paste/type directly using the formatting toolbar. Perfect for templates with tables, boxes, and complex formatting!
                     </p>
                 </div>
 
@@ -1091,6 +1147,47 @@
                     </td>
                 </tr>
             `).join('');
+        }
+
+        // Handle Word Document Upload
+        async function handleDocxUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.innerHTML = '<div class="upload-status">Converting Word document...</div>';
+
+            try {
+                // Read the file
+                const arrayBuffer = await file.arrayBuffer();
+
+                // Convert using Mammoth.js
+                const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+
+                // Initialize Quill if not already done
+                initializeTemplateQuill();
+
+                // Insert the converted HTML into the editor
+                templateQuillEditor.root.innerHTML = result.value;
+
+                // Show success message
+                statusDiv.innerHTML = '<div class="upload-status success">✅ Word document converted successfully! You can now edit the content below.</div>';
+
+                // Log any messages from the conversion
+                if (result.messages.length > 0) {
+                    console.log('Conversion messages:', result.messages);
+                }
+
+                // Automatically check "Allow users to edit"
+                document.getElementById('templateIsEditable').checked = true;
+
+                // Clear the file input
+                event.target.value = '';
+
+            } catch (error) {
+                console.error('Error converting document:', error);
+                statusDiv.innerHTML = '<div class="upload-status error">❌ Error converting document: ' + error.message + '</div>';
+            }
         }
 
         // Initialize Quill Editor for Templates
