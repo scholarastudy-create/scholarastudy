@@ -1,0 +1,22 @@
+# Security Headers for all pages
+/*
+  # Force HTTPS
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+  # Prevent clickjacking
+  X-Frame-Options: SAMEORIGIN
+
+  # Prevent MIME type sniffing
+  X-Content-Type-Options: nosniff
+
+  # Enable XSS protection
+  X-XSS-Protection: 1; mode=block
+
+  # Referrer policy
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Permissions policy
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+  # Content Security Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.quilljs.com https://connect.facebook.net https://www.facebook.com; style-src 'self' 'unsafe-inline' https://cdn.quilljs.com https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com https://cdn.quilljs.com; connect-src 'self' https://kiojxqwuxkrhkznszdvo.supabase.co https://www.facebook.com; frame-src https://drive.google.com https://www.facebook.com; object-src 'none'; base-uri 'self'; form-action 'self'
