@@ -64,15 +64,13 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
+            background: linear-gradient(135deg, #E8A735, #d49625);
             padding: 1.2rem 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.02);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .logo-container {
@@ -91,7 +89,7 @@
         .logo {
             font-size: 1.8rem;
             font-weight: 700;
-            color: #1a3a52;
+            color: white;
             letter-spacing: 1px;
         }
 
@@ -104,7 +102,7 @@
         .settings-icon {
             width: 44px;
             height: 44px;
-            background: #f8f8f8;
+            background: rgba(255,255,255,0.2);
             border-radius: 14px;
             display: flex;
             align-items: center;
@@ -112,16 +110,16 @@
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 1.3rem;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
             text-decoration: none;
-            border: 1px solid rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
         }
 
         .settings-icon:hover {
-            background: linear-gradient(135deg, #E8A735, #d49625);
+            background: rgba(255,255,255,0.3);
             transform: translateY(-2px) rotate(90deg);
-            box-shadow: 0 4px 12px rgba(232, 167, 53, 0.3);
-            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-color: rgba(255,255,255,0.5);
         }
 
         .admin-btn {
@@ -178,9 +176,9 @@
 
         .logout-btn {
             padding: 0.75rem 1.5rem;
-            background: #f8f8f8;
-            color: #1a3a52;
-            border: 1px solid rgba(26, 58, 82, 0.2);
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
             border-radius: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -188,11 +186,11 @@
         }
 
         .logout-btn:hover {
-            background: #1a3a52;
+            background: rgba(255,255,255,0.3);
             color: white;
-            border-color: #1a3a52;
+            border-color: rgba(255,255,255,0.5);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(26, 58, 82, 0.25);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .container {
@@ -353,9 +351,9 @@
 
         .upgrade-btn {
             padding: 0.6rem 1.2rem;
-            background: white;
-            color: #1a3a52;
-            border: 1px solid rgba(0,0,0,0.1);
+            background: #E8A735;
+            color: white;
+            border: 1px solid #E8A735;
             border-radius: 6px;
             font-weight: 500;
             cursor: pointer;
@@ -365,9 +363,9 @@
         }
 
         .upgrade-btn:hover {
-            background: #1a3a52;
+            background: #d49625;
             color: white;
-            border-color: #1a3a52;
+            border-color: #d49625;
         }
 
         .templates-grid {
@@ -449,17 +447,17 @@
         }
 
         .btn-primary {
-            background: white;
-            color: #1a3a52;
-            border-color: rgba(0,0,0,0.15);
+            background: #E8A735;
+            color: white;
+            border-color: #E8A735;
         }
 
         .btn-primary:hover {
-            background: #1a3a52;
+            background: #d49625;
             color: white;
-            border-color: #1a3a52;
+            border-color: #d49625;
             transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(232, 167, 53, 0.3);
         }
 
         .btn-secondary {
@@ -1238,14 +1236,15 @@
         }
 
         .btn-edit-template {
-            color: #1a3a52;
-            border-color: rgba(0,0,0,0.15);
+            color: white;
+            background: #E8A735;
+            border-color: #E8A735;
         }
 
         .btn-edit-template:hover {
-            background: #1a3a52;
+            background: #d49625;
             color: white;
-            border-color: #1a3a52;
+            border-color: #d49625;
             transform: translateY(-1px);
         }
 
@@ -1263,6 +1262,7 @@
 
         .btn-download-template {
             color: #1a3a52;
+            background: white;
             border-color: rgba(0,0,0,0.15);
         }
 
