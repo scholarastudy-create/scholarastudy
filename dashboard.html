@@ -1496,7 +1496,9 @@
                     description: t.description,
                     requiredPlan: t.required_plan,
                     fileUrl: t.file_url,
-                    category: t.category || 'general'
+                    category: t.category || 'general',
+                    content: t.content,
+                    isEditable: t.is_editable || false
                 }));
 
                 console.log('Loaded', templates.length, 'templates from database');
@@ -1854,60 +1856,66 @@
                 return;
             }
 
-            // Open original template in new window for reference
-            if (template.fileUrl) {
-                if (template.fileUrl.includes('drive.google.com')) {
-                    let fileId = null;
-
-                    if (template.fileUrl.includes('id=')) {
-                        fileId = template.fileUrl.split('id=')[1].split('&')[0];
-                    } else if (template.fileUrl.includes('/file/d/')) {
-                        fileId = template.fileUrl.split('/file/d/')[1].split('/')[0];
-                    }
-
-                    if (fileId) {
-                        const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-                        window.open(previewUrl, 'templateReference', 'width=800,height=600');
-                    } else {
-                        window.open(template.fileUrl, 'templateReference', 'width=800,height=600');
-                    }
-                } else {
-                    window.open(template.fileUrl, 'templateReference', 'width=800,height=600');
-                }
-            }
-
             initializeQuillEditor();
             isEditingExisting = false;
             currentEditingTemplateId = templateId;
 
             document.getElementById('templateNameInput').value = template.name + ' (My Copy)';
 
-            // Create a structured starter template
-            const initialContent = `
-                <h1>${template.name}</h1>
-                <p><em>${template.description}</em></p>
-                <p><br></p>
-                <p><strong>📝 Instructions:</strong> The original template has been opened in a new window for your reference. Use it as a guide to create your custom version below.</p>
-                <p><br></p>
-                <h2>Section 1: Introduction</h2>
-                <p>Start typing here...</p>
-                <p><br></p>
-                <h2>Section 2: Main Content</h2>
-                <p>Add your content here...</p>
-                <p><br></p>
-                <h2>Section 3: Conclusion</h2>
-                <p>Summarize here...</p>
-                <p><br></p>
-                <p><em>Tip: Delete these placeholder sections and customize the template to fit your needs!</em></p>
-            `;
-            quillEditor.root.innerHTML = initialContent;
+            // Check if template has editable content
+            if (template.content && template.isEditable) {
+                // Load the actual template content!
+                quillEditor.root.innerHTML = template.content;
+                console.log('Loaded editable template content');
+            } else {
+                // Fallback: Open reference window and show placeholder
+                if (template.fileUrl) {
+                    if (template.fileUrl.includes('drive.google.com')) {
+                        let fileId = null;
+
+                        if (template.fileUrl.includes('id=')) {
+                            fileId = template.fileUrl.split('id=')[1].split('&')[0];
+                        } else if (template.fileUrl.includes('/file/d/')) {
+                            fileId = template.fileUrl.split('/file/d/')[1].split('/')[0];
+                        }
+
+                        if (fileId) {
+                            const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+                            window.open(previewUrl, 'templateReference', 'width=800,height=600');
+                        } else {
+                            window.open(template.fileUrl, 'templateReference', 'width=800,height=600');
+                        }
+                    } else {
+                        window.open(template.fileUrl, 'templateReference', 'width=800,height=600');
+                    }
+                }
+
+                // Create a structured starter template
+                const initialContent = `
+                    <h1>${template.name}</h1>
+                    <p><em>${template.description}</em></p>
+                    <p><br></p>
+                    <p><strong>📝 Instructions:</strong> The original template has been opened in a new window for your reference. Use it as a guide to create your custom version below.</p>
+                    <p><br></p>
+                    <h2>Section 1: Introduction</h2>
+                    <p>Start typing here...</p>
+                    <p><br></p>
+                    <h2>Section 2: Main Content</h2>
+                    <p>Add your content here...</p>
+                    <p><br></p>
+                    <h2>Section 3: Conclusion</h2>
+                    <p>Summarize here...</p>
+                    <p><br></p>
+                    <p><em>Tip: Delete these placeholder sections and customize the template to fit your needs!</em></p>
+                `;
+                quillEditor.root.innerHTML = initialContent;
+
+                setTimeout(() => {
+                    alert('💡 Tip: The original template is now open in a new window.\n\nUse it as a reference while you create your custom version in the editor!\n\nYou can view the formatting, structure, and content, then recreate it here with your own customizations.');
+                }, 500);
+            }
 
             document.getElementById('editorModal').classList.add('active');
-
-            // Show helpful message
-            setTimeout(() => {
-                alert('💡 Tip: The original template is now open in a new window.\n\nUse it as a reference while you create your custom version in the editor!\n\nYou can view the formatting, structure, and content, then recreate it here with your own customizations.');
-            }, 500);
         }
 
         // Edit User's Saved Template
