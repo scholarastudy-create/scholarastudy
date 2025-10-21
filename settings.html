@@ -576,21 +576,6 @@
                 </button>
             </div>
 
-            <div class="settings-card" style="border: 2px solid #E8A735;">
-                <h2>🔧 Debug: Test Account Deletion</h2>
-
-                <p style="color: #5a6c7d; margin-bottom: 1.5rem;">
-                    This is a TEST function that will show detailed logs about the deletion process. Use this to debug why deletion isn't working.
-                </p>
-
-                <button class="btn btn-primary" onclick="testDeleteAccount()" style="background: #dc3545;">
-                    🧪 Test Delete (Show Logs)
-                </button>
-
-                <div id="debugLogs" style="margin-top: 1rem; padding: 1rem; background: #f8f8f8; border-radius: 10px; display: none; max-height: 400px; overflow-y: auto;">
-                    <pre id="debugOutput" style="font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word;"></pre>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -923,67 +908,6 @@
             localStorage.removeItem('scholara_tour_completed');
             alert('Tour reset! Go back to your dashboard to start the tour again.');
             window.location.href = 'dashboard.html';
-        }
-
-        async function testDeleteAccount() {
-            try {
-                const debugLogsDiv = document.getElementById('debugLogs');
-                const debugOutput = document.getElementById('debugOutput');
-                debugLogsDiv.style.display = 'block';
-                debugOutput.textContent = 'Running test deletion...\n\n';
-
-                const { data: { session } } = await supabase.auth.getSession();
-
-                if (!session) {
-                    debugOutput.textContent = 'ERROR: No session found. Please log in again.';
-                    return;
-                }
-
-                debugOutput.textContent += 'Calling test endpoint...\n';
-
-                const response = await fetch('/.netlify/functions/test-delete-user', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + session.access_token,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const data = await response.json();
-
-                debugOutput.textContent += '\n=== TEST RESULTS ===\n\n';
-                debugOutput.textContent += 'Response Status: ' + response.status + '\n\n';
-                debugOutput.textContent += JSON.stringify(data, null, 2);
-
-                if (data.logs) {
-                    debugOutput.textContent += '\n\n=== DETAILED LOGS ===\n\n';
-                    data.logs.forEach((log, index) => {
-                        debugOutput.textContent += `[${index + 1}] ${log.message}\n`;
-                        if (log.data) {
-                            debugOutput.textContent += '    Data: ' + JSON.stringify(log.data, null, 2) + '\n';
-                        }
-                        debugOutput.textContent += '\n';
-                    });
-                }
-
-                // Important warning
-                if (data.success) {
-                    debugOutput.textContent += '\n\n⚠️ WARNING: This test actually deleted your account!\n';
-                    debugOutput.textContent += 'You will be signed out in 5 seconds...\n';
-
-                    setTimeout(async () => {
-                        await supabase.auth.signOut();
-                        window.location.href = 'index.html';
-                    }, 5000);
-                } else {
-                    debugOutput.textContent += '\n\n❌ Account was NOT deleted. Check the logs above for details.\n';
-                }
-
-            } catch (error) {
-                const debugOutput = document.getElementById('debugOutput');
-                debugOutput.textContent += '\n\nERROR: ' + error.message + '\n';
-                debugOutput.textContent += 'Stack: ' + error.stack;
-            }
         }
 
         console.log('Settings page script loaded, checking auth...');
