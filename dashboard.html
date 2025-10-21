@@ -7,6 +7,21 @@
     <link rel="icon" type="image/png" href="https://i.imgur.com/s9222rr.png">
     <link rel="apple-touch-icon" href="https://i.imgur.com/s9222rr.png">
 
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Access your Scholara dashboard with study templates, AI tools, and personalized study guides.">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Dashboard - Scholara">
+    <meta property="og:description" content="Your personal study dashboard with templates, AI tools, and study guides.">
+    <meta property="og:image" content="https://i.imgur.com/s9222rr.png">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Dashboard - Scholara">
+    <meta name="twitter:description" content="Your personal study dashboard.">
+    <meta name="twitter:image" content="https://i.imgur.com/s9222rr.png">
+
     <!-- Meta Pixel Code -->
     <script>
     !function(f,b,e,v,n,t,s)
@@ -1139,9 +1154,12 @@
 
         /* My Templates Section */
         .my-templates-section {
-            background: transparent;
-            padding: 0;
+            background: white;
+            padding: 2rem;
             margin-bottom: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.08);
             display: none;
         }
 
@@ -1150,15 +1168,20 @@
         }
 
         .my-templates-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .my-templates-header h2 {
             color: #1a3a52;
-            font-size: 1.8rem;
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .my-templates-header .btn {
+            width: auto;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
         }
 
         .my-templates-grid {
@@ -1368,10 +1391,10 @@
         <div class="my-templates-section" id="myTemplatesSection">
             <div class="my-templates-header">
                 <h2>📝 My Templates</h2>
-                <button class="btn btn-primary" onclick="createNewTemplate()">
-                    + Create New Template
-                </button>
             </div>
+            <button class="btn btn-primary" onclick="createNewTemplate()" style="margin-bottom: 1.5rem;">
+                + Create New Template
+            </button>
             <div class="my-templates-grid" id="myTemplatesGrid">
                 <div class="empty-templates">
                     <div class="empty-templates-icon">📝</div>
