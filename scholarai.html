@@ -43,19 +43,19 @@
         }
 
         nav {
-            background: white;
+            background: linear-gradient(135deg, #E8A735, #d49625);
             padding: 1rem 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
             flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .logo {
             font-size: 1.4rem;
             font-weight: 600;
-            color: #1a3a52;
+            color: white;
             text-decoration: none;
         }
 
@@ -66,9 +66,9 @@
 
         .nav-btn {
             padding: 0.6rem 1rem;
-            background: white;
-            color: #1a3a52;
-            border: 1px solid rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
             border-radius: 6px;
             font-weight: 500;
             cursor: pointer;
@@ -78,7 +78,89 @@
         }
 
         .nav-btn:hover {
-            background: #f5f5f5;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .new-chat-btn {
+            margin: 1rem;
+            padding: 0.7rem 1rem;
+            background: #E8A735;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .new-chat-btn:hover {
+            background: #d49625;
+        }
+
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 1rem 1rem;
+        }
+
+        .chat-history h3 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #5a6c7d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+        }
+
+        .history-item {
+            padding: 0.7rem;
+            background: #f8f8f8;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            color: #1a3a52;
+            border: 1px solid transparent;
+        }
+
+        .history-item:hover {
+            background: #f0f0f0;
+            border-color: rgba(232, 167, 53, 0.3);
+        }
+
+        .history-item.active {
+            background: #E8A735;
+            color: white;
+        }
+
+        .history-item-title {
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .history-item-date {
+            font-size: 0.7rem;
+            opacity: 0.7;
         }
 
         .chat-container {
@@ -89,6 +171,7 @@
             width: 100%;
             margin: 0 auto;
             overflow: hidden;
+            position: relative;
         }
 
         .messages-area {
@@ -98,6 +181,39 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+        }
+
+        .drag-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(232, 167, 53, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .drag-overlay.active {
+            display: flex;
+        }
+
+        .drag-overlay-content {
+            text-align: center;
+            color: white;
+        }
+
+        .drag-overlay-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .drag-overlay-text {
+            font-size: 1.5rem;
+            font-weight: 600;
         }
 
         .message {
@@ -160,6 +276,32 @@
             line-height: 1.6;
         }
 
+        .file-preview {
+            background: #f8f8f8;
+            padding: 0.6rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .file-preview-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-preview-remove {
+            cursor: pointer;
+            color: #dc3545;
+            font-weight: bold;
+            padding: 0 0.3rem;
+        }
+
         .input-area {
             padding: 1rem;
             border-top: 1px solid rgba(0,0,0,0.06);
@@ -178,7 +320,7 @@
         }
 
         .input-wrapper:focus-within {
-            border-color: #1a3a52;
+            border-color: #E8A735;
         }
 
         #messageInput {
@@ -191,6 +333,30 @@
             resize: none;
             outline: none;
             max-height: 120px;
+        }
+
+        .attach-btn {
+            padding: 0.6rem;
+            background: white;
+            color: #5a6c7d;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+        }
+
+        .attach-btn:hover {
+            background: #E8A735;
+            color: white;
+            border-color: #E8A735;
         }
 
         .send-btn {
@@ -270,29 +436,15 @@
             30% { opacity: 1; }
         }
 
-        .new-chat-btn {
-            position: fixed;
-            bottom: 6rem;
-            right: 2rem;
-            padding: 0.7rem 1.2rem;
-            background: white;
-            color: #1a3a52;
-            border: 1px solid rgba(0,0,0,0.15);
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .new-chat-btn:hover {
-            background: #1a3a52;
-            color: white;
-            border-color: #1a3a52;
+        #fileInput {
+            display: none;
         }
 
         @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
             nav {
                 padding: 1rem 4%;
             }
@@ -324,13 +476,6 @@
 
             .input-area {
                 padding: 0.8rem;
-            }
-
-            .new-chat-btn {
-                bottom: 5.5rem;
-                right: 1rem;
-                padding: 0.6rem 1rem;
-                font-size: 0.85rem;
             }
         }
 
@@ -378,12 +523,6 @@
                 padding: 0.5rem 1rem;
                 font-size: 0.85rem;
             }
-
-            .new-chat-btn {
-                bottom: 5rem;
-                padding: 0.5rem 0.9rem;
-                font-size: 0.8rem;
-            }
         }
     </style>
 </head>
@@ -396,28 +535,48 @@
         </div>
     </nav>
 
-    <div class="chat-container">
-        <div class="messages-area" id="messagesArea">
-            <div class="welcome-message">
-                <h2>ScholarAI</h2>
-                <p>Your AI study assistant. Ask me anything about your coursework, essays, or research.</p>
+    <div class="main-container">
+        <aside class="sidebar">
+            <button class="new-chat-btn" onclick="startNewChat()">+ New Chat</button>
+            <div class="chat-history">
+                <h3>Chat History</h3>
+                <div id="chatHistoryList"></div>
             </div>
-        </div>
+        </aside>
 
-        <div class="input-area">
-            <div class="input-wrapper">
-                <textarea
-                    id="messageInput"
-                    placeholder="Ask me anything..."
-                    rows="1"
-                    onkeydown="handleKeyPress(event)"
-                ></textarea>
-                <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+        <div class="chat-container" id="chatContainer">
+            <div class="drag-overlay" id="dragOverlay">
+                <div class="drag-overlay-content">
+                    <div class="drag-overlay-icon">📎</div>
+                    <div class="drag-overlay-text">Drop files to upload</div>
+                </div>
+            </div>
+
+            <div class="messages-area" id="messagesArea">
+                <div class="welcome-message">
+                    <h2>ScholarAI</h2>
+                    <p>Your AI study assistant. Ask me anything about your coursework, essays, or research.</p>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div id="filePreviewArea"></div>
+                <div class="input-wrapper">
+                    <button class="attach-btn" onclick="document.getElementById('fileInput').click()" title="Attach files">
+                        +
+                    </button>
+                    <textarea
+                        id="messageInput"
+                        placeholder="Ask me anything..."
+                        rows="1"
+                        onkeydown="handleKeyPress(event)"
+                    ></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+                </div>
+                <input type="file" id="fileInput" multiple accept=".pdf,.docx,.txt,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
             </div>
         </div>
     </div>
-
-    <button class="new-chat-btn" onclick="startNewChat()">+ New Chat</button>
 
     <script>
         const SUPABASE_URL = 'https://kiojxqwuxkrhkznszdvo.supabase.co';
@@ -444,6 +603,43 @@
         let isAdmin = false;
         let thinkingInterval = null;
         let currentThinkingIndex = 0;
+        let attachedFiles = [];
+        let chatSessions = [];
+        let currentSession = null;
+        let currentChatId = null;
+        const MAX_SESSIONS = 10;
+
+        // Drag and drop functionality
+        const chatContainer = document.getElementById('chatContainer');
+        const dragOverlay = document.getElementById('dragOverlay');
+        let dragCounter = 0;
+
+        chatContainer.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            dragCounter++;
+            dragOverlay.classList.add('active');
+        });
+
+        chatContainer.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dragCounter--;
+            if (dragCounter === 0) {
+                dragOverlay.classList.remove('active');
+            }
+        });
+
+        chatContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        chatContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragCounter = 0;
+            dragOverlay.classList.remove('active');
+
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles(files);
+        });
 
         async function checkAuth() {
             const { data: { user } } = await supabase.auth.getUser();
@@ -457,6 +653,7 @@
 
             if (user.email === ADMIN_EMAIL) {
                 isAdmin = true;
+                await loadChatSessions();
                 await createThread();
                 return;
             }
@@ -472,6 +669,7 @@
 
                 if (profile.subscription_plan === 'admin') {
                     isAdmin = true;
+                    await loadChatSessions();
                     await createThread();
                     return;
                 }
@@ -483,7 +681,107 @@
                 }
             }
 
+            await loadChatSessions();
             await createThread();
+        }
+
+        async function loadChatSessions() {
+            const storageKey = `scholarai_sessions_${currentUser.id}`;
+            const stored = localStorage.getItem(storageKey);
+
+            if (stored) {
+                try {
+                    chatSessions = JSON.parse(stored);
+                    if (chatSessions.length > 0) {
+                        currentSession = chatSessions[0];
+                        currentChatId = currentSession.id;
+                        restoreSession(currentSession);
+                    }
+                    updateHistoryList();
+                } catch (e) {
+                    console.error('Error loading chat sessions:', e);
+                    chatSessions = [];
+                }
+            }
+        }
+
+        function saveChatSessions() {
+            const storageKey = `scholarai_sessions_${currentUser.id}`;
+            if (chatSessions.length > MAX_SESSIONS) {
+                chatSessions = chatSessions.slice(0, MAX_SESSIONS);
+            }
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(chatSessions));
+                updateHistoryList();
+            } catch (e) {
+                console.error('Error saving chat sessions:', e);
+            }
+        }
+
+        function createNewSession() {
+            const newSession = {
+                id: Date.now().toString(),
+                title: 'New Chat',
+                messages: [],
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            chatSessions.unshift(newSession);
+            currentSession = newSession;
+            currentChatId = newSession.id;
+
+            saveChatSessions();
+            return newSession;
+        }
+
+        function restoreSession(session) {
+            const messagesArea = document.getElementById('messagesArea');
+            messagesArea.innerHTML = '';
+
+            const welcomeMsg = document.querySelector('.welcome-message');
+            if (welcomeMsg && session.messages.length > 0) {
+                welcomeMsg.remove();
+            }
+
+            session.messages.forEach(msg => {
+                addMessage(msg.content, msg.role, false);
+            });
+        }
+
+        function loadSession(sessionId) {
+            const session = chatSessions.find(s => s.id === sessionId);
+            if (!session) return;
+
+            currentSession = session;
+            currentChatId = session.id;
+
+            restoreSession(session);
+
+            chatSessions = [session, ...chatSessions.filter(s => s.id !== sessionId)];
+            saveChatSessions();
+        }
+
+        function updateHistoryList() {
+            const historyList = document.getElementById('chatHistoryList');
+
+            if (chatSessions.length === 0) {
+                historyList.innerHTML = '<p style="color: #5a6c7d; font-size: 0.85rem; text-align: center;">No chat history yet</p>';
+                return;
+            }
+
+            historyList.innerHTML = chatSessions.map(session => {
+                const date = new Date(session.updatedAt);
+                const dateStr = date.toLocaleDateString();
+                const isActive = currentChatId === session.id;
+
+                return `
+                    <div class="history-item ${isActive ? 'active' : ''}" onclick="loadSession('${session.id}')">
+                        <div class="history-item-title">${session.title}</div>
+                        <div class="history-item-date">${dateStr}</div>
+                    </div>
+                `;
+            }).join('');
         }
 
         async function createThread() {
@@ -507,6 +805,90 @@
             }
         }
 
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            handleFiles(files);
+            event.target.value = '';
+        }
+
+        function handleFiles(files) {
+            files.forEach(file => {
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`${file.name} is too large. Maximum file size is 10MB.`);
+                    return;
+                }
+                attachedFiles.push(file);
+                displayFilePreview(file);
+            });
+        }
+
+        function displayFilePreview(file) {
+            const container = document.getElementById('filePreviewArea');
+            const preview = document.createElement('div');
+            preview.className = 'file-preview';
+            preview.innerHTML = `
+                <span>📄</span>
+                <span class="file-preview-name">${file.name}</span>
+                <span class="file-preview-remove" onclick="removeFile('${file.name}')">×</span>
+            `;
+            container.appendChild(preview);
+        }
+
+        function removeFile(fileName) {
+            attachedFiles = attachedFiles.filter(f => f.name !== fileName);
+            const container = document.getElementById('filePreviewArea');
+            container.innerHTML = '';
+            attachedFiles.forEach(file => displayFilePreview(file));
+        }
+
+        async function uploadFiles() {
+            if (attachedFiles.length === 0) return [];
+
+            const uploadedFiles = [];
+
+            for (const file of attachedFiles) {
+                try {
+                    const reader = new FileReader();
+                    const fileContent = await new Promise((resolve, reject) => {
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.onerror = (e) => reject(e);
+                        reader.readAsDataURL(file);
+                    });
+
+                    const response = await fetch('/.netlify/functions/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'uploadFile',
+                            fileContent: fileContent,
+                            fileName: file.name,
+                            purpose: 'assistants'
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Upload failed: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    if (data.id) {
+                        uploadedFiles.push({
+                            id: data.id,
+                            isImage: data.isImage === true
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error uploading file:', file.name, error);
+                    throw error;
+                }
+            }
+
+            return uploadedFiles;
+        }
+
         function handleKeyPress(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
@@ -518,7 +900,11 @@
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
 
-            if (!message) return;
+            if (!message && attachedFiles.length === 0) return;
+
+            if (!currentSession) {
+                createNewSession();
+            }
 
             const sendBtn = document.getElementById('sendBtn');
             sendBtn.disabled = true;
@@ -529,11 +915,41 @@
             const welcomeMsg = document.querySelector('.welcome-message');
             if (welcomeMsg) welcomeMsg.remove();
 
-            addMessage(originalMessage, 'user');
+            let fileMetadata = [];
+            if (attachedFiles.length > 0) {
+                try {
+                    fileMetadata = await uploadFiles();
+                    const fileNames = attachedFiles.map(f => f.name).join(', ');
+                    addMessage(`📎 Attached: ${fileNames}`, 'user');
+                } catch (error) {
+                    console.error('File upload error:', error);
+                    addMessage('❌ Failed to upload files. Please try again.', 'user');
+                    attachedFiles = [];
+                    document.getElementById('filePreviewArea').innerHTML = '';
+                    sendBtn.disabled = false;
+                    return;
+                }
+
+                attachedFiles = [];
+                document.getElementById('filePreviewArea').innerHTML = '';
+            }
+
+            if (originalMessage) {
+                addMessage(originalMessage, 'user');
+
+                if (currentSession.messages.length === 1) {
+                    currentSession.title = originalMessage.substring(0, 30) + (originalMessage.length > 30 ? '...' : '');
+                    saveChatSessions();
+                }
+            }
+
             showThinkingIndicator();
 
             try {
-                const aiResponse = await getAIResponse(originalMessage);
+                const aiResponse = await getAIResponse(
+                    originalMessage || 'Please analyze the uploaded files and tell me what they contain.',
+                    fileMetadata
+                );
                 hideThinkingIndicator();
                 addMessage(aiResponse.text, 'ai');
             } catch (error) {
@@ -545,7 +961,7 @@
             }
         }
 
-        async function getAIResponse(userMessage) {
+        async function getAIResponse(userMessage, fileIds = []) {
             try {
                 const addMessageResponse = await fetch('/.netlify/functions/chat', {
                     method: 'POST',
@@ -555,7 +971,8 @@
                     body: JSON.stringify({
                         action: 'addMessage',
                         threadId: currentThreadId,
-                        message: userMessage
+                        message: userMessage,
+                        fileIds: fileIds.length > 0 ? fileIds : undefined
                     })
                 });
 
@@ -652,7 +1069,7 @@
             }
         }
 
-        function addMessage(content, sender) {
+        function addMessage(content, sender, saveToSession = true) {
             const messagesArea = document.getElementById('messagesArea');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}`;
@@ -667,6 +1084,17 @@
 
             messagesArea.appendChild(messageDiv);
             messagesArea.scrollTop = messagesArea.scrollHeight;
+
+            if (saveToSession && currentSession) {
+                currentSession.messages.push({
+                    role: sender,
+                    content: content,
+                    timestamp: new Date().toISOString()
+                });
+
+                currentSession.updatedAt = new Date().toISOString();
+                saveChatSessions();
+            }
         }
 
         function formatMessage(text) {
@@ -707,7 +1135,7 @@
                 if (thinkingText) {
                     thinkingText.textContent = THINKING_MESSAGES[currentThinkingIndex];
                 }
-            }, 2000); // Change message every 2 seconds
+            }, 2000);
         }
 
         function hideThinkingIndicator() {
@@ -728,6 +1156,9 @@
                 </div>
             `;
 
+            attachedFiles = [];
+            document.getElementById('filePreviewArea').innerHTML = '';
+            createNewSession();
             await createThread();
         }
 
