@@ -6,6 +6,9 @@
     <title>Payment Successful - Scholara</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="apple-touch-icon" href="/favicon.svg">
+    
+    <!-- Facebook Domain Verification -->
+    <meta name="facebook-domain-verification" content="5hv0698zgujzxauOrwggr4mklwbubc" />
 
     <!-- Meta Pixel Code -->
     <script>
@@ -339,6 +342,30 @@
 
         document.getElementById('planName').textContent = selectedPlan + ' Plan';
         document.getElementById('billingPeriod').textContent = selectedBilling;
+
+        // Fire Meta Pixel Purchase event with conversion value
+        // Map plan and billing to actual values
+        const purchaseValues = {
+            'Pro-Monthly': 5.99,
+            'Pro-Semester': 25.00,
+            'Premium-Monthly': 9.99,
+            'Premium-Semester': 45.00
+        };
+
+        const purchaseKey = `${selectedPlan}-${selectedBilling}`;
+        const purchaseValue = purchaseValues[purchaseKey] || 5.99;
+
+        // Fire Purchase conversion event
+        if (typeof fbq !== 'undefined') {
+            fbq('track', 'Purchase', {
+                value: purchaseValue,
+                currency: 'USD',
+                content_name: selectedPlan + ' Plan',
+                content_category: 'Subscription',
+                content_type: selectedBilling
+            });
+            console.log('Meta Pixel Purchase event fired:', purchaseValue, 'USD');
+        }
 
         localStorage.removeItem('selectedPlan');
         localStorage.removeItem('selectedBilling');

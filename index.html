@@ -11,6 +11,9 @@
     <link rel="apple-touch-icon" href="/favicon.svg">
     <link rel="manifest" href="/site.webmanifest">
 
+    <!-- Facebook Domain Verification -->
+    <meta name="facebook-domain-verification" content="5hv0698zgujzxauOrwggr4mklwbubc" />
+
     <!-- Theme color for mobile browsers -->
     <meta name="theme-color" content="#E8A735">
     <meta name="msapplication-TileColor" content="#E8A735">
@@ -1531,25 +1534,40 @@
                 document.getElementById('login').classList.remove('hidden');
                 return;
             }
-            
+
             let paymentLink;
             let planName;
-            
+            let planValue;
+
             if (plan === 'pro') {
                 paymentLink = isMonthly ? paymentLinks.proMonthly : paymentLinks.proSemester;
                 planName = 'Pro';
+                planValue = isMonthly ? 5.99 : 25.00;
             } else if (plan === 'premium') {
                 paymentLink = isMonthly ? paymentLinks.premiumMonthly : paymentLinks.premiumSemester;
                 planName = 'Premium';
+                planValue = isMonthly ? 9.99 : 45.00;
             }
-            
+
+            // Fire Meta Pixel InitiateCheckout event
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'InitiateCheckout', {
+                    value: planValue,
+                    currency: 'USD',
+                    content_name: planName + ' Plan',
+                    content_category: 'Subscription',
+                    content_type: isMonthly ? 'Monthly' : 'Semester'
+                });
+                console.log('Meta Pixel InitiateCheckout event fired:', planValue, 'USD');
+            }
+
             localStorage.setItem('selectedPlan', planName);
             localStorage.setItem('selectedBilling', isMonthly ? 'Monthly' : 'Semester');
-            
+
             const button = document.getElementById(plan + 'CheckoutBtn');
             button.disabled = true;
             button.textContent = 'Redirecting to payment...';
-            
+
             window.location.href = paymentLink + '?prefilled_email=' + encodeURIComponent(currentUser.email);
         }
 
@@ -1722,6 +1740,15 @@
                 submitButton.disabled = false;
                 submitButton.textContent = 'Create Account';
             } else {
+                // Fire Meta Pixel CompleteRegistration event
+                if (typeof fbq !== 'undefined') {
+                    fbq('track', 'CompleteRegistration', {
+                        content_name: 'Free Account',
+                        status: 'success'
+                    });
+                    console.log('Meta Pixel CompleteRegistration event fired');
+                }
+
                 alert('Account created successfully! You can now choose a plan.');
                 currentUser = data.user;
                 await checkAuth();
