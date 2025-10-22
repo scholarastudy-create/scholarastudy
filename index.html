@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scholara - Study Smarter, Not Harder</title>
 
-    <!-- Favicon - Multiple sizes for better Google indexing -->
-    <link rel="icon" type="image/png" sizes="16x16" href="https://i.imgur.com/s9222rr.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://i.imgur.com/s9222rr.png">
-    <link rel="icon" type="image/png" sizes="48x48" href="https://i.imgur.com/s9222rr.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://i.imgur.com/s9222rr.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://i.imgur.com/s9222rr.png">
-    <link rel="shortcut icon" type="image/png" href="https://i.imgur.com/s9222rr.png">
+    <!-- Favicon - Optimized for Google Search and all browsers -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/favicon.svg">
     <link rel="manifest" href="/site.webmanifest">
+
+    <!-- Facebook Domain Verification -->
+    <meta name="facebook-domain-verification" content="5hv0698zgujzxauOrwggr4mklwbubc" />
 
     <!-- Theme color for mobile browsers -->
     <meta name="theme-color" content="#E8A735">
     <meta name="msapplication-TileColor" content="#E8A735">
-    <meta name="msapplication-TileImage" content="https://i.imgur.com/s9222rr.png">
+    <meta name="msapplication-TileImage" content="/favicon.svg">
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="Scholara helps you study smarter with AI-powered study guides, templates, and personalized learning tools.">
@@ -1534,25 +1534,40 @@
                 document.getElementById('login').classList.remove('hidden');
                 return;
             }
-            
+
             let paymentLink;
             let planName;
-            
+            let planValue;
+
             if (plan === 'pro') {
                 paymentLink = isMonthly ? paymentLinks.proMonthly : paymentLinks.proSemester;
                 planName = 'Pro';
+                planValue = isMonthly ? 5.99 : 25.00;
             } else if (plan === 'premium') {
                 paymentLink = isMonthly ? paymentLinks.premiumMonthly : paymentLinks.premiumSemester;
                 planName = 'Premium';
+                planValue = isMonthly ? 9.99 : 45.00;
             }
-            
+
+            // Fire Meta Pixel InitiateCheckout event
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'InitiateCheckout', {
+                    value: planValue,
+                    currency: 'USD',
+                    content_name: planName + ' Plan',
+                    content_category: 'Subscription',
+                    content_type: isMonthly ? 'Monthly' : 'Semester'
+                });
+                console.log('Meta Pixel InitiateCheckout event fired:', planValue, 'USD');
+            }
+
             localStorage.setItem('selectedPlan', planName);
             localStorage.setItem('selectedBilling', isMonthly ? 'Monthly' : 'Semester');
-            
+
             const button = document.getElementById(plan + 'CheckoutBtn');
             button.disabled = true;
             button.textContent = 'Redirecting to payment...';
-            
+
             window.location.href = paymentLink + '?prefilled_email=' + encodeURIComponent(currentUser.email);
         }
 
@@ -1725,6 +1740,15 @@
                 submitButton.disabled = false;
                 submitButton.textContent = 'Create Account';
             } else {
+                // Fire Meta Pixel CompleteRegistration event
+                if (typeof fbq !== 'undefined') {
+                    fbq('track', 'CompleteRegistration', {
+                        content_name: 'Free Account',
+                        status: 'success'
+                    });
+                    console.log('Meta Pixel CompleteRegistration event fired');
+                }
+
                 alert('Account created successfully! You can now choose a plan.');
                 currentUser = data.user;
                 await checkAuth();
