@@ -263,6 +263,11 @@
             background: #c82333;
         }
 
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -931,7 +936,7 @@
                         <div class="action-btns">
                             <button class="btn btn-view" onclick="viewSubmission('${sub.id}')">View</button>
                             ${sub.status !== 'completed' ? `<button class="btn btn-complete" onclick="updateStatus('${sub.id}', '${sub.status === 'pending' ? 'processing' : 'completed'}')">${sub.status === 'pending' ? 'Start' : 'Complete'}</button>` : ''}
-                            <button class="btn btn-delete" onclick="deleteSubmission('${sub.id}')">Delete</button>
+                            <button class="btn btn-delete" onclick="deleteSubmission('${sub.id}', event)">Delete</button>
                         </div>
                     </td>
                 </tr>
@@ -1070,16 +1075,44 @@
             loadSubmissions();
         }
 
-        async function deleteSubmission(id) {
-            if (!confirm('Are you sure you want to delete this submission?')) return;
-            const { error } = await supabase.from('study_guide_requests').delete().eq('id', id);
-            if (error) {
-                console.error('Error:', error);
-                alert('Failed to delete submission');
+        async function deleteSubmission(id, event) {
+            if (!confirm('Are you sure you want to delete this study guide request? This cannot be undone.')) {
                 return;
             }
-            alert('Submission deleted');
-            loadSubmissions();
+
+            // Find and disable the delete button
+            const deleteButton = event.target;
+            const originalText = deleteButton.textContent;
+            deleteButton.disabled = true;
+            deleteButton.textContent = 'Deleting...';
+
+            try {
+                console.log('Attempting to delete submission:', id);
+
+                const { data, error } = await supabase
+                    .from('study_guide_requests')
+                    .delete()
+                    .eq('id', id)
+                    .select();
+
+                if (error) {
+                    console.error('Supabase delete error:', error);
+                    alert(`Failed to delete submission:\n${error.message}\n\nPlease check the browser console for more details.`);
+                    deleteButton.disabled = false;
+                    deleteButton.textContent = originalText;
+                    return;
+                }
+
+                console.log('Successfully deleted:', data);
+                alert('Study guide request deleted successfully!');
+                await loadSubmissions();
+
+            } catch (err) {
+                console.error('Exception during delete:', err);
+                alert(`Error deleting submission:\n${err.message}`);
+                deleteButton.disabled = false;
+                deleteButton.textContent = originalText;
+            }
         }
 
         // Section navigation
