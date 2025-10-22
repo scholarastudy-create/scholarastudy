@@ -2292,14 +2292,19 @@
 
         // Ensure Meta Pixel loads before any auth redirects
         function initializePageWhenReady() {
-            // Wait for Meta Pixel to initialize (max 2 seconds)
+            // Wait for Meta Pixel to fully initialize (not just defined)
             let checkCount = 0;
             const checkPixel = setInterval(() => {
                 checkCount++;
-                if (typeof fbq !== 'undefined' || checkCount > 20) {
+                // Check if pixel is loaded AND initialized
+                const pixelReady = typeof fbq !== 'undefined' && (window.fbq.loaded === true || window._fbq);
+                if (pixelReady || checkCount > 20) {
                     clearInterval(checkPixel);
-                    // Pixel loaded or timeout reached, proceed with auth check
-                    checkAuth();
+                    // Give pixel a moment to send PageView event
+                    setTimeout(() => {
+                        // Pixel loaded or timeout reached, proceed with auth check
+                        checkAuth();
+                    }, 300); // 300ms buffer to ensure PageView sends
                 }
             }, 100); // Check every 100ms
         }
