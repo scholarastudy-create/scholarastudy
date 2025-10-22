@@ -1828,16 +1828,28 @@
             observer.observe(card);
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            checkAuth();
-            
-            if (window.location.hash === '#login') {
-                document.querySelector('.hero').classList.add('hidden');
-                document.getElementById('pricing').classList.add('hidden');
-                document.getElementById('mission').classList.add('hidden');
-                document.getElementById('login').classList.remove('hidden');
-            }
-        });
+        // Ensure Meta Pixel loads before any auth redirects
+        function initializePageWhenReady() {
+            // Wait for Meta Pixel to initialize (max 2 seconds)
+            let checkCount = 0;
+            const checkPixel = setInterval(() => {
+                checkCount++;
+                if (typeof fbq !== 'undefined' || checkCount > 20) {
+                    clearInterval(checkPixel);
+                    // Pixel loaded or timeout reached, proceed with auth check
+                    checkAuth();
+
+                    if (window.location.hash === '#login') {
+                        document.querySelector('.hero').classList.add('hidden');
+                        document.getElementById('pricing').classList.add('hidden');
+                        document.getElementById('mission').classList.add('hidden');
+                        document.getElementById('login').classList.remove('hidden');
+                    }
+                }
+            }, 100); // Check every 100ms
+        }
+
+        document.addEventListener('DOMContentLoaded', initializePageWhenReady);
     </script>
 
     <footer>
