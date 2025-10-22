@@ -352,28 +352,50 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // DOWNLOAD FILE - New action to retrieve generated files
+    // DOWNLOAD FILE - Retrieve generated files from OpenAI
     if (action === 'downloadFile') {
-      const { fileId } = JSON.parse(event.body);
-      
-      const response = await fetch(`https://api.openai.com/v1/files/${fileId}/content`, {
-        headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`
+      try {
+        console.log('Downloading file:', fileId);
+
+        const response = await fetch(`https://api.openai.com/v1/files/${fileId}/content`, {
+          headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`
+          }
+        });
+
+        if (!response.ok) {
+          console.error('File download failed:', response.status);
+          return {
+            statusCode: response.status,
+            headers,
+            body: JSON.stringify({ error: 'Failed to download file from OpenAI' })
+          };
         }
-      });
-      
-      const fileContent = await response.buffer();
-      
-      return {
-        statusCode: 200,
-        headers: {
-          ...headers,
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': 'attachment; filename="document.pdf"'
-        },
-        body: fileContent.toString('base64'),
-        isBase64Encoded: true
-      };
+
+        const fileContent = await response.buffer();
+        console.log('File downloaded, size:', fileContent.length);
+
+        // Get content type from response or default to PDF
+        const contentType = response.headers.get('content-type') || 'application/pdf';
+
+        return {
+          statusCode: 200,
+          headers: {
+            ...headers,
+            'Content-Type': contentType,
+            'Content-Disposition': `attachment; filename="document.pdf"`
+          },
+          body: fileContent.toString('base64'),
+          isBase64Encoded: true
+        };
+      } catch (error) {
+        console.error('Download exception:', error);
+        return {
+          statusCode: 500,
+          headers,
+          body: JSON.stringify({ error: error.message })
+        };
+      }
     }
 
     return {
