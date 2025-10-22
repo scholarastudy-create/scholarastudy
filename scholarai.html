@@ -1323,7 +1323,21 @@
             this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
 
-        document.addEventListener('DOMContentLoaded', checkAuth);
+        // Ensure Meta Pixel loads before any auth redirects
+        function initializePageWhenReady() {
+            // Wait for Meta Pixel to initialize (max 2 seconds)
+            let checkCount = 0;
+            const checkPixel = setInterval(() => {
+                checkCount++;
+                if (typeof fbq !== 'undefined' || checkCount > 20) {
+                    clearInterval(checkPixel);
+                    // Pixel loaded or timeout reached, proceed with auth check
+                    checkAuth();
+                }
+            }, 100); // Check every 100ms
+        }
+
+        document.addEventListener('DOMContentLoaded', initializePageWhenReady);
     </script>
 </body>
 </html>
