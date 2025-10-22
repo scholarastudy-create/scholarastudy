@@ -1,0 +1,28 @@
+{
+  "appId": "com.scholara.study",
+  "appName": "Scholara",
+  "webDir": ".",
+  "bundledWebRuntime": false,
+  "server": {
+    "hostname": "scholarastudy.com",
+    "androidScheme": "https",
+    "iosScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#E8A735",
+      "showSpinner": false,
+      "androidSpinnerStyle": "small",
+      "iosSpinnerStyle": "small",
+      "spinnerColor": "#FFFFFF"
+    },
+    "StatusBar": {
+      "style": "light",
+      "backgroundColor": "#E8A735"
+    }
+  },
+  "ios": {
+    "contentInset": "always"
+  }
+}
