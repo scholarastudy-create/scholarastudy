@@ -1571,7 +1571,10 @@
             button.disabled = true;
             button.textContent = 'Redirecting to payment...';
 
-            window.location.href = paymentLink + '?prefilled_email=' + encodeURIComponent(currentUser.email);
+            // Pass both email (for prefill) and user ID (for reliable matching in webhook)
+            window.location.href = paymentLink +
+                '?prefilled_email=' + encodeURIComponent(currentUser.email) +
+                '&client_reference_id=' + encodeURIComponent(currentUser.id);
         }
 
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
