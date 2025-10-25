@@ -1923,10 +1923,35 @@
                 return;
             }
 
-            const link = document.createElement('a');
-            link.href = guide.completed_study_guide.data;
-            link.download = guide.completed_study_guide.name;
-            link.click();
+            try {
+                // Convert data URL to blob for proper download
+                const dataUrl = guide.completed_study_guide.data;
+                const response = await fetch(dataUrl);
+                const blob = await response.blob();
+
+                // Create object URL and download
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+
+                // Ensure proper file extension
+                let fileName = guide.completed_study_guide.name;
+                if (!fileName.toLowerCase().endsWith('.pdf')) {
+                    fileName += '.pdf';
+                }
+                link.download = fileName;
+
+                // Trigger download
+                document.body.appendChild(link);
+                link.click();
+
+                // Clean up
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error('Download error:', err);
+                alert('Failed to download study guide. Please try again.');
+            }
         }
 
         function viewTemplate(id) {
