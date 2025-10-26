@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholara Pro Polish Demo - See Your Site's Potential</title>
+    <link rel="icon" type="image/png" href="https://i.imgur.com/s9222rr.png">
+
+    <!-- Import the Scholara Polish CSS -->
+    <link rel="stylesheet" href="scholara-polish.css">
+
+    <style>
+        /* Just some additional demo-specific styling */
+        .demo-notice {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--brand), var(--brand-600));
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 100;
+            animation: slideInRight 0.6s ease;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .component-demo {
+            margin: 4rem 0;
+            padding: 3rem 0;
+            border-top: 1px solid var(--line);
+        }
+        .component-label {
+            display: inline-block;
+            background: var(--brand-50);
+            color: var(--brand-700);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="brand">
+                <div class="brand-logo"></div>
+                SCHOLARA
+            </div>
+            <div class="links">
+                <a href="#hero">Home</a>
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="container">
+            <div class="text-center">
+                <span class="eyebrow">Welcome to Scholara</span>
+                <h1>Study Smarter,<br>Not Harder</h1>
+                <p class="lead text-center" style="margin: 0 auto;">Transform your notes into high-quality study guides in seconds. End those countless nights of cramming with AI-powered learning tools.</p>
+                <div class="actions" style="justify-content: center; margin-top: 2rem;">
+                    <a href="#" class="btn btn-primary">Get Started Free</a>
+                    <a href="#" class="btn btn-ghost">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="container">
+            <h2 class="section-title text-center">Powerful Features</h2>
+            <p class="section-subtitle text-center" style="margin: 0 auto;">Everything you need to ace your exams</p>
+
+            <div class="grid grid-3">
+                <div class="card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">📚</div>
+                    <h3 class="card-title">AI Study Guides</h3>
+                    <p class="muted">Upload your notes or syllabus and get custom study guides generated instantly with AI.</p>
+                </div>
+
+                <div class="card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">✏️</div>
+                    <h3 class="card-title">Smart Templates</h3>
+                    <p class="muted">Access professionally designed templates for resumes, essays, and assignments.</p>
+                </div>
+
+                <div class="card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎯</div>
+                    <h3 class="card-title">ScholarAI Assistant</h3>
+                    <p class="muted">Your personal AI tutor optimized for schoolwork, essays, and exam prep.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="section section-soft">
+        <div class="container">
+            <h2 class="section-title text-center">Choose Your Plan</h2>
+            <p class="section-subtitle text-center" style="margin: 0 auto;">Start free, upgrade when you're ready</p>
+
+            <div class="grid grid-3">
+                <!-- Free Plan -->
+                <div class="pricing-card">
+                    <div class="plan-name">Free</div>
+                    <p class="muted">For students who want to get organized fast</p>
+                    <div class="plan-price">$0<span style="font-size: 1rem; color: var(--ink-500); font-weight: 400;"> / month</span></div>
+                    <ul class="feature-list">
+                        <li>Access to 5 free templates</li>
+                        <li>Resume & cover letter templates</li>
+                        <li>Limited customization</li>
+                        <li>Community access</li>
+                    </ul>
+                    <button class="btn btn-ghost btn-block">Get Started</button>
+                </div>
+
+                <!-- Pro Plan (Popular) -->
+                <div class="pricing-card popular">
+                    <div class="popular-badge">⭐ Most Popular</div>
+                    <div class="plan-name">Pro</div>
+                    <p class="muted">Turn notes into study guides in seconds</p>
+                    <div class="plan-price">$5.99<span style="font-size: 1rem; color: var(--ink-500); font-weight: 400;"> / month</span></div>
+                    <ul class="feature-list">
+                        <li>Everything in Free</li>
+                        <li>AI-powered study guide generation</li>
+                        <li>Full access to all templates</li>
+                        <li>Priority template updates</li>
+                        <li>Upload unlimited notes</li>
+                    </ul>
+                    <button class="btn btn-primary btn-block">Upgrade to Pro</button>
+                </div>
+
+                <!-- Premium Plan -->
+                <div class="pricing-card">
+                    <div class="plan-name">Premium ScholarAI</div>
+                    <p class="muted">Your personal AI for smarter studying</p>
+                    <div class="plan-price">$9.99<span style="font-size: 1rem; color: var(--ink-500); font-weight: 400;"> / month</span></div>
+                    <ul class="feature-list">
+                        <li>Everything in Pro</li>
+                        <li>AI assistant for schoolwork & essays</li>
+                        <li>Advanced formatting & citations</li>
+                        <li>Early access to new features</li>
+                        <li>Priority support</li>
+                    </ul>
+                    <button class="btn btn-primary btn-block">Upgrade to Premium</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Component Showcase -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title text-center">Component Showcase</h2>
+            <p class="section-subtitle text-center" style="margin: 0 auto;">See all the polished UI components in action</p>
+
+            <!-- Buttons -->
+            <div class="component-demo">
+                <span class="component-label">Buttons</span>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
+                    <button class="btn btn-primary">Primary Button</button>
+                    <button class="btn btn-ghost">Ghost Button</button>
+                    <button class="btn btn-link">Link Button</button>
+                </div>
+            </div>
+
+            <!-- Badges -->
+            <div class="component-demo">
+                <span class="component-label">Badges</span>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
+                    <span class="badge">New Feature</span>
+                    <span class="badge brand">Pro Plan</span>
+                    <span class="badge">Popular</span>
+                    <span class="badge">Limited Time</span>
+                </div>
+            </div>
+
+            <!-- Forms -->
+            <div class="component-demo">
+                <span class="component-label">Forms</span>
+                <div class="grid grid-2" style="margin-top: 1.5rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--ink);">Email Address</label>
+                        <input type="email" class="input" placeholder="your.email@example.com">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--ink);">Full Name</label>
+                        <input type="text" class="input" placeholder="John Doe">
+                    </div>
+                    <div style="grid-column: 1 / -1;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--ink);">Message</label>
+                        <textarea class="textarea" placeholder="Tell us what you think..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="component-demo">
+                <span class="component-label">Tables</span>
+                <table class="table" style="margin-top: 1.5rem;">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Course</th>
+                            <th>Grade</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John Smith</td>
+                            <td>Introduction to Biology</td>
+                            <td>A+</td>
+                            <td><span class="badge brand">Excellent</span></td>
+                        </tr>
+                        <tr>
+                            <td>Sarah Johnson</td>
+                            <td>Calculus I</td>
+                            <td>A</td>
+                            <td><span class="badge brand">Great</span></td>
+                        </tr>
+                        <tr>
+                            <td>Mike Williams</td>
+                            <td>World History</td>
+                            <td>B+</td>
+                            <td><span class="badge">Good</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Typography -->
+            <div class="component-demo">
+                <span class="component-label">Typography</span>
+                <div style="margin-top: 1.5rem;">
+                    <h1>Heading 1 - Study Smarter</h1>
+                    <h2>Heading 2 - Ace Your Exams</h2>
+                    <h3>Heading 3 - Learn Faster</h3>
+                    <p class="lead">This is a lead paragraph with larger text for emphasis and better readability.</p>
+                    <p>This is a regular paragraph with normal body text. It provides information in a clear and concise manner. The text is optimized for readability with proper line-height and font-size.</p>
+                    <p class="muted">This is muted text used for less important information or supplementary details.</p>
+                </div>
+            </div>
+
+            <!-- Grid Layouts -->
+            <div class="component-demo">
+                <span class="component-label">Grid Layouts</span>
+                <div class="grid grid-2" style="margin-top: 1.5rem;">
+                    <div class="card">
+                        <h3 class="card-title">Study Materials</h3>
+                        <p class="muted">Access your uploaded notes, PDFs, and study guides all in one place.</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">AI Generation</h3>
+                        <p class="muted">Let our AI create custom study guides tailored to your learning style.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="section" style="background: linear-gradient(135deg, var(--ink) 0%, var(--ink-700) 100%); color: white; border-radius: 30px; margin: 4rem auto; max-width: var(--container); padding: 5rem 4rem;">
+        <div class="container">
+            <div class="text-center">
+                <h2 style="color: var(--brand); font-size: 2.5rem; margin-bottom: 2rem;">Our Mission</h2>
+                <p style="font-size: 1.3rem; line-height: 1.8; color: rgba(255, 255, 255, 0.9); max-width: 800px; margin: 0 auto;">
+                    At Scholara, our mission is to end those countless nights of staying up studying. Our goal is to provide you with a means of learning the content in your classes and acing your exam.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem;">
+                <div style="display: flex; align-items: center; gap: 0.8rem;">
+                    <img src="https://i.imgur.com/ba7q8q6.png" alt="Scholara Logo" style="width: 40px; height: 40px;">
+                    <span style="font-size: 1.5rem; font-weight: 700; color: var(--ink);">SCHOLARA</span>
+                </div>
+                <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Contact Us</a>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--line);" class="small">
+                © 2025 Scholara. All rights reserved. Study smarter, not harder.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Demo Notice -->
+    <div class="demo-notice">
+        <strong>Demo Mode</strong><br>
+        <small>This is a preview of the Pro Polish styling!</small>
+    </div>
+</body>
+</html>
