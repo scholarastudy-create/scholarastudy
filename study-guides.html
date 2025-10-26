@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Study Guides - Scholara</title>
+    <link rel="icon" type="image/png" href="https://i.imgur.com/s9222rr.png">
+    <link rel="apple-touch-icon" href="https://i.imgur.com/s9222rr.png">
+
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #F7F8FA;
+            color: #1a3a52;
+            min-height: 100vh;
+            font-size: 16px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            padding: 1.25rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a3a52;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .back-btn {
+            padding: 0.625rem 1.25rem;
+            background: white;
+            color: #1a3a52;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: #1a3a52;
+            color: white;
+            border-color: #1a3a52;
+            transform: translateY(-1px);
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 120px 2rem 80px;
+        }
+
+        .page-header {
+            margin-bottom: 80px;
+        }
+
+        .page-header h1 {
+            font-size: clamp(2rem, 4vw, 2.75rem);
+            color: #1a3a52;
+            margin-bottom: 0.625rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        .page-header p {
+            font-size: 1.125rem;
+            color: #6b7280;
+            font-weight: 400;
+        }
+
+        .upload-card {
+            background: linear-gradient(135deg, rgba(232, 167, 53, 0.08) 0%, rgba(232, 167, 53, 0.03) 100%);
+            border: 1.5px solid rgba(232, 167, 53, 0.2);
+            padding: 2.5rem;
+            border-radius: 18px;
+            margin-bottom: 80px;
+            text-align: center;
+        }
+
+        .upload-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            color: #1a3a52;
+        }
+
+        .upload-card p {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-btn {
+            padding: 0.875rem 1.75rem;
+            background: #E8A735;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-block;
+            box-shadow: 0 2px 8px rgba(232, 167, 53, 0.2);
+        }
+
+        .upload-btn:hover {
+            background: #d49625;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(232, 167, 53, 0.3);
+        }
+
+        .guides-grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .guide-card {
+            background: white;
+            padding: 2.25rem;
+            border-radius: 18px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            transition: all 0.25s ease;
+            border: 1px solid rgba(0,0,0,0.04);
+            border-left: 4px solid #E8A735;
+        }
+
+        .guide-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            transform: translateY(-4px);
+        }
+
+        .guide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.25rem;
+            gap: 1rem;
+        }
+
+        .guide-title {
+            font-size: 1.375rem;
+            color: #1a3a52;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .guide-meta {
+            color: #9ca3af;
+            font-size: 0.9375rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-processing {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .download-btn {
+            padding: 0.875rem 1.75rem;
+            background: #E8A735;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9375rem;
+            width: 100%;
+            margin-top: 1.25rem;
+        }
+
+        .download-btn:hover {
+            background: #d49625;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(232, 167, 53, 0.25);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.4;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #1a3a52;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            font-size: 1.0625rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state a {
+            color: #E8A735;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .empty-state a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            background: transparent;
+            padding: 3rem 2rem 2.5rem;
+            margin-top: 100px;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .footer-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 100px 1.5rem 60px;
+            }
+
+            .page-header {
+                margin-bottom: 60px;
+            }
+
+            .upload-card {
+                margin-bottom: 60px;
+                padding: 2rem;
+            }
+
+            .guide-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            footer {
+                margin-top: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo-container">
+            <img src="https://i.imgur.com/s9222rr.png" alt="Scholara Logo" class="logo-img">
+            <div class="logo">SCHOLARA</div>
+        </a>
+        <div class="nav-right">
+            <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>📚 My Study Guides</h1>
+            <p>View and download your AI-generated study guides</p>
+        </div>
+
+        <div class="upload-card">
+            <h2>Create a New Study Guide</h2>
+            <p>Upload your notes or syllabus and let our AI create a professional study guide for you</p>
+            <a href="upload-notes.html" class="upload-btn">📤 Upload Notes</a>
+        </div>
+
+        <div class="guides-grid" id="guidesGrid">
+            <div class="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <h3>No study guides yet</h3>
+                <p>
+                    <a href="upload-notes.html">Upload your notes</a> to get started with AI-powered study guides
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            © 2025 Scholara. All rights reserved. Study smarter, not harder.
+        </div>
+    </footer>
+
+    <script>
+        const SUPABASE_URL = 'https://kiojxqwuxkrhkznszdvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtpb2p4cXd1eGtyaGt6bnN6ZHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwNzQxMTMsImV4cCI6MjA3NTY1MDExM30.guF9oB2LmY3GDcwSWQEe_5K6FmQ592otUPtttQW1LQQ';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+
+        async function checkAuth() {
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                window.location.href = 'index.html#login';
+                return;
+            }
+
+            currentUser = user;
+            loadStudyGuides();
+        }
+
+        async function loadStudyGuides() {
+            const { data: guides, error } = await supabase
+                .from('study_guide_requests')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            const guidesGrid = document.getElementById('guidesGrid');
+
+            if (!guides || guides.length === 0) {
+                guidesGrid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <h3>No study guides yet</h3>
+                        <p>
+                            <a href="upload-notes.html">Upload your notes</a> to get started with AI-powered study guides
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            guidesGrid.innerHTML = guides.map(guide => `
+                <div class="guide-card">
+                    <div class="guide-header">
+                        <div>
+                            <div class="guide-title">${guide.title}</div>
+                            <div class="guide-meta">
+                                ${guide.subject} • ${new Date(guide.created_at).toLocaleDateString()}
+                            </div>
+                        </div>
+                        <span class="status-badge status-${guide.status}">${guide.status.toUpperCase()}</span>
+                    </div>
+                    ${guide.status === 'completed' && guide.completed_study_guide ? `
+                        <button class="download-btn" onclick="downloadCompletedGuide('${guide.id}')">
+                            📥 Download Study Guide
+                        </button>
+                    ` : `
+                        <p style="color: #6b7280; margin-top: 1rem;">
+                            ${guide.status === 'pending' ? '⏳ Waiting to be processed...' : '🔄 Your study guide is being created...'}
+                        </p>
+                    `}
+                </div>
+            `).join('');
+        }
+
+        async function downloadCompletedGuide(guideId) {
+            const { data: guide, error } = await supabase
+                .from('study_guide_requests')
+                .select('completed_study_guide')
+                .eq('id', guideId)
+                .single();
+
+            if (error || !guide || !guide.completed_study_guide) {
+                alert('Study guide not found');
+                return;
+            }
+
+            try {
+                const dataUrl = guide.completed_study_guide.data;
+                const response = await fetch(dataUrl);
+                const blob = await response.blob();
+
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+
+                let fileName = guide.completed_study_guide.name;
+                if (!fileName.toLowerCase().endsWith('.pdf')) {
+                    fileName += '.pdf';
+                }
+                link.download = fileName;
+
+                document.body.appendChild(link);
+                link.click();
+
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error('Download error:', err);
+                alert('Failed to download study guide. Please try again.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>
