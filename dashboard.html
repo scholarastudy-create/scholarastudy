@@ -6,7 +6,7 @@
     <title>Dashboard - Scholara</title>
     <link rel="icon" type="image/png" href="https://i.imgur.com/s9222rr.png">
     <link rel="apple-touch-icon" href="https://i.imgur.com/s9222rr.png">
-
+    
     <!-- Facebook Domain Verification -->
     <meta name="facebook-domain-verification" content="5hv0698zgujzxau0rwggr4mklwbubc" />
 
@@ -63,41 +63,39 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #F7F8FA;
+            background: linear-gradient(135deg, #F5F3EF 0%, #e8e5df 100%);
             color: #1a3a52;
             min-height: 100vh;
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Navigation */
         nav {
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.06);
-            padding: 1.25rem 5%;
+            background: rgba(245, 243, 239, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
         }
 
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.8rem;
             text-decoration: none;
         }
 
         .logo-img {
-            width: 42px;
-            height: 42px;
+            width: 45px;
+            height: 45px;
             object-fit: contain;
         }
 
@@ -105,77 +103,47 @@
             font-size: 1.5rem;
             font-weight: 700;
             color: #1a3a52;
-            letter-spacing: -0.02em;
+            letter-spacing: 0.5px;
         }
 
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 1.25rem;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
             gap: 1rem;
-            font-size: 0.9375rem;
-            color: #4a5568;
-        }
-
-        .plan-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-
-        .plan-free {
-            background: #f1f3f5;
-            color: #495057;
-        }
-        .plan-pro {
-            background: linear-gradient(135deg, #E8A735 0%, #d49625 100%);
-            color: white;
-        }
-        .plan-premium {
-            background: linear-gradient(135deg, #1a3a52 0%, #0d2235 100%);
-            color: white;
-        }
-        .plan-admin {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            color: white;
         }
 
         .settings-icon {
             width: 40px;
             height: 40px;
-            background: #f7f7f8;
-            border-radius: 10px;
+            background: rgba(232, 167, 53, 0.1);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 1.2rem;
             text-decoration: none;
-            color: #6b7280;
+            border: 1px solid rgba(232, 167, 53, 0.2);
+            color: #E8A735;
         }
 
         .settings-icon:hover {
-            background: #e8a735;
-            color: white;
-            transform: translateY(-1px);
+            background: rgba(232, 167, 53, 0.15);
+            transform: translateY(-1px) rotate(90deg);
+            box-shadow: 0 4px 12px rgba(232, 167, 53, 0.2);
+            border-color: rgba(232, 167, 53, 0.4);
         }
 
         .admin-btn {
-            padding: 0.625rem 1.125rem;
+            padding: 0.625rem 1.25rem;
             background: #1a3a52;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             display: none;
             font-size: 0.875rem;
@@ -184,17 +152,52 @@
         .admin-btn:hover {
             background: #0d2235;
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 58, 82, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .plan-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .plan-free {
+            background: white;
+            color: #5a6c7d;
+            border: 2px solid #e8e5df;
+        }
+        .plan-pro {
+            background: linear-gradient(135deg, #E8A735 0%, #d49625 100%);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .plan-premium {
+            background: linear-gradient(135deg, #1a3a52 0%, #0d2235 100%);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .plan-admin {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
         .logout-btn {
             padding: 0.625rem 1.25rem;
             background: white;
             color: #1a3a52;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 10px;
+            border: 2px solid #1a3a52;
+            border-radius: 25px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 0.875rem;
         }
 
@@ -205,281 +208,290 @@
             transform: translateY(-1px);
         }
 
-        /* Main Container */
         .container {
             max-width: 1280px;
             margin: 0 auto;
-            padding: 120px 2rem 80px;
+            padding: 6rem 2rem 4rem;
         }
 
-        /* Welcome Section */
         .welcome-section {
-            margin-bottom: 80px;
+            margin-bottom: 3rem;
+            text-align: left;
         }
 
         .welcome-section h1 {
-            font-size: clamp(2rem, 4vw, 2.75rem);
+            font-size: 2.25rem;
             color: #1a3a52;
-            margin-bottom: 0.625rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-        }
-
-        .welcome-section p {
-            font-size: 1.125rem;
-            color: #6b7280;
-            font-weight: 400;
-        }
-
-        /* Upgrade Banner */
-        .upgrade-banner {
-            background: linear-gradient(135deg, rgba(232, 167, 53, 0.08) 0%, rgba(232, 167, 53, 0.03) 100%);
-            border: 1.5px solid rgba(232, 167, 53, 0.2);
-            color: #1a3a52;
-            padding: 2.5rem;
-            border-radius: 18px;
-            margin-bottom: 80px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .upgrade-banner h2 {
-            font-size: 1.5rem;
             margin-bottom: 0.5rem;
-            font-weight: 700;
-            color: #1a3a52;
-        }
-
-        .upgrade-banner p {
-            font-size: 1rem;
-            color: #6b7280;
-        }
-
-        .upgrade-btn {
-            padding: 0.875rem 1.75rem;
-            background: #E8A735;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            font-size: 1rem;
-            white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(232, 167, 53, 0.2);
-        }
-
-        .upgrade-btn:hover {
-            background: #d49625;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(232, 167, 53, 0.3);
-        }
-
-        /* Section Headings */
-        .section-title {
-            font-size: 1.625rem;
-            color: #1a3a52;
-            margin-bottom: 2rem;
             font-weight: 700;
             letter-spacing: -0.02em;
         }
 
-        /* Quick Actions Grid */
+        .welcome-section p {
+            font-size: 1.125rem;
+            color: #5a6c7d;
+            font-weight: 400;
+        }
+
         .quick-actions {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 100px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
         }
 
         .action-card {
             background: white;
             padding: 2.5rem;
-            border-radius: 18px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-            transition: all 0.25s ease;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
             cursor: pointer;
-            border: 1px solid rgba(0,0,0,0.04);
+            text-align: center;
+            border: none;
             position: relative;
         }
 
         .action-card:hover {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-            transform: translateY(-4px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+            transform: translateY(-10px);
         }
 
         .action-card.locked {
-            opacity: 0.6;
+            opacity: 0.65;
             cursor: not-allowed;
-            background: #fafbfc;
+            background: #fafafa;
         }
 
         .action-card.locked:hover {
             transform: none;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
         }
 
         .action-icon {
-            font-size: 2.75rem;
-            margin-bottom: 1.25rem;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
         }
 
         .action-card h3 {
             color: #1a3a52;
-            font-size: 1.25rem;
-            margin-bottom: 0.625rem;
-            font-weight: 700;
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
 
         .action-card p {
-            color: #6b7280;
+            color: #5a6c7d;
             line-height: 1.6;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
             font-size: 0.9375rem;
         }
 
         .action-card .btn {
             width: 100%;
-            padding: 0.75rem;
-            font-size: 0.9375rem;
+            padding: 0.7rem;
+            font-size: 0.9rem;
             margin-top: 0;
         }
 
-        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 2rem;
-            margin-bottom: 100px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
         }
 
         .stat-card {
             background: white;
-            padding: 2.25rem;
-            border-radius: 18px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-            transition: all 0.25s ease;
-            border: 1px solid rgba(0,0,0,0.04);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
+            border: none;
         }
 
         .stat-card:hover {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-            transform: translateY(-4px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+            transform: translateY(-10px);
         }
 
         .stat-card h3 {
-            color: #9ca3af;
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
+            color: #5a6c7d;
+            font-size: 0.8125rem;
+            margin-bottom: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             font-weight: 600;
         }
 
         .stat-card .number {
-            font-size: 2.75rem;
+            font-size: 2.25rem;
             color: #1a3a52;
             font-weight: 700;
         }
 
-        /* Templates Grid */
+        .section-title {
+            font-size: 1.5rem;
+            color: #1a3a52;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .upgrade-banner {
+            background: linear-gradient(135deg, rgba(232, 167, 53, 0.1) 0%, rgba(232, 167, 53, 0.05) 100%);
+            color: #1a3a52;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid rgba(232, 167, 53, 0.3);
+            box-shadow: 0 4px 15px rgba(232, 167, 53, 0.15);
+        }
+
+        .upgrade-banner h2 {
+            font-size: 1.25rem;
+            margin-bottom: 0.375rem;
+            font-weight: 700;
+            color: #1a3a52;
+        }
+
+        .upgrade-banner p {
+            font-size: 0.9375rem;
+            color: #5a6c7d;
+        }
+
+        .upgrade-btn {
+            padding: 0.75rem 1.5rem;
+            background: #E8A735;
+            color: white;
+            border: 1px solid #E8A735;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 0.9375rem;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(232, 167, 53, 0.3);
+        }
+
+        .upgrade-btn:hover {
+            background: #d49625;
+            color: white;
+            border-color: #d49625;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(232, 167, 53, 0.4);
+        }
+
         .templates-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 100px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
         }
 
         .template-card {
             background: white;
-            border-radius: 18px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-            transition: all 0.25s ease;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
             position: relative;
-            border: 1px solid rgba(0,0,0,0.04);
+            border: none;
         }
 
         .template-card:hover {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-            transform: translateY(-4px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+            transform: translateY(-10px);
         }
 
         .template-card.locked {
-            opacity: 0.6;
-            background: #fafbfc;
+            opacity: 0.65;
+            background: #fafafa;
         }
 
         .template-preview {
             width: 100%;
-            height: 160px;
-            background: linear-gradient(135deg, #f7f8fa 0%, #e9ecef 100%);
+            height: 140px;
+            background: linear-gradient(135deg, rgba(245, 243, 239, 0.5) 0%, rgba(232, 229, 223, 0.5) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
+            font-size: 2.5rem;
+            position: relative;
+            opacity: 0.8;
+        }
+
+        .template-card:hover .template-preview {
+            opacity: 1;
         }
 
         .template-info {
-            padding: 1.75rem;
+            padding: 1.5rem;
         }
 
         .template-info h3 {
             color: #1a3a52;
-            margin-bottom: 0.625rem;
-            font-size: 1.125rem;
-            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1.0625rem;
+            font-weight: 600;
         }
 
         .template-info p {
-            color: #6b7280;
+            color: #5a6c7d;
             font-size: 0.9375rem;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
             line-height: 1.5;
         }
 
         .template-actions {
             display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            gap: 0.4rem;
+            margin-top: 0.8rem;
         }
 
-        /* Buttons */
         .btn {
             flex: 1;
-            padding: 0.75rem 1.125rem;
+            padding: 0.625rem 1rem;
             border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
-            font-size: 0.9375rem;
-            border: none;
-            text-align: center;
+            font-size: 0.875rem;
+            border: 1px solid transparent;
         }
 
         .btn-primary {
             background: #E8A735;
             color: white;
+            border-color: #E8A735;
         }
 
         .btn-primary:hover {
             background: #d49625;
+            color: white;
+            border-color: #d49625;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(232, 167, 53, 0.25);
+            box-shadow: 0 4px 12px rgba(232, 167, 53, 0.4);
         }
 
         .btn-secondary {
-            background: #f7f8fa;
-            color: #4a5568;
-            border: 1.5px solid #e2e8f0;
+            background: white;
+            color: #5a6c7d;
+            border-color: rgba(232, 167, 53, 0.2);
         }
 
         .btn-secondary:hover {
-            background: white;
+            background: rgba(232, 167, 53, 0.05);
             color: #1a3a52;
-            border-color: #cbd5e0;
+            border-color: rgba(232, 167, 53, 0.4);
             transform: translateY(-1px);
         }
 
@@ -491,9 +503,9 @@
 
         .lock-overlay {
             position: absolute;
-            top: 14px;
-            right: 14px;
-            background: rgba(26, 58, 82, 0.92);
+            top: 12px;
+            right: 12px;
+            background: rgba(26, 58, 82, 0.9);
             color: white;
             padding: 0.5rem 1rem;
             border-radius: 20px;
@@ -502,130 +514,10 @@
             backdrop-filter: blur(8px);
         }
 
-        /* My Templates Section */
-        .my-templates-section {
-            background: white;
-            padding: 2.5rem;
-            margin-bottom: 100px;
-            border-radius: 18px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-            border: 1px solid rgba(0,0,0,0.04);
-            display: none;
+        .features-section {
+            margin-top: 3rem;
         }
 
-        .my-templates-section.active {
-            display: block;
-        }
-
-        .my-templates-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .my-templates-header h2 {
-            font-size: 1.625rem;
-            color: #1a3a52;
-            font-weight: 700;
-        }
-
-        .my-templates-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .user-template-card {
-            background: #fafbfc;
-            border-radius: 14px;
-            padding: 1.75rem;
-            transition: all 0.2s ease;
-            border: 1.5px solid #e9ecef;
-        }
-
-        .user-template-card:hover {
-            border-color: #e8a735;
-            box-shadow: 0 4px 12px rgba(232, 167, 53, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .user-template-card h3 {
-            color: #1a3a52;
-            font-size: 1.125rem;
-            margin-bottom: 0.625rem;
-            font-weight: 700;
-        }
-
-        .user-template-card .template-meta {
-            color: #9ca3af;
-            font-size: 0.8125rem;
-            margin-bottom: 1.25rem;
-        }
-
-        .user-template-actions {
-            display: flex;
-            gap: 0.625rem;
-        }
-
-        .user-template-actions button {
-            flex: 1;
-            padding: 0.75rem;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-        }
-
-        .btn-edit-template {
-            background: #E8A735;
-            color: white;
-        }
-
-        .btn-edit-template:hover {
-            background: #d49625;
-            transform: translateY(-1px);
-        }
-
-        .btn-download-template {
-            background: #f7f8fa;
-            color: #1a3a52;
-            border: 1.5px solid #e2e8f0;
-        }
-
-        .btn-download-template:hover {
-            background: #1a3a52;
-            color: white;
-            transform: translateY(-1px);
-        }
-
-        .btn-delete-template {
-            background: #fee;
-            color: #dc3545;
-            border: 1.5px solid #fcc;
-        }
-
-        .btn-delete-template:hover {
-            background: #dc3545;
-            color: white;
-            transform: translateY(-1px);
-        }
-
-        .empty-templates {
-            text-align: center;
-            padding: 3rem;
-            color: #6b7280;
-        }
-
-        .empty-templates-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            opacity: 0.4;
-        }
-
-        /* Status Badges */
         .status-badge {
             padding: 0.5rem 1rem;
             border-radius: 20px;
@@ -634,26 +526,28 @@
         }
 
         .status-pending {
-            background: #fef3c7;
-            color: #92400e;
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
         }
 
         .status-processing {
-            background: #dbeafe;
-            color: #1e40af;
+            background: #cfe2ff;
+            color: #084298;
+            border: 1px solid #9ec5fe;
         }
 
         .status-completed {
-            background: #d1fae5;
-            color: #065f46;
+            background: #d1e7dd;
+            color: #0a3622;
+            border: 1px solid #a3cfbb;
         }
 
-        /* Footer */
         footer {
             background: transparent;
-            padding: 3rem 2rem 2.5rem;
-            margin-top: 100px;
-            border-top: 1px solid rgba(0,0,0,0.06);
+            padding: 3rem 2rem 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(232, 167, 53, 0.2);
         }
 
         .footer-content {
@@ -690,10 +584,10 @@
         }
 
         .footer-links a {
-            color: #6b7280;
+            color: #5a6c7d;
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.2s ease;
+            transition: color 0.3s ease;
             font-size: 0.9375rem;
         }
 
@@ -706,12 +600,12 @@
             text-align: center;
             margin-top: 2rem;
             padding-top: 2rem;
-            border-top: 1px solid rgba(0,0,0,0.06);
-            color: #9ca3af;
+            border-top: 1px solid rgba(232, 167, 53, 0.2);
+            color: #5a6c7d;
             font-size: 0.875rem;
         }
 
-        /* Tour System */
+        /* Tour System Styles */
         .tour-card {
             position: fixed;
             top: 50%;
@@ -719,13 +613,14 @@
             transform: translate(-50%, -50%);
             background: white;
             border-radius: 24px;
-            padding: 2.75rem;
+            padding: 2.5rem;
             max-width: 520px;
             width: calc(100% - 40px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08);
             z-index: 10001;
             display: none;
-            animation: tourCardAppear 0.4s ease;
+            animation: tourCardAppear 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #E2E8F0;
         }
 
         .tour-card.active {
@@ -749,39 +644,46 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 10000;
             display: none;
+            animation: fadeIn 0.3s ease;
         }
 
         .tour-backdrop.active {
             display: block;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .tour-card h3 {
             color: #1a3a52;
-            font-size: 1.625rem;
+            font-size: 1.5rem;
             margin-bottom: 0.5rem;
+            line-height: 1.3;
             font-weight: 700;
         }
 
         .tour-card .tour-icon {
-            font-size: 3.5rem;
-            margin-bottom: 1.25rem;
+            font-size: 3rem;
+            margin-bottom: 1rem;
             text-align: center;
         }
 
         .tour-card p {
-            color: #6b7280;
+            color: #5a6c7d;
             line-height: 1.7;
             margin-bottom: 2rem;
-            font-size: 1.0625rem;
+            font-size: 1rem;
         }
 
         .tour-progress-bar {
             width: 100%;
             height: 6px;
-            background: #e9ecef;
+            background: #e8e5df;
             border-radius: 10px;
             margin-bottom: 1.5rem;
             overflow: hidden;
@@ -796,12 +698,12 @@
 
         .tour-controls {
             display: flex;
-            gap: 1rem;
+            gap: 0.8rem;
             align-items: center;
         }
 
         .tour-step-indicator {
-            color: #9ca3af;
+            color: #5a6c7d;
             font-size: 0.875rem;
             margin-bottom: 1rem;
             text-align: center;
@@ -809,58 +711,338 @@
         }
 
         .tour-btn {
-            padding: 1rem 1.75rem;
+            padding: 0.875rem 1.5rem;
             border: none;
             border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-size: 0.9375rem;
+            white-space: nowrap;
         }
 
         .tour-btn-primary {
             background: #E8A735;
             color: white;
             flex: 1;
-            box-shadow: 0 2px 8px rgba(232, 167, 53, 0.25);
+            box-shadow: 0 4px 15px rgba(232, 167, 53, 0.3);
         }
 
         .tour-btn-primary:hover {
             background: #d49625;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(232, 167, 53, 0.3);
+            box-shadow: 0 6px 25px rgba(232, 167, 53, 0.4);
         }
 
         .tour-btn-secondary {
-            background: #f7f8fa;
+            background: #f0f0f0;
             color: #1a3a52;
-            padding: 1rem 1.5rem;
+            padding: 0.875rem 1.25rem;
         }
 
         .tour-btn-secondary:hover {
-            background: #e9ecef;
+            background: #e0e0e0;
         }
 
         .tour-skip {
             text-align: center;
-            margin-top: 1.25rem;
+            margin-top: 1rem;
         }
 
         .tour-skip button {
             background: none;
             border: none;
-            color: #9ca3af;
+            color: #5a6c7d;
             font-size: 0.875rem;
             cursor: pointer;
             text-decoration: underline;
-            transition: color 0.2s ease;
+            transition: color 0.3s ease;
         }
 
         .tour-skip button:hover {
             color: #1a3a52;
         }
 
-        /* Template Editor Modal */
+        @media (max-width: 768px) {
+            .tour-card {
+                padding: 2rem;
+                width: calc(100% - 30px);
+                max-width: 100%;
+            }
+
+            .tour-card h3 {
+                font-size: 1.3rem;
+            }
+
+            .tour-card .tour-icon {
+                font-size: 2.5rem;
+            }
+
+            .tour-card p {
+                font-size: 0.95rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .tour-btn {
+                font-size: 0.9rem;
+                padding: 0.8rem 1.2rem;
+            }
+
+            .tour-controls {
+                flex-direction: column;
+            }
+
+            .tour-btn-primary,
+            .tour-btn-secondary {
+                width: 100%;
+            }
+
+            nav {
+                padding: 1rem 4%;
+                flex-wrap: wrap;
+                gap: 0.8rem;
+            }
+
+            .logo-img {
+                width: 38px;
+                height: 38px;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .nav-right {
+                gap: 0.8rem;
+                flex-wrap: wrap;
+            }
+
+            .user-info {
+                gap: 0.6rem;
+                font-size: 0.85rem;
+                flex-wrap: wrap;
+            }
+
+            .plan-badge {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .settings-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .logout-btn, .admin-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.85rem;
+            }
+
+            .container {
+                padding: 6rem 1.5rem 3rem;
+            }
+
+            .welcome-section {
+                margin-bottom: 2.5rem;
+            }
+
+            .welcome-section h1 {
+                font-size: 2rem;
+            }
+
+            .welcome-section p {
+                font-size: 1rem;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+
+            .action-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .action-icon {
+                font-size: 2.5rem;
+            }
+
+            .action-card h3 {
+                font-size: 1.2rem;
+            }
+
+            .upgrade-banner {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+                padding: 2rem;
+            }
+
+            .upgrade-banner h2 {
+                font-size: 1.3rem;
+            }
+
+            .templates-grid {
+                grid-template-columns: 1fr;
+                gap: 1.2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1.5rem;
+            }
+
+            .stat-card .number {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.375rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tour-card {
+                padding: 1.5rem;
+                width: calc(100% - 24px);
+            }
+
+            .tour-card h3 {
+                font-size: 1.2rem;
+            }
+
+            .tour-card .tour-icon {
+                font-size: 2rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .tour-card p {
+                font-size: 0.9rem;
+            }
+
+            .tour-btn {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            nav {
+                padding: 0.9rem 4%;
+            }
+
+            .logo {
+                font-size: 1.3rem;
+            }
+
+            .logo-img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .nav-right {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 0.6rem;
+                gap: 0.6rem;
+            }
+
+            .user-info {
+                gap: 0.4rem;
+                font-size: 0.8rem;
+            }
+
+            .settings-icon {
+                width: 38px;
+                height: 38px;
+            }
+
+            .container {
+                padding: 5.5rem 1.25rem 2.5rem;
+            }
+
+            .welcome-section {
+                margin-bottom: 2rem;
+            }
+
+            .welcome-section h1 {
+                font-size: 1.75rem;
+            }
+
+            .welcome-section p {
+                font-size: 0.9375rem;
+            }
+
+            .action-card {
+                padding: 1.8rem 1.5rem;
+            }
+
+            .action-icon {
+                font-size: 2.2rem;
+            }
+
+            .action-card h3 {
+                font-size: 1.15rem;
+            }
+
+            .action-card p {
+                font-size: 0.9rem;
+            }
+
+            .upgrade-banner {
+                padding: 1.5rem;
+            }
+
+            .upgrade-banner h2 {
+                font-size: 1.2rem;
+            }
+
+            .upgrade-banner p {
+                font-size: 0.9rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 1.25rem;
+                margin-bottom: 1rem;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .my-templates-section {
+                padding: 1.5rem;
+            }
+
+            .my-templates-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .my-templates-header .btn {
+                width: 100%;
+            }
+        }
+
+        /* Template Editor Modal Styles */
         .editor-modal {
             display: none;
             position: fixed;
@@ -868,10 +1050,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.6);
             z-index: 10000;
             align-items: center;
             justify-content: center;
+            animation: fadeIn 0.3s ease;
             backdrop-filter: blur(4px);
         }
 
@@ -887,8 +1070,9 @@
             max-height: 90vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            animation: slideUp 0.4s ease;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08);
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #E2E8F0;
         }
 
         @keyframes slideUp {
@@ -903,26 +1087,28 @@
         }
 
         .editor-header {
-            padding: 2.25rem;
-            border-bottom: 1px solid #e9ecef;
+            padding: 2rem;
+            border-bottom: 1px solid #e8e5df;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .editor-header h2 {
-            font-size: 1.75rem;
+            color: #1a3a52;
+            font-size: 1.5rem;
+            font-weight: 700;
         }
 
         .editor-header input {
             flex: 1;
-            margin: 0 1.25rem;
-            padding: 0.875rem 1.125rem;
-            border: 1.5px solid #e2e8f0;
+            margin: 0 1rem;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e8e5df;
             border-radius: 12px;
             font-size: 1rem;
             font-family: 'Inter', sans-serif;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .editor-header input:focus {
@@ -932,14 +1118,14 @@
         }
 
         .editor-close {
-            background: #f7f8fa;
+            background: #f0f0f0;
             border: none;
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             font-size: 1.5rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .editor-close:hover {
@@ -948,7 +1134,7 @@
         }
 
         .editor-body {
-            padding: 2.25rem;
+            padding: 2rem;
             overflow-y: auto;
             flex: 1;
         }
@@ -959,42 +1145,42 @@
         }
 
         .editor-footer {
-            padding: 1.75rem 2.25rem;
-            border-top: 1px solid #e9ecef;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #e8e5df;
             display: flex;
             gap: 1rem;
             justify-content: flex-end;
         }
 
         .editor-btn {
-            padding: 1rem 2.25rem;
+            padding: 0.875rem 2rem;
             border: none;
             border-radius: 12px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.9375rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .editor-btn-save {
             background: #E8A735;
             color: white;
-            box-shadow: 0 2px 8px rgba(232, 167, 53, 0.25);
+            box-shadow: 0 4px 15px rgba(232, 167, 53, 0.3);
         }
 
         .editor-btn-save:hover {
             background: #d49625;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(232, 167, 53, 0.3);
+            box-shadow: 0 6px 25px rgba(232, 167, 53, 0.4);
         }
 
         .editor-btn-cancel {
-            background: #f7f8fa;
+            background: #f0f0f0;
             color: #1a3a52;
         }
 
         .editor-btn-cancel:hover {
-            background: #e9ecef;
+            background: #e0e0e0;
         }
 
         .editor-btn:disabled {
@@ -1003,43 +1189,179 @@
             transform: none !important;
         }
 
-        /* Responsive */
+        /* My Templates Section */
+        .my-templates-section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid rgba(232, 167, 53, 0.1);
+            display: none;
+        }
+
+        .my-templates-section.active {
+            display: block;
+        }
+
+        .my-templates-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .my-templates-header h2 {
+            color: #1a3a52;
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .my-templates-header .btn {
+            width: auto;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.875rem;
+        }
+
+        .my-templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .user-template-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(232, 167, 53, 0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .user-template-card:hover {
+            border-color: rgba(232, 167, 53, 0.3);
+            box-shadow: 0 8px 24px rgba(232, 167, 53, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .user-template-card h3 {
+            color: #1a3a52;
+            font-size: 1.0625rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .user-template-card .template-meta {
+            color: #5a6c7d;
+            font-size: 0.8125rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .user-template-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .user-template-actions button {
+            flex: 1;
+            padding: 0.625rem 0.75rem;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .btn-edit-template {
+            color: white;
+            background: #E8A735;
+            border-color: #E8A735;
+        }
+
+        .btn-edit-template:hover {
+            background: #d49625;
+            color: white;
+            border-color: #d49625;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(232, 167, 53, 0.4);
+        }
+
+        .btn-delete-template {
+            color: #dc3545;
+            border-color: rgba(220, 53, 69, 0.2);
+            background: white;
+        }
+
+        .btn-delete-template:hover {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-download-template {
+            color: #1a3a52;
+            background: white;
+            border-color: rgba(232, 167, 53, 0.2);
+        }
+
+        .btn-download-template:hover {
+            background: #1a3a52;
+            color: white;
+            border-color: #1a3a52;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 58, 82, 0.3);
+        }
+
+        .empty-templates {
+            text-align: center;
+            padding: 3rem;
+            color: #5a6c7d;
+        }
+
+        .empty-templates-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
         @media (max-width: 768px) {
-            .container {
-                padding: 100px 1.5rem 60px;
+            .editor-container {
+                width: 95%;
+                max-height: 95vh;
             }
 
-            .welcome-section {
-                margin-bottom: 60px;
+            .editor-header {
+                padding: 1.5rem;
+                flex-wrap: wrap;
             }
 
-            .quick-actions, .stats-grid, .templates-grid {
-                margin-bottom: 60px;
+            .editor-header h2 {
+                width: 100%;
+                margin-bottom: 1rem;
             }
 
-            .upgrade-banner {
+            .editor-body {
+                padding: 1rem;
+            }
+
+            #quillEditor {
+                height: 300px;
+            }
+
+            .editor-footer {
                 flex-direction: column;
-                gap: 1.5rem;
-                text-align: center;
-                margin-bottom: 60px;
             }
 
-            .nav-right {
-                gap: 0.875rem;
+            .editor-btn {
+                width: 100%;
             }
 
-            .user-info {
-                font-size: 0.8125rem;
-                gap: 0.625rem;
-            }
-
-            footer {
-                margin-top: 60px;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                text-align: center;
+            .my-templates-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -1103,39 +1425,33 @@
         <div class="quick-actions" id="quickActions">
         </div>
 
-        <!-- My Templates Section (Pro/Premium only) -->
-        <div class="my-templates-section" id="myTemplatesSection">
-            <div class="my-templates-header">
-                <h2>📝 My Templates</h2>
-                <button class="btn btn-primary" onclick="createNewTemplate()">
-                    + Create New Template
-                </button>
+        <div class="features-section" id="studyGuidesSection" style="margin-top: 4rem; display: none;">
+            <h2 class="section-title">📚 My Study Guides</h2>
+            <div id="studyGuidesList" style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
             </div>
-            <div class="my-templates-grid" id="myTemplatesGrid">
-                <div class="empty-templates">
-                    <div class="empty-templates-icon">📝</div>
-                    <p>No templates yet. Click "Create New Template" or "Edit" on any template below to get started!</p>
+        </div>
+
+        <div class="features-section" style="margin-top: 4rem;">
+            <h2 class="section-title">📚 Template Library</h2>
+            <div id="templatesGrid" class="templates-grid">
+            </div>
+        </div>
+
+        <div class="features-section" style="margin-top: 4rem;">
+            <h2 class="section-title">📊 Your Stats</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Templates Available</h3>
+                    <div class="number" id="templatesCount">0</div>
                 </div>
-            </div>
-        </div>
-
-        <h2 class="section-title">📚 Template Library</h2>
-        <div id="templatesGrid" class="templates-grid">
-        </div>
-
-        <h2 class="section-title">📊 Your Stats</h2>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Templates Available</h3>
-                <div class="number" id="templatesCount">0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Study Guides Created</h3>
-                <div class="number" id="guidesCount">0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Hours Saved</h3>
-                <div class="number">0</div>
+                <div class="stat-card">
+                    <h3>Study Guides Created</h3>
+                    <div class="number" id="guidesCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Hours Saved</h3>
+                    <div class="number">0</div>
+                </div>
             </div>
         </div>
     </div>
@@ -1158,6 +1474,7 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'https://kiojxqwuxkrhkznszdvo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtpb2p4cXd1eGtyaGt6bnN6ZHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwNzQxMTMsImV4cCI6MjA3NTY1MDExM30.guF9oB2LmY3GDcwSWQEe_5K6FmQ592otUPtttQW1LQQ';
@@ -1214,7 +1531,7 @@
             if (localStorage.getItem('scholara_tour_completed')) {
                 return;
             }
-
+            
             setTimeout(() => {
                 showTourStep(0);
             }, 1000);
@@ -1231,7 +1548,7 @@
 
             const backdrop = document.getElementById('tourBackdrop');
             const card = document.getElementById('tourCard');
-
+            
             backdrop.classList.add('active');
             card.classList.add('active');
 
@@ -1281,13 +1598,13 @@
 
         function isAdmin() {
             if (!currentUser || !userProfile) return false;
-            return currentUser.email === ADMIN_EMAIL ||
+            return currentUser.email === ADMIN_EMAIL || 
                    userProfile.subscription_plan === 'admin';
         }
 
         async function checkAuth() {
             const { data: { user } } = await supabase.auth.getUser();
-
+            
             if (!user) {
                 window.location.href = 'index.html#login';
                 return;
@@ -1357,12 +1674,12 @@
                 if (subscriptionStatus === 'cancelled' || subscriptionStatus === 'expired') {
                     await supabase
                         .from('profiles')
-                        .update({
+                        .update({ 
                             subscription_plan: 'free',
                             subscription_status: 'inactive'
                         })
                         .eq('id', currentUser.id);
-
+                    
                     userProfile.subscription_plan = 'free';
                     alert('Your subscription has ended. You have been moved to the Free plan. Upgrade to regain access to premium features!');
                     window.location.href = 'index.html#pricing';
@@ -1371,12 +1688,12 @@
                 if (subscriptionEndDate && new Date(subscriptionEndDate) < new Date()) {
                     await supabase
                         .from('profiles')
-                        .update({
+                        .update({ 
                             subscription_plan: 'free',
                             subscription_status: 'expired'
                         })
                         .eq('id', currentUser.id);
-
+                    
                     userProfile.subscription_plan = 'free';
                     alert('Your subscription has expired. You have been moved to the Free plan. Upgrade to continue using premium features!');
                     window.location.href = 'index.html#pricing';
@@ -1387,14 +1704,14 @@
         function updateUI() {
             const email = currentUser.email;
             let plan = userProfile.subscription_plan || 'free';
-
+            
             if (isAdmin()) {
                 plan = 'admin';
             }
-
+            
             document.getElementById('userEmail').textContent = email;
             document.getElementById('welcomeMessage').textContent = `Welcome back, ${userProfile.full_name || email.split('@')[0]}!`;
-
+            
             const planBadge = document.getElementById('planBadge');
             if (plan === 'admin') {
                 planBadge.textContent = 'Admin';
@@ -1425,13 +1742,13 @@
             grid.innerHTML = '';
 
             if (templates.length === 0) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #6b7280; padding: 3rem; font-size: 1.0625rem;">No templates available at this time. Check back soon!</p>';
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #5a6c7d; padding: 2rem;">No templates available at this time. Check back soon!</p>';
                 return;
             }
 
             templates.forEach(template => {
                 const hasAccess = planHierarchy[template.requiredPlan] <= planHierarchy[userPlan];
-
+                
                 const card = document.createElement('div');
                 card.className = 'template-card' + (hasAccess ? '' : ' locked');
                 card.innerHTML = `
@@ -1445,7 +1762,7 @@
                                 ${hasAccess ? 'View' : 'Locked'}
                             </button>
                             ${(userPlan === 'pro' || userPlan === 'premium' || userPlan === 'admin') && hasAccess ?
-                                `<button class="btn btn-primary" onclick="editTemplate('${template.id}')">Edit</button>` :
+                                `<button class="btn btn-secondary" onclick="editTemplate('${template.id}')" style="background: #E8A735; color: white;">Edit</button>` :
                                 ''}
                             <button class="btn btn-secondary" onclick="downloadTemplate('${template.id}')" ${!hasAccess ? 'disabled' : ''}>
                                 Download
@@ -1462,35 +1779,34 @@
             quickActions.innerHTML = '';
 
             const actions = [
-                {
+                { 
                     icon: '📄',
-                    title: 'Browse Templates',
-                    description: 'Access study templates, resumes, and planning tools for your academic needs.',
+                    title: 'Browse Templates', 
+                    description: 'Access study templates, resumes, and planning tools for your academic needs.', 
                     plans: ['free', 'pro', 'premium', 'admin'],
                     action: 'scrollToTemplates()'
                 },
-                {
+                { 
                     icon: '📤',
-                    title: 'Upload Notes',
-                    description: 'Turn your class notes into professional study guides with our AI-powered system.',
+                    title: 'Upload Notes', 
+                    description: 'Turn your class notes into professional study guides with our AI-powered system.', 
                     plans: ['pro', 'premium', 'admin'],
                     locked: userPlan === 'free',
                     link: 'upload-notes.html'
                 },
-                {
+                { 
                     icon: '🤖',
-                    title: 'ScholarAI Chat',
-                    description: 'Get instant help with homework, essays, and exam prep from your personal AI tutor.',
+                    title: 'ScholarAI Chat', 
+                    description: 'Get instant help with homework, essays, and exam prep from your personal AI tutor.', 
                     plans: ['premium', 'admin'],
                     locked: (userPlan !== 'premium' && userPlan !== 'admin'),
                     link: 'scholarai.html'
                 },
                 {
                     icon: '📚',
-                    title: 'My Study Guides',
-                    description: 'View and download your completed custom study guides.',
-                    plans: ['pro', 'premium', 'admin'],
-                    locked: userPlan === 'free',
+                    title: 'My Study Guides & Templates',
+                    description: 'View and download your study guides and manage your custom templates.',
+                    plans: ['free', 'pro', 'premium', 'admin'],
                     link: 'study-guides.html'
                 }
             ];
@@ -1499,7 +1815,7 @@
                 const hasAccess = action.plans.includes(userPlan);
                 const card = document.createElement('div');
                 card.className = 'action-card' + (action.locked ? ' locked' : '');
-
+                
                 let buttonHtml;
                 if (action.locked) {
                     buttonHtml = '<button class="btn btn-secondary" disabled>🔒 Upgrade to Unlock</button>';
@@ -1508,7 +1824,7 @@
                 } else if (action.action) {
                     buttonHtml = `<button class="btn btn-primary" onclick="${action.action}">View →</button>`;
                 }
-
+                
                 card.innerHTML = `
                     <div class="action-icon">${action.icon}</div>
                     <h3>${action.title}</h3>
@@ -1519,22 +1835,102 @@
             });
 
             if (userPlan !== 'free') {
-                // Count study guides for stats
-                countStudyGuides();
+                loadStudyGuides();
+                document.getElementById('studyGuidesSection').style.display = 'block';
             }
-        }
-
-        async function countStudyGuides() {
-            const { data: guides, error } = await supabase
-                .from('study_guide_requests')
-                .select('id')
-                .eq('user_id', currentUser.id);
-
-            document.getElementById('guidesCount').textContent = guides ? guides.length : 0;
         }
 
         function scrollToTemplates() {
             document.querySelector('#templatesGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function scrollToStudyGuides() {
+            document.querySelector('#studyGuidesSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        async function loadStudyGuides() {
+            const { data: guides, error } = await supabase
+                .from('study_guide_requests')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            const guidesList = document.getElementById('studyGuidesList');
+            
+            document.getElementById('guidesCount').textContent = guides ? guides.length : 0;
+
+            if (!guides || guides.length === 0) {
+                guidesList.innerHTML = `
+                    <p style="text-align: center; color: #5a6c7d;">
+                        No study guides yet. <a href="upload-notes.html" style="color: #E8A735; text-decoration: none; font-weight: 600;">Upload your notes</a> to get started!
+                    </p>
+                `;
+                return;
+            }
+
+            guidesList.innerHTML = guides.map(guide => `
+                <div style="background: #f8f8f8; padding: 1.5rem; border-radius: 15px; margin-bottom: 1rem; border-left: 4px solid #E8A735;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <div style="font-weight: 600; color: #1a3a52; font-size: 1.1rem;">${guide.title}</div>
+                        <span class="status-badge status-${guide.status}">${guide.status.toUpperCase()}</span>
+                    </div>
+                    <div style="color: #5a6c7d; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                        ${guide.subject} • ${new Date(guide.created_at).toLocaleDateString()}
+                    </div>
+                    ${guide.status === 'completed' && guide.completed_study_guide ? `
+                        <button class="btn btn-primary" onclick="downloadCompletedGuide('${guide.id}')" style="margin-top: 1rem; width: 100%;">
+                            📥 Download Study Guide
+                        </button>
+                    ` : `
+                        <p style="color: #5a6c7d; font-size: 0.9rem; margin-top: 1rem;">
+                            ${guide.status === 'pending' ? '⏳ Waiting to be processed...' : '🔄 Your study guide is being created...'}
+                        </p>
+                    `}
+                </div>
+            `).join('');
+        }
+
+        async function downloadCompletedGuide(guideId) {
+            const { data: guide, error } = await supabase
+                .from('study_guide_requests')
+                .select('completed_study_guide')
+                .eq('id', guideId)
+                .single();
+
+            if (error || !guide || !guide.completed_study_guide) {
+                alert('Study guide not found');
+                return;
+            }
+
+            try {
+                // Convert data URL to blob for proper download
+                const dataUrl = guide.completed_study_guide.data;
+                const response = await fetch(dataUrl);
+                const blob = await response.blob();
+
+                // Create object URL and download
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+
+                // Ensure proper file extension
+                let fileName = guide.completed_study_guide.name;
+                if (!fileName.toLowerCase().endsWith('.pdf')) {
+                    fileName += '.pdf';
+                }
+                link.download = fileName;
+
+                // Trigger download
+                document.body.appendChild(link);
+                link.click();
+
+                // Clean up
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error('Download error:', err);
+                alert('Failed to download study guide. Please try again.');
+            }
         }
 
         function viewTemplate(id) {
@@ -1543,17 +1939,17 @@
                 alert('Template not found');
                 return;
             }
-
+            
             if (template.fileUrl.includes('drive.google.com')) {
                 let fileId = null;
-
+                
                 if (template.fileUrl.includes('id=')) {
                     fileId = template.fileUrl.split('id=')[1].split('&')[0];
                 }
                 else if (template.fileUrl.includes('/file/d/')) {
                     fileId = template.fileUrl.split('/file/d/')[1].split('/')[0];
                 }
-
+                
                 if (fileId) {
                     const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
                     window.open(previewUrl, '_blank', 'width=1000,height=800');
@@ -1571,7 +1967,7 @@
                 alert('Template not found');
                 return;
             }
-
+            
             const link = document.createElement('a');
             link.href = template.fileUrl;
             link.download = template.name + '.pdf';
@@ -1582,6 +1978,7 @@
 
         // ========== TEMPLATE EDITOR FUNCTIONS ==========
 
+        // Initialize Quill Editor
         function initializeQuillEditor() {
             if (!quillEditor) {
                 quillEditor = new Quill('#quillEditor', {
@@ -1602,6 +1999,7 @@
             }
         }
 
+        // Create New Template
         async function createNewTemplate() {
             const plan = userProfile?.subscription_plan || 'free';
             if (plan === 'free') {
@@ -1620,6 +2018,7 @@
             document.getElementById('editorModal').classList.add('active');
         }
 
+        // Open Template Editor with Original Template
         async function editTemplate(templateId) {
             const plan = userProfile?.subscription_plan || 'free';
             if (plan === 'free') {
@@ -1640,10 +2039,13 @@
 
             document.getElementById('templateNameInput').value = template.name + ' (My Copy)';
 
+            // Check if template has editable content
             if (template.content && template.isEditable) {
+                // Load the actual template content!
                 quillEditor.root.innerHTML = template.content;
                 console.log('Loaded editable template content');
             } else {
+                // Fallback: Open reference window and show placeholder
                 if (template.fileUrl) {
                     if (template.fileUrl.includes('drive.google.com')) {
                         let fileId = null;
@@ -1665,6 +2067,7 @@
                     }
                 }
 
+                // Create a structured starter template
                 const initialContent = `
                     <h1>${template.name}</h1>
                     <p><em>${template.description}</em></p>
@@ -1692,6 +2095,7 @@
             document.getElementById('editorModal').classList.add('active');
         }
 
+        // Edit User's Saved Template
         async function editUserTemplate(userTemplateId) {
             const template = userTemplates.find(t => t.id === userTemplateId);
             if (!template) {
@@ -1709,12 +2113,14 @@
             document.getElementById('editorModal').classList.add('active');
         }
 
+        // Close Editor
         function closeEditor() {
             document.getElementById('editorModal').classList.remove('active');
             currentEditingTemplateId = null;
             isEditingExisting = false;
         }
 
+        // Save User Template
         async function saveUserTemplate() {
             const templateName = document.getElementById('templateNameInput').value.trim();
             const content = quillEditor.root.innerHTML;
@@ -1735,6 +2141,7 @@
 
             try {
                 if (isEditingExisting && currentEditingTemplateId) {
+                    // Update existing template
                     const { error } = await supabase
                         .from('user_templates')
                         .update({
@@ -1749,6 +2156,7 @@
 
                     console.log('Template updated successfully');
                 } else {
+                    // Create new template
                     const { error } = await supabase
                         .from('user_templates')
                         .insert({
@@ -1778,9 +2186,10 @@
             }
         }
 
+        // Load User Templates
         async function loadUserTemplates() {
             try {
-                const { data, error} = await supabase
+                const { data, error } = await supabase
                     .from('user_templates')
                     .select('*')
                     .eq('user_id', currentUser.id)
@@ -1799,11 +2208,13 @@
             }
         }
 
+        // Display User Templates
         function displayUserTemplates() {
             const plan = userProfile?.subscription_plan || 'free';
             const myTemplatesSection = document.getElementById('myTemplatesSection');
             const grid = document.getElementById('myTemplatesGrid');
 
+            // Only show for Pro/Premium users
             if (plan === 'pro' || plan === 'premium' || plan === 'admin') {
                 myTemplatesSection.classList.add('active');
             } else {
@@ -1851,6 +2262,7 @@
             });
         }
 
+        // Delete User Template
         async function deleteUserTemplate(templateId) {
             if (!confirm('Are you sure you want to delete this template? This action cannot be undone.')) {
                 return;
@@ -1875,6 +2287,7 @@
             }
         }
 
+        // Download User Template
         function downloadUserTemplate(templateId) {
             const template = userTemplates.find(t => t.id === templateId);
             if (!template) {
@@ -1882,6 +2295,7 @@
                 return;
             }
 
+            // Create HTML document
             const htmlContent = `
 <!DOCTYPE html>
 <html>
@@ -1906,6 +2320,7 @@
 </body>
 </html>`;
 
+            // Create blob and download
             const blob = new Blob([htmlContent], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -1924,18 +2339,23 @@
             window.location.href = 'index.html';
         }
 
+        // Ensure Meta Pixel loads before any auth redirects
         function initializePageWhenReady() {
+            // Wait for Meta Pixel to fully initialize (not just defined)
             let checkCount = 0;
             const checkPixel = setInterval(() => {
                 checkCount++;
+                // Check if pixel is loaded AND initialized
                 const pixelReady = typeof fbq !== 'undefined' && (window.fbq.loaded === true || window._fbq);
                 if (pixelReady || checkCount > 20) {
                     clearInterval(checkPixel);
+                    // Give pixel a moment to send PageView event
                     setTimeout(() => {
+                        // Pixel loaded or timeout reached, proceed with auth check
                         checkAuth();
-                    }, 300);
+                    }, 300); // 300ms buffer to ensure PageView sends
                 }
-            }, 100);
+            }, 100); // Check every 100ms
         }
 
         document.addEventListener('DOMContentLoaded', initializePageWhenReady);
