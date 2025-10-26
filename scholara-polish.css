@@ -99,7 +99,7 @@ code,kbd,pre,samp{font-family:var(--font-mono); font-size:90%}
 }
 
 /* Typography */
-h1,h2,h3{ line-height:1.2; letter-spacing:-.01em; margin:0 0 .6em; color: var(--ink)}
+h1,h2,h3{ line-height:1.2; letter-spacing:-.01em; margin:0 0 .6em; color: #1a3a52}
 h1{ font-size:var(--fs-900) }
 h2{ font-size:var(--fs-800) }
 h3{ font-size:var(--fs-700) }
@@ -333,7 +333,7 @@ p{ margin:0 0 1em; max-width:75ch }
 }
 .pricing-card .plan-name {
   font-size: 1.8rem;
-  color: var(--ink);
+  color: #1a3a52 !important;
   margin-bottom: 0.5rem;
   font-weight: 700;
 }
@@ -378,6 +378,71 @@ p{ margin:0 0 1em; max-width:75ch }
 /* Micro-interactions */
 a, .btn, .card, .input, .select, .textarea { will-change: transform, box-shadow, background, border-color }
 :focus-visible{ outline: 3px solid rgba(232, 167, 53, 0.5); outline-offset:3px; border-radius:10px }
+
+/* Dashboard-specific enhancements */
+.action-card, .stat-card {
+  position: relative;
+  overflow: hidden;
+}
+.action-card::after, .stat-card::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, rgba(232, 167, 53, 0.1), rgba(26, 58, 82, 0.05));
+  border-radius: 18px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+.action-card:hover::after, .stat-card:hover::after {
+  opacity: 1;
+}
+
+/* Enhanced action cards */
+.action-card {
+  border: 1.5px solid rgba(232, 167, 53, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02) !important;
+}
+.action-card:hover {
+  box-shadow: 0 12px 32px rgba(232, 167, 53, 0.12), 0 4px 12px rgba(0,0,0,0.06) !important;
+  border-color: rgba(232, 167, 53, 0.25) !important;
+}
+
+/* Stat cards with gradient accent */
+.stat-card {
+  border: 1.5px solid rgba(232, 167, 53, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02) !important;
+}
+.stat-card:hover {
+  box-shadow: 0 12px 32px rgba(232, 167, 53, 0.12), 0 4px 12px rgba(0,0,0,0.06) !important;
+}
+.stat-card .number {
+  background: linear-gradient(135deg, #1a3a52 0%, #E8A735 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Refined buttons for dashboard */
+.btn, .upgrade-btn, .plan-button, .auth-button, button[class*="btn"] {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.btn:hover, .upgrade-btn:hover, .plan-button:hover, .auth-button:hover, button[class*="btn"]:hover {
+  box-shadow: 0 6px 20px rgba(232, 167, 53, 0.25) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Welcome section enhancement */
+.welcome-section h1 {
+  background: linear-gradient(135deg, #1a3a52 0%, #2a4a62 50%, #E8A735 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
 /* Dark mode support (optional - can be removed if not needed) */
 @media (prefers-color-scheme: dark){
